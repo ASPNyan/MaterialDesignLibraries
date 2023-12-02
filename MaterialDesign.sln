@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignTesting", "Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignShowcase", "MaterialDesignShowcase\MaterialDesignShowcase.csproj", "{FF937162-663F-44FE-9005-FACCEFC2AFF9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesign.Theming", "MaterialDesign.Theming\MaterialDesign.Theming.csproj", "{F62517E0-2AA2-4A68-A9CD-008A97CD2DA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{FF937162-663F-44FE-9005-FACCEFC2AFF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF937162-663F-44FE-9005-FACCEFC2AFF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF937162-663F-44FE-9005-FACCEFC2AFF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62517E0-2AA2-4A68-A9CD-008A97CD2DA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62517E0-2AA2-4A68-A9CD-008A97CD2DA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62517E0-2AA2-4A68-A9CD-008A97CD2DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62517E0-2AA2-4A68-A9CD-008A97CD2DA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
