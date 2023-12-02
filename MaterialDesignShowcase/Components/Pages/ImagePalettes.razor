@@ -1,0 +1,108 @@
+﻿@page "/ImagePalettes"
+@using MaterialDesign.Image
+@using MaterialDesign.Palettes
+@using MaterialDesign.Colorspaces
+@using MaterialDesign.Blend
+@using MaterialDesign.Common
+@using MaterialDesign.Quantize
+@using MaterialDesign.Schemes
+@using MaterialDesign.Score
+@rendermode InteractiveServer
+<h3>Image Palettes</h3>
+
+@if (ImageDataUrls.Count is not 0)
+{
+    foreach (string url in ImageDataUrls)
+    {
+        <img src="@url" alt="" style="max-width: @($"{60d / ImageDataUrls.Count}")vw;"/>
+    }
+}
+else
+{
+    <p>Upload an Image to create a palette!</p>
+}
+
+<div>
+    <InputFile OnChange="@OnImageUpload" multiple accept="image/png,image/jpeg"/>
+    <br>
+    Dynamic Scheme Variant: <InputSelect @bind-Value="@Variant">
+        <option value="">Default</option>
+        @foreach (Variant variant in Enum.GetValues<Variant>())
+        {
+            <option value="@variant">@variant</option>
+        }
+    </InputSelect>
+</div>
+
+@if (Palettes.Count is not 0)
+{
+    FrequencyMap<HCTA, double> scored = Score.Scored(
+        FrequencyMap<HCTA>.From(
+            QuantizerCelebi.Quantize(Palettes.Select(palette => palette.Origin.ToRGBA()).ToArray(),
+                256),
+            HCTA.FromRGBA),
+        Palettes.Count);
+
+    (HCTA first, double firstScore) = scored.GetMostFrequentWithFrequencies();
+    foreach ((HCTA hcta, double score) in scored.GetMostFrequentWithFrequencies(scored.Count).Skip(1))
+        first = Blend.ViaCAM16Ucs(first, hcta, score / firstScore);
+
+    if (Variant is not null)
+    {
+        DynamicScheme scheme = DynamicScheme.Create(first, Variant.Value);
+        <DynamicSchemePalettes Scheme="@scheme" Tones="@Tones"/>
+    }
+    else
+    {
+        CorePalette palette = new CorePalette(first);
+        <CorePalettes Palette="@palette" Tones="@Tones"/>
+    }
+}
+
+@code {
+    private static readonly double[] Tones = [100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
+
+    private List<string> ImageDataUrls { get; set; } = [];
+    private List<CorePalette> Palettes { get; set; } = [];
+    private Variant? Variant { get; set; }
+    
+    private async Task OnImageUpload(InputFileChangeEventArgs args)
+    {
+        ImageDataUrls = [];
+        Palettes = [];
+        
+        if (args.FileCount is 0) return;
+
+        IBrowserFile file;
+
+        if (args.FileCount > 1)
+        {
+            IReadOnlyList<IBrowserFile> files = args.GetMultipleFiles();
+            for (int i = 0; i < args.FileCount; i++)
+            {
+                file = files[i];
+                await GetPaletteData(file);
+            }
+        }
+        else
+        {
+            file = args.File;
+            await GetPaletteData(file);
+        }
+
+        StateHasChanged();
+        return;
+
+        async Task GetPaletteData(IBrowserFile fileInput)
+        {
+            await using Stream stream = fileInput.OpenReadStream(20_971_520); // 20MB
+            await using MemoryStream ms = new();
+            await stream.CopyToAsync(ms);
+
+            byte[] bytes = ms.ToArray();
+
+            Palettes.Add((await fileInput.PalettesFromWebImage(20_971_520, 1)).First());
+            ImageDataUrls.Add($"data:{fileInput.ContentType};base64,{Convert.ToBase64String(bytes)}");
+        }
+    }
+}
