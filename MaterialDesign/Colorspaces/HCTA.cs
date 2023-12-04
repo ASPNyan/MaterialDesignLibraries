@@ -36,12 +36,12 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     }
 
     /// <summary>
-    /// The Chroma value of the HCT color, ranging from 0 to 120 where values outside these bounds are clamped.
+    /// The Chroma value of the HCT color, ranging from 0 to 150 where values outside these bounds are clamped.
     /// </summary>
     public double C
     {
         get => c;
-        set => c = Clamp(value, 0, 120);
+        set => c = Clamp(value, 0, 150);
     }
 
     /// <summary>
@@ -499,18 +499,15 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <returns>The lightness value Y in the CIE XYZ color space.</returns>
     public static double YFromTone(double t)
     {
-        return 100 * LabInv((t + 16) / 116);
-
-        double LabInv(double ft)
+        const double ke = 8;
+        if (t > ke)
         {
-            const double e = 216.0 / 24389.0;
-            const double kappa = 24389.0 / 27.0;
-
-            double ft3 = ft * ft * ft;
-
-            if (ft3 > e) return ft3;
-            return (116 * ft - 16) / kappa;
+            double cbrt = (t + 16) / 116;
+            double cube = cbrt * cbrt * cbrt;
+            return cube * 100;
         }
+
+        return t / (24389 / 27d) * 100;
     }
 
     #endregion

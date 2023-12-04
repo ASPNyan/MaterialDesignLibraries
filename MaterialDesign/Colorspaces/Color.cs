@@ -434,20 +434,19 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
             return new Color(r, g, b, a);
         }
 
-        if (value.StartsWith("rgba")) // rgba()
+        if (value.StartsWith("rgb")) // rgb()
         {
             if (format?.Format is not null and not WebFormat.CSS && format.Value.Option is not WebFormat.RGBA)
                 throw new FormatException("Expected CSS RGBA function but input was not valid.");
             
-            value = new string(value.Skip(5).ToArray());
+            value = new string(value.Skip(4).ToArray());
             value = value.Replace(")", null);
             string[] values = value.Split(",", StringSplitOptions.TrimEntries);
             byte r = byte.Parse(values[0]);
             byte g = byte.Parse(values[1]);
             byte b = byte.Parse(values[2]);
-            byte a = byte.Parse(values[3]);
             
-            return new Color(r, g, b, a);
+            return new Color(r, g, b);
         }
         
         if (value.StartsWith("rgba")) // rgba()
@@ -469,7 +468,7 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
         if (value.StartsWith('#'))
         {
             if ((format?.Format is not null and not WebFormat.CSS && format.Value.Option is not WebFormat.Hex)
-                || value.Length is not 9)
+                || (value.Length != 7 && value.Length != 9))
                 throw new FormatException("Expected Hex format but input was not valid.");
             
             value = value.Replace("#", null);
@@ -478,9 +477,9 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
             byte r = values[0];
             byte g = values[1];
             byte b = values[2];
-            byte a = values[3];
+            byte? a = value.Length is 9 ? values[3] : null;
 
-            return new Color(r, g, b, a);
+            return new Color(r, g, b, a ?? 255);
         }
 
         throw new FormatException("Expected a valid string format but could not find any.");

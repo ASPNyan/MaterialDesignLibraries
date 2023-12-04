@@ -1,6 +1,6 @@
 ﻿namespace MaterialDesign.Contrast;
 
-public class Contrast
+public static class Contrast
 {
     /// <summary>
     /// Calculates the ratio of two tones.
@@ -12,7 +12,7 @@ public class Contrast
     {
         toneA = Math.Clamp(toneA, 0, 100);
         toneB = Math.Clamp(toneB, 0, 100);
-        return RatioOfYs(toneA, toneB);
+        return RatioOfYs(HCTA.YFromTone(toneA), HCTA.YFromTone(toneB));
     }
 
     /// <summary>
