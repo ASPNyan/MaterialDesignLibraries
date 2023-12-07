@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MaterialDesign\MaterialDesign.csproj" />
+      <ProjectReference Include="..\MaterialDesign.Color\MaterialDesign.Color.csproj" />
     </ItemGroup>
 
     <ItemGroup>

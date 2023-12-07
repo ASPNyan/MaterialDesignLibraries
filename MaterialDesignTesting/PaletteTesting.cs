@@ -1,5 +1,5 @@
-﻿using MaterialDesign.Colorspaces;
-using MaterialDesign.Palettes;
+﻿using MaterialDesign.Color.Colorspaces;
+using MaterialDesign.Color.Palettes;
 
 namespace MaterialDesignTesting;
 

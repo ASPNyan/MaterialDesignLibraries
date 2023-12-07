@@ -1,4 +1,4 @@
-﻿using MaterialDesign.Colorspaces;
+﻿using MaterialDesign.Color.Colorspaces;
 
 namespace MaterialDesignTesting;
 
