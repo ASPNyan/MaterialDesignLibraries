@@ -82,5 +82,5 @@ public struct RGBA(byte r, byte g, byte b, float a = 100f) : IRGB, IAlpha, IEqua
     /// Returns a CSS <c>rgba</c> function.
     /// </summary>
     /// <returns>A CSS <c>rgba</c> function</returns>
-    public override string ToString() => $"rgba({R}, {G}, {B}, {A:G5}%)";
+    public override string ToString() => $"rgba({R}, {G}, {B}, {A/100:G5})";
 }

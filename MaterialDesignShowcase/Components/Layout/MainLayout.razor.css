@@ -36,6 +36,12 @@ main {
         text-overflow: ellipsis;
     }
 
+article {
+    flex-grow: 1;
+    padding-top: 1.1rem;
+    padding-bottom: 1.1rem;
+}
+
 @media (max-width: 640.98px) {
     .top-row {
         justify-content: space-between;
@@ -47,6 +53,15 @@ main {
 }
 
 @media (min-width: 641px) {
+    main {
+        display: flex;
+        height: 100vh;
+        flex-direction: column;
+        position: absolute;
+        left: 250px;
+        width: calc(100vw - 250px);
+    }
+    
     .page {
         flex-direction: row;
     }
@@ -54,8 +69,9 @@ main {
     .sidebar {
         width: 250px;
         height: 100vh;
-        position: sticky;
+        position: fixed;
         top: 0;
+        left: 0;
     }
 
     .top-row {

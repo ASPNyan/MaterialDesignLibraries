@@ -1,10 +1,7 @@
-﻿using MaterialDesign.Color.Colorspaces;
-using MaterialDesign.Color.Palettes;
+﻿namespace MaterialDesign.Color.Schemes;
 
-namespace MaterialDesign.Color.Schemes;
-
-public record NeutralScheme(HCTA Source, bool IsDark, double ContrastLevel = 0)
-    : DynamicScheme(Source, Variant.Neutral, ContrastLevel, IsDark,
+public record NeutralScheme(HCTA Source, bool IsDark)
+    : DynamicScheme(Source, Variant.Neutral, IsDark,
         Primary: new TonalPalette(Source.H, 12),
         Secondary: new TonalPalette(Source.H, 8),
         Tertiary: new TonalPalette(Source.H, 16),

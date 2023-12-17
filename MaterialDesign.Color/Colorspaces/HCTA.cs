@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
-using Vector = MathNet.Numerics.LinearAlgebra.Vector<double>;
-using Matrix = MathNet.Numerics.LinearAlgebra.Matrix<double>;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 using static System.Math;
 
 namespace MaterialDesign.Color.Colorspaces;
@@ -19,7 +19,7 @@ namespace MaterialDesign.Color.Colorspaces;
 /// different way of thinking about color, the total number of unique colors it can represent is still bound by these
 /// digital constraints while it's used on a display.
 /// </remarks>
-public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquatable<IRGB>, IEquatable<Color>
+public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquatable<IRGB>, IEquatable<Color>, IEquatable<HCTA>
 {
     private const double Precision = 5e-5;
     
@@ -60,6 +60,8 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     }
 
     public byte A255 => (this as IAlpha).A255;
+
+    byte IAlpha.A255 => byte.Clamp((byte)Color.Round0(A / 100 * 255), 0, 255);
 
 
     #region Conversion Helpers
@@ -134,11 +136,11 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     private static double InverseChromaticAdaptation(double adapted)
     {
         double abs = Abs(adapted);
-        double @base = Max(0, 27.13 * abs / (400 - abs));
+        double b = Max(0, 27.13 * abs / (400 - abs));
 
         int sign = SignOf(adapted);
 
-        return sign * Pow(@base, 1 / 0.42);
+        return sign * Pow(b, 1 / 0.42);
     }
 
     /// <summary>
@@ -186,22 +188,22 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
             {
                 double r = (y - coordA * kG - coordB * kB) / kR;
 
-                if (IsBounded(r)) return Vector.Build.DenseOfArray(new[] { r, coordA, coordB });
-                return Vector.Build.DenseOfArray(new double[] { -1, -1, -1 });
+                if (IsBounded(r)) return Vector.From(new[] { r, coordA, coordB });
+                return Vector.From(new double[] { -1, -1, -1 });
             }
             case < 8:
             {
                 double g = (y - coordB * kR - coordA * kB) / kG;
 
-                if (IsBounded(g)) return Vector.Build.DenseOfArray(new[] { coordB, g, coordA });
-                return Vector.Build.DenseOfArray(new double[] { -1, -1, -1 });
+                if (IsBounded(g)) return Vector.From(new[] { coordB, g, coordA });
+                return Vector.From(new double[] { -1, -1, -1 });
             }
             default:
             {
                 double b = (y - coordA * kR - coordB * kG) / kB;
 
-                if (IsBounded(b)) return Vector.Build.DenseOfArray(new[] { coordA, coordB, b });
-                return Vector.Build.DenseOfArray(new double[] { -1, -1, -1 });
+                if (IsBounded(b)) return Vector.From(new[] { coordA, coordB, b });
+                return Vector.From(new double[] { -1, -1, -1 });
             }
         }
     }
@@ -211,7 +213,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// </summary>
     /// <param name="linRGB">The linear RGB color.</param>
     /// <returns>The hue value.</returns>
-    private static double HueOf(Vector linRGB)
+    private static double HueOf(in Vector linRGB)
     {
         Vector scaledDiscount = ScaledDiscountFromLinRGB.Multiply(linRGB);
 
@@ -256,7 +258,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="val">An array containing the left and right vectors of the bisected segment.</param>
     private static void BisectToSegment(double y, double targetHue, out Vector[] val)
     {
-        Vector left = Vector.Build.DenseOfArray(new double[] { -1, -1, -1 });
+        Vector left = Vector.From(new double[] { -1, -1, -1 });
         Vector right = left;
 
         double leftHue = 0;
@@ -270,7 +272,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
             Vector mid = NthVertex(y, n);
             if (mid[0] < 0) continue;
 
-            double midHue = HueOf(mid);
+            double midHue = HueOf(in mid);
 
             if (!initialized)
             {
@@ -371,7 +373,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="target">The ending point of the interpolation.</param>
     /// <returns>The interpolated point between the source and target points.</returns>
     private static Vector LerpPoint(Vector source, double t, Vector target) =>
-        Vector.Build.DenseOfArray(new[]
+        Vector.From(new[]
         {
             source[0] + (target[0] - source[0]) * t,
             source[1] + (target[1] - source[1]) * t,
@@ -396,7 +398,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="b">The second Vector.</param>
     /// <returns>The midpoint between the two input Vector objects.</returns>
     private static Vector Midpoint(Vector a, Vector b) =>
-        Vector.Build.DenseOfArray(new[]
+        Vector.From(new[]
         {
             (a[0] + b[0]) / 2,
             (a[1] + b[1]) / 2,
@@ -414,7 +416,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
         BisectToSegment(y, targetHue, out Vector[] segment);
 
         Vector left = segment[0];
-        double leftHue = HueOf(left);
+        double leftHue = HueOf(in left);
         Vector right = segment[1];
 
         for (int axis = 0; axis < 3; axis++)
@@ -444,7 +446,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
 
                     Vector mid = SetCoordinate(left, midPlaneCoord, right, axis);
 
-                    double midHue = HueOf(mid);
+                    double midHue = HueOf(in mid);
 
                     if (AreInCyclicOrder(leftHue, targetHue, midHue))
                     {
@@ -536,45 +538,46 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <summary>
     /// Matrix used to convert scaled discount to Linear RGB values.
     /// </summary>
-    private static readonly Matrix LinRGBFromScaledDiscount = Matrix.Build.DenseOfArray(new[,] {
-        {
+    private static readonly Matrix LinRGBFromScaledDiscount = Matrix.From(
+    [
+        [
             1373.2198709594231,
             -1100.4251190754821,
             -7.278681089101213,
-        },
-        {
+        ],
+        [
             -271.815969077903,
             559.6580465940733,
             -32.46047482791194,
-        },
-        {
+        ],
+        [
             1.9622899599665666,
             -57.173814538844006,
             308.7233197812385,
-        }
-    });
+        ]
+    ]);
 
     /// <summary>
     /// Represents a matrix containing scaled discount values based on linear RGB values.
     /// </summary>
-    private static readonly Matrix ScaledDiscountFromLinRGB = Matrix.Build.DenseOfArray(new[,]
-    {
-        {
+    private static readonly Matrix ScaledDiscountFromLinRGB = Matrix.From(
+    [
+        [
             0.001200833568784504,
             0.002389694492170889,
             0.0002795742885861124,
-        },
-        {
+        ],
+        [
             0.0005891086651375999,
             0.0029785502573438758,
             0.0003270666104008398,
-        },
-        {
+        ],
+        [
             0.00010146692491640572,
             0.0005364214359186694,
             0.0032979401770712076,
-        },
-    });
+        ],
+    ]);
 
     /// <summary>
     /// YFromLinRGB represents the transformation coefficients used to calculate the luminance (Y) value from
@@ -629,7 +632,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
             double gCScaled = InverseChromaticAdaptation(gA);
             double bCScaled = InverseChromaticAdaptation(bA);
 
-            Vector scaled = Vector.Build.DenseOfArray(new[] {rCScaled, gCScaled, bCScaled});
+            Vector scaled = Vector.From([rCScaled, gCScaled, bCScaled]);
             Vector linRGB = LinRGBFromScaledDiscount.Multiply(scaled);
 
             if (linRGB[0] < 0 || linRGB[1] < 0 || linRGB[2] < 0) return (RGBA)0;
@@ -682,7 +685,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     }
 
     /// <summary>
-    /// An array containing critical planes for a specific calculation.
+    /// An array containing critical planes.
     /// </summary>
     private static readonly double[] CriticalPlanes = {
         0.015176349177441876, 0.045529047532325624, 0.07588174588720938, 0.10623444424209313,  0.13658714259697685,  0.16693984095186062,
@@ -809,12 +812,56 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
 
     #region Interface Implementations
 
+    public bool Equals(HCTA? other) => other is not null && (H, C, T, A) == (other.H, other.C, other.T, other.A);
+    
     public bool Equals(IRGB? other) => ToRGBA().Equals(other);
 
     public bool Equals(Color? other) => ((IRGB)ToRGBA()).Equals(other);
     
     #endregion
 
+    public int MaxChroma() => MaxChroma(H, T);
+    public double ExactMaxChroma(int accuracy) => ExactMaxChroma(H, T, accuracy);
+
+    /// <summary>
+    /// Returns an approximate max chroma of a hue-tone pair, rounded up to the next greatest integer.
+    /// This will not be the exact max chroma, but it will be close enough for almost every use case.
+    /// For a more exact method, use <see cref="ExactMaxChroma(double, double, int)"/>
+    /// </summary>
+    public static int MaxChroma(double hue, double tone)
+    {
+        if (tone is <= 0 or >= 100) return 0;
+        
+        const double maxChroma = 150;
+        // using the max possible chroma and then converting it to and from RGBA will bring it to a rough max chroma
+        HCTA max = FromRGBA(new HCTA(hue, maxChroma, tone).ToRGBA()); 
+        // this can't be assumed to be accurate, or true either, so using ceiling can make it at least correct as a max
+        return (int)Ceiling(max.C);
+    }
+
+    public static double ExactMaxChroma(double hue, double tone, int precision)
+    {
+        if (tone is <= 0 or >= 100) return 0;
+        
+        double estimate = MaxChroma(hue, tone); // using a non-precise method to get an estimate
+        if (precision <= 0) return estimate;
+
+        double iterAmount = 1 / (10d * precision);
+        RGBA? last = null;
+        for (double chroma = estimate - 1; chroma < estimate + 0.5; chroma += iterAmount)
+        {
+            last ??= new HCTA(hue, chroma - iterAmount, tone).ToRGBA();
+            RGBA current = new HCTA(hue, chroma, tone).ToRGBA();
+
+            if (last == current) return chroma;
+            
+            last = current;
+        }
+
+        return estimate + 0.5;
+    }
+    
+    public override string ToString() => $"hcta({H}, {C}, {T}, {A}%)";
 
     public override int GetHashCode()
     {

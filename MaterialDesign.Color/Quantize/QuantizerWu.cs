@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using MaterialDesign.Color.Colorspaces;
 
 namespace MaterialDesign.Color.Quantize;
 

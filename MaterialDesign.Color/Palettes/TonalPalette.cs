@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.Contracts;
-using MaterialDesign.Color.Colorspaces;
 
 namespace MaterialDesign.Color.Palettes;
 

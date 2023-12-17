@@ -1,0 +1,82 @@
+﻿.SchemeWrapper {
+    display: flex;
+    gap: 3vh;
+    flex-direction: column;
+}
+
+.Scheme {
+    height: 60vh;
+}
+
+.ThemeSchemeGrid {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-rows: 1fr repeat(6, 4px 15fr);
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px;
+}
+
+.ThemeSchemeGrid * {
+    padding: 0.8em 0.64em;
+}
+
+.ThemeSchemeGrid .Core {
+    grid-column: 1;
+}
+
+.ThemeSchemeGrid .OnCore {
+    grid-column: 2;
+}
+
+.ThemeSchemeGrid .Container {
+    grid-column: 3;
+}
+
+.ThemeSchemeGrid .OnContainer {
+    grid-column: 4;
+}
+
+.ThemeSchemeGrid .Outline {
+    grid-column: 1 / span 2 ;
+}
+
+.ThemeSchemeGrid .PrimaryPalette {
+    grid-row: 1 / span 3;
+}
+
+.ThemeSchemeGrid .PrimaryPalette:first-child {
+    border-top-left-radius: 1vh;
+}
+
+.ThemeSchemeGrid .PrimaryPalette:last-child {
+    border-top-right-radius: 1vh;
+}
+
+.ThemeSchemeGrid .SecondaryPalette {
+    grid-row: 5;
+}
+
+.ThemeSchemeGrid .TertiaryPalette {
+    grid-row: 7;
+}
+
+.ThemeSchemeGrid .ErrorPalette {
+    grid-row: 9;
+}
+
+.ThemeSchemeGrid .NeutralPalette {
+    grid-row: 11;
+}
+
+.ThemeSchemeGrid .NeutralVariantPalette {
+    grid-row: 13;
+}
+
+.ThemeSchemeGrid .Outline {
+    border-bottom-left-radius: 1vh;
+}
+
+.ThemeSchemeGrid .NeutralVariantPalette:last-child {
+    border-bottom-right-radius: 1vh;
+}

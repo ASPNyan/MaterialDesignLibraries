@@ -1,0 +1,45 @@
+﻿@using MaterialDesign.Theming.Injection
+@using Microsoft.Extensions.DependencyInjection
+@inject IServiceProvider ServiceProvider
+
+<BoundParameter TValue="@Theme" @bind-Value="@Theme" SetNullWhenNull="@false" DefaultValueIfNull="@SetThemeIfNull"
+                SetOnly="@SetOnly" Overwrite="@Overwrite">
+    @ChildContent
+</BoundParameter>
+
+@code {
+    [Parameter, EditorRequired]
+    public Theme? Theme { get; set; }
+    
+    [Parameter]
+    public EventCallback<Theme>? ThemeChanged { get; set; }
+    
+    [Parameter]
+    public bool SetOnly { get; set; }
+    
+    [Parameter]
+    public bool Overwrite { get; set; }
+    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        ThemeContainer? container = ServiceProvider.GetService<ThemeContainer>();
+        if (container is not null) container.OnThemeUpdate += OnThemeUpdate;
+        return;
+
+        async void OnThemeUpdate()
+        {
+            Theme = container.Theme;
+            if (ThemeChanged is not null) await ThemeChanged.Value.InvokeAsync();
+        }
+    }
+
+    private Theme SetThemeIfNull()
+    {
+        ThemeContainer? container = ServiceProvider.GetService<ThemeContainer>();
+        Theme ??= container?.Theme;
+        return Theme!;
+    }
+}

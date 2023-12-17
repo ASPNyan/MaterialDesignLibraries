@@ -1,6 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-
-namespace MaterialDesign.Color.Temperature;
+﻿namespace MaterialDesign.Color.Temperature;
 
 /// <summary>
 /// Design utilities using color temperature theory.

@@ -1,0 +1,215 @@
+﻿@using MaterialDesign.Color.Colorspaces
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using System.Numerics
+@using System.Diagnostics.CodeAnalysis
+@using MaterialDesign.Color.Disliked
+@implements IDisposable
+@inject IJSRuntime Js
+
+<div style="width: @(Width * WidthScale + HueSliderWidth * 4)px; height: @(Height * HeightScale)px; display: flex; 
+gap: @(HueSliderWidth)px; @_style" @attributes="@Unmatched">
+    <div style="width: @(Width * WidthScale)px; height: @(Height * HeightScale)px"
+         @onclick="OnCtSelect" @onmousemove="@OnCtDrag" @onmousedown="@(args => { _ctMouseDown = true; OnCtDrag(args); })"
+         @onmouseup="@(() => _ctMouseDown = false)" @onmouseleave="@(() => _ctMouseDown = false)">
+        <canvas width="@(Width * WidthScale)" height="@(Height * HeightScale)" id="@CtCanvasId" style="@(GetFakeHueStyle())"></canvas>
+        <svg style="position: relative; left: @(ColorPos.X)px; top: @(ColorPos.Y - Height * HeightScale)px; overflow: visible">
+            <circle r="@(5 * WidthScale)" fill="transparent" stroke="white" stroke-width="@(1 * WidthScale)"/>
+        </svg>
+    </div>
+    <div style="width: @(HueSliderWidth * 4)px; height: @(Height * HeightScale)px; transform: translateX(-50%);"
+         @onmousemove="@OnHDrag" @onmouseleave="@(() => HMouseDown = false)">
+        <canvas id="@HCanvasId" width="@HueSliderWidth" height="@(Height * HeightScale)" 
+                style="position: relative; border-radius: @(HueSliderWidth / 2f)px; left: 50%; transform: translateX(-50%);"></canvas>
+        <svg style="position: absolute; width: @(HueSliderWidth)px; height: @(Height * HeightScale)px; left: 50%;
+transform: translateX(-50%); overflow: visible;" @onmouseup="@(() => HMouseDown = false)" @onclick="OnHSelect"
+         @onmousedown="@(async args => { HMouseDown = true; await RenderCanvases(CancellationToken.None); await OnCtDrag(args); })">
+            <circle r="@(HueSliderWidth * 0.8)" cx="50%" cy="@(HSliderPos)%" fill="white" stroke="grey" stroke-width="1"/>
+        </svg>
+    </div>
+</div>
+
+@code {
+    private const int ChromaDefault = 150;
+    private const int ToneDefault = 100;
+    private const int WidthScale = 2;
+    private const int HeightScale = 3;
+    private const int HueSliderWidth = 10;
+
+    private int Width => MaterialDesign.Color.Colorspaces.Color.Round0(ChromaDefault * Accuracy);
+    private int Height => MaterialDesign.Color.Colorspaces.Color.Round0(ToneDefault * Accuracy);
+
+    private Guid HCanvasId { get; } = Guid.NewGuid();
+    private Guid CtCanvasId { get; set; } = Guid.NewGuid();
+    
+    [NotNull] private IJSObjectReference? Module { get; set; }
+
+    private string? _style;
+    
+    /* Tracking */
+    private (double X, double Y) HCanvasPos { get; set; } = (0, 0);
+    private (double X, double Y) CtCanvasPos { get; set; } = (0, 0);
+    private (double X, double Y) ColorPos { get; set; } = (0, 0);
+    private double HSliderPos { get; set; }
+
+    [Parameter, EditorRequired] 
+    public HCTA Color { get; set; } = new(0, 0, 0);
+
+    [Parameter] 
+    public EventCallback<HCTA> ColorChanged { get; set; }
+
+    /// <summary>
+    /// The accuracy of the Chroma-Tone picker, where 1 will give 150 chroma values by 100 tone values.
+    /// This value will multiply those values.
+    /// </summary>
+    [Parameter] 
+    public float Accuracy { get; set; } = 1;
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? Unmatched { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Unmatched?.TryGetValue("style", out var value) is true) _style = (string)value;
+        while (HCanvasId == CtCanvasId) CtCanvasId = Guid.NewGuid(); // creating both GUIDs at the same time could cause a collision, so check.
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        double[] ctCanvasPosValues;
+        double[] hCanvasPosValues;
+        
+        if (!firstRender)
+        {
+            Module ??= await Js.InvokeAsync<IJSObjectReference>("import", $"{ContentPathRoot}js/hctCanvas.js");
+            ctCanvasPosValues = await Module.InvokeAsync<double[]>("getCanvasPos", CtCanvasId.ToString());
+            CtCanvasPos = (ctCanvasPosValues[0], ctCanvasPosValues[1]);
+            hCanvasPosValues = await Module.InvokeAsync<double[]>("getCanvasPos", HCanvasId.ToString());
+            HCanvasPos = (hCanvasPosValues[0], hCanvasPosValues[1]);
+            return;
+        }
+
+        double colorPosX = Color.C / ChromaDefault * Width * WidthScale;
+        double colorPosY = (ToneDefault - Color.T) * HeightScale / Height * ToneDefault;
+
+        ColorPos = (colorPosX, colorPosY);
+        HSliderPos = Color.H / 360 * 100;
+
+        Module = await Js.InvokeAsync<IJSObjectReference>("import", $"{ContentPathRoot}js/hctCanvas.js");
+        
+        await RenderCanvases(CancellationToken.None);
+        
+        ctCanvasPosValues = await Module.InvokeAsync<double[]>("getCanvasPos", CtCanvasId.ToString());
+        CtCanvasPos = (ctCanvasPosValues[0], ctCanvasPosValues[1]);
+        hCanvasPosValues = await Module.InvokeAsync<double[]>("getCanvasPos", HCanvasId.ToString());
+        HCanvasPos = (hCanvasPosValues[0], hCanvasPosValues[1]);
+        
+        StateHasChanged();
+    }
+
+    private bool _preventFalseHueDisplay = false;
+    private async Task RenderCanvases(CancellationToken token)
+    {
+        if (HMouseDown) _preventFalseHueDisplay = true;
+        
+        List<string> hexValues = [];
+
+        await Task.Run(() =>
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    double chroma = x / Accuracy;
+                    double tone = y / Accuracy;
+
+                    HCTA hcta = new(HMouseDown ? 0 : Color.H, chroma, tone);
+                    RGBA current = hcta.ToRGBA();
+
+                    hexValues.Add($"#{current.ToUIntRepresentation():X8}");
+                }
+            }
+        }, token);
+        
+        await Module.InvokeVoidAsync("renderHCanvas", token, HCanvasId.ToString(), HueSliderWidth, Height * HeightScale);
+        await Module.InvokeVoidAsync("renderCtCanvas", token, CtCanvasId.ToString(), hexValues.ToArray(), Width, 
+            Height, WidthScale, HeightScale, Color.MaxChroma());
+        
+        if (_preventFalseHueDisplay && !HMouseDown)
+        {
+            _preventFalseHueDisplay = false;
+            StateHasChanged();
+        }
+    }
+
+    private Task OnCtSelect(MouseEventArgs args)
+    {
+        double offsetX = args.ClientX - CtCanvasPos.X;
+        double offsetY = args.ClientY - CtCanvasPos.Y;
+        
+        if (offsetX >= Width * WidthScale || offsetY >= Height * HeightScale) return Task.CompletedTask;
+        if (offsetX < 0 || offsetY < 0) return Task.CompletedTask;
+        
+        ColorPos = (offsetX, offsetY);
+        double chroma = ColorPos.X / WidthScale / Width * ChromaDefault;
+        double tone = ToneDefault - ColorPos.Y / HeightScale / Height * ToneDefault;
+
+        Color = new HCTA(Color.H, chroma, tone).FixIfDisliked();
+        return ColorChanged.InvokeAsync(Color);
+    }
+
+    private bool _ctMouseDown;
+    private CancellationTokenSource _ctCts = new();
+    private DateTime _ctDt = DateTime.MinValue;
+    private Task OnCtDrag(MouseEventArgs args)
+    {
+        TimeSpan interval = TimeSpan.FromMilliseconds(0.5);
+        if (!_ctMouseDown || (args.Buttons & 1) is 0 || DateTime.Now - _ctDt < interval) return Task.CompletedTask;
+        _ctDt = DateTime.Now;
+        
+        _ctCts.Cancel();
+        _ctCts = new CancellationTokenSource();
+        CancellationToken token = _ctCts.Token;
+        return Task.Run(() => InvokeAsync(() => OnCtSelect(args)), token);
+    }
+
+    private Task OnHSelect(MouseEventArgs args) => OnHSelect(args, CancellationToken.None);
+    
+    private async Task OnHSelect(MouseEventArgs args, CancellationToken token)
+    {
+        double offsetY = args.ClientY - HCanvasPos.Y;
+
+        if (offsetY >= Height * HeightScale || offsetY < 0) return;
+
+        Color.H = offsetY / Height / HeightScale * 360;
+        HSliderPos = Color.H / 360 * 100;
+        await ColorChanged.InvokeAsync(Color);
+        if (!HMouseDown) await RenderCanvases(token);
+    }
+
+    private bool HMouseDown { get; set; }
+    private CancellationTokenSource _hCts = new();
+    private DateTime _hDt = DateTime.MinValue;
+    private Task OnHDrag(MouseEventArgs args)
+    {
+        TimeSpan interval = TimeSpan.FromMilliseconds(0.5);
+        if (!HMouseDown || (args.Buttons & 1) is 0 || DateTime.Now - _hDt < interval) return Task.CompletedTask;
+        _hDt = DateTime.Now;
+        
+        _hCts.Cancel();
+        _hCts = new CancellationTokenSource();
+        CancellationToken token = _hCts.Token;
+        return Task.Run(() => InvokeAsync(() => OnHSelect(args, token)), token);
+    }
+    
+    private string GetFakeHueStyle() => 
+        HMouseDown || _preventFalseHueDisplay ? $"filter: hue-rotate({Color.H}deg); scale: 1 -1;" : "scale: 1 -1;";
+    
+    public void Dispose()
+    {
+        _ctCts.Cancel();
+        _ctCts.Dispose();
+        _hCts.Cancel();
+        _hCts.Dispose();
+    }
+}

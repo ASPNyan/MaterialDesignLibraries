@@ -1,9 +1,15 @@
 ﻿@page "/Palettes"
 @using MaterialDesign.Color.Colorspaces
 @using MaterialDesign.Color.Schemes
+@using MaterialDesign.Theming.Web
+@rendermode InteractiveServer
+
 <h1>Palettes</h1>
 <h2>Original</h2>
-<p style="background: @(((Color)Color).ToHexString())">@(((Color)Color).ToHexString())</p>
+
+<HCTSelector @bind-Color="@Color"/>
+
+<p style="background: @Color.ToRGBA().ToString()">@Color.ToRGBA().ToUIntRepresentation().ToString("X8")</p>
 
 @foreach (DynamicScheme scheme in AllSchemes)
 {
@@ -12,38 +18,38 @@
 
 @code {
     private static readonly double[] Tones = [100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
-    
-    private static readonly HCTA Color = new(298.980997210704, 47.8565263749703, 40.08324408746242);
+
+    private HCTA Color { get; set; } = new(0, 100, 50);
 
     private const bool IsDark = true;
     private const bool IsNotDark = false;
     
-    private static readonly ContentScheme ContentScheme = new(Color, IsDark);
-    private static readonly ContentScheme LightContentScheme = new(Color, IsNotDark);
-    private static readonly ExpressiveScheme ExpressiveScheme = new(Color, IsDark);
-    private static readonly ExpressiveScheme LightExpressiveScheme = new(Color, IsNotDark);
-    private static readonly FidelityScheme FidelityScheme = new(Color, IsDark);
-    private static readonly FidelityScheme LightFidelityScheme = new(Color, IsNotDark);
-    private static readonly FruitSaladScheme FruitSaladScheme = new(Color, IsDark);
-    private static readonly FruitSaladScheme LightFruitSaladScheme = new(Color, IsNotDark);
-    private static readonly MonochromeScheme MonochromeScheme = new(Color, IsDark);
-    private static readonly MonochromeScheme LightMonochromeScheme = new(Color, IsNotDark);
-    private static readonly NeutralScheme NeutralScheme = new(Color, IsDark);
-    private static readonly NeutralScheme LightNeutralScheme = new(Color, IsNotDark);
-    private static readonly RainbowScheme RainbowScheme = new(Color, IsDark);
-    private static readonly RainbowScheme LightRainbowScheme = new(Color, IsNotDark);
-    private static readonly TonalSpotScheme TonalSpotScheme = new(Color, IsDark);
-    private static readonly TonalSpotScheme LightTonalSpotScheme = new(Color, IsNotDark);
-    private static readonly VibrantScheme VibrantScheme = new(Color, IsDark);
-    private static readonly VibrantScheme LightVibrantScheme = new(Color, IsNotDark);
+    private ContentScheme ContentScheme => new(Color, IsDark);
+    private ContentScheme LightContentScheme => new(Color, IsNotDark);
+    private ExpressiveScheme ExpressiveScheme => new(Color, IsDark);
+    private ExpressiveScheme LightExpressiveScheme => new(Color, IsNotDark);
+    private FidelityScheme FidelityScheme => new(Color, IsDark);
+    private FidelityScheme LightFidelityScheme => new(Color, IsNotDark);
+    private FruitSaladScheme FruitSaladScheme => new(Color, IsDark);
+    private FruitSaladScheme LightFruitSaladScheme => new(Color, IsNotDark);
+    private MonochromeScheme MonochromeScheme => new(Color, IsDark);
+    private MonochromeScheme LightMonochromeScheme => new(Color, IsNotDark);
+    private NeutralScheme NeutralScheme => new(Color, IsDark);
+    private NeutralScheme LightNeutralScheme => new(Color, IsNotDark);
+    private RainbowScheme RainbowScheme => new(Color, IsDark);
+    private RainbowScheme LightRainbowScheme => new(Color, IsNotDark);
+    private TonalSpotScheme TonalSpotScheme => new(Color, IsDark);
+    private TonalSpotScheme LightTonalSpotScheme => new(Color, IsNotDark);
+    private VibrantScheme VibrantScheme => new(Color, IsDark);
+    private VibrantScheme LightVibrantScheme => new(Color, IsNotDark);
 
-    private static readonly DynamicScheme[] DarkSchemes = [ContentScheme, ExpressiveScheme, FidelityScheme, 
+    private DynamicScheme[] DarkSchemes => [ContentScheme, ExpressiveScheme, FidelityScheme, 
                                                            FruitSaladScheme, MonochromeScheme, NeutralScheme,
                                                            RainbowScheme, TonalSpotScheme, VibrantScheme];
     
-    private static readonly DynamicScheme[] LightSchemes = [LightContentScheme, LightExpressiveScheme, LightFidelityScheme, 
+    private DynamicScheme[] LightSchemes => [LightContentScheme, LightExpressiveScheme, LightFidelityScheme, 
                                                             LightFruitSaladScheme, LightMonochromeScheme, LightNeutralScheme,
                                                             LightRainbowScheme, LightTonalSpotScheme, LightVibrantScheme];
     
-    private static readonly DynamicScheme[] AllSchemes = [..DarkSchemes, ..LightSchemes];
+    private IEnumerable<DynamicScheme> AllSchemes => [..DarkSchemes, ..LightSchemes];
 }

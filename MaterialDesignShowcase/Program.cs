@@ -1,9 +1,13 @@
+using MaterialDesign.Color.Colorspaces;
+using MaterialDesign.Theming;
 using MaterialDesignShowcase.Components;
+using MaterialDesign.Theming.Injection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services.AddMaterialThemeService(new Theme(new HCTA(293.42, 74.248, 34.458))) // blazor blue (#512bd4)
+    .AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
@@ -21,6 +25,7 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

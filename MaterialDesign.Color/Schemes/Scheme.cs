@@ -1,7 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-using MaterialDesign.Color.Palettes;
-
-namespace MaterialDesign.Color.Schemes;
+﻿namespace MaterialDesign.Color.Schemes;
 
 public readonly struct Scheme(CorePalette palette, bool isDark)
 {

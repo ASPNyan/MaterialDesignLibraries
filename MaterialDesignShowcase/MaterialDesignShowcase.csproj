@@ -6,14 +6,11 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <BlazorEnableDebugging>true</BlazorEnableDebugging>
     </PropertyGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css" />
-      <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css.map" />
-    </ItemGroup>
-
+    
     <ItemGroup>
       <ProjectReference Include="..\MaterialDesign.Color\MaterialDesign.Color.csproj" />
+      <ProjectReference Include="..\MaterialDesign.Theming.Web\MaterialDesign.Theming.Web.csproj" />
+      <ProjectReference Include="..\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
     </ItemGroup>
 
     <ItemGroup>

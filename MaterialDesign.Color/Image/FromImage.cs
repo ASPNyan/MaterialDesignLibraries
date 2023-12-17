@@ -1,7 +1,4 @@
 ﻿using System.Diagnostics.Contracts;
-using MaterialDesign.Color.Colorspaces;
-using MaterialDesign.Color.Common;
-using MaterialDesign.Color.Palettes;
 using MaterialDesign.Color.Quantize;
 using Microsoft.AspNetCore.Components.Forms;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;

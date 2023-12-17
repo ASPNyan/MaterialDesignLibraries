@@ -1,10 +1,7 @@
-﻿using MaterialDesign.Color.Colorspaces;
-using MaterialDesign.Color.Palettes;
+﻿namespace MaterialDesign.Color.Schemes;
 
-namespace MaterialDesign.Color.Schemes;
-
-public record FruitSaladScheme(HCTA Source, bool IsDark, double ContrastLevel = 0)
-    : DynamicScheme(Source, Variant.FruitSalad, ContrastLevel, IsDark,
+public record FruitSaladScheme(HCTA Source, bool IsDark)
+    : DynamicScheme(Source, Variant.FruitSalad, IsDark,
         Primary: new TonalPalette(Colorspaces.Color.SanitizeDegrees(Source.H - 50), 48),
         Secondary: new TonalPalette(Colorspaces.Color.SanitizeDegrees(Source.H - 50), 36),
         Tertiary: new TonalPalette(Source.H, 36),

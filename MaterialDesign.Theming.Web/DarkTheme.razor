@@ -1,0 +1,15 @@
+﻿<BoundTheme @bind-Theme="@Theme" @Overwrite="@true"/>
+
+@code {
+    private Theme? _theme;
+
+    private Theme? Theme
+    {
+        get
+        {
+            _theme?.SetDark();
+            return _theme;
+        }
+        set => _theme = value;
+    }
+}

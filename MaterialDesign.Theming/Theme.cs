@@ -4,9 +4,12 @@ namespace MaterialDesign.Theming;
 
 public class Theme
 {
-    public bool IsDarkScheme { get; set; }
-    public Scheme CurrentScheme => IsDarkScheme ? Schemes.Dark : Schemes.Light;
-    public (Scheme Dark, Scheme Light) Schemes { get; private set; }
+    public bool IsDarkScheme { get; private set; }
+    public Scheme CurrentScheme => IsDarkScheme ? Scheme with { IsDark = true } : Scheme with { IsDark = false };
+    public Scheme Scheme { get; private set; }
+
+    public void SetDark() => IsDarkScheme = true;
+    public void SetLight() => IsDarkScheme = false;
 
     public HCTA Primary => CurrentScheme.Primary;
     public HCTA OnPrimary => CurrentScheme.OnPrimary;
@@ -22,6 +25,17 @@ public class Theme
     public HCTA OnTertiary => CurrentScheme.OnTertiary;
     public HCTA TertiaryContainer => CurrentScheme.TertiaryContainer;
     public HCTA OnTertiaryContainer => CurrentScheme.OnTertiaryContainer;
+    
+    private int Core => IsDarkScheme ? 80 : 40;
+    private int OnCore => Core + SignViaDark(60);
+    private int CoreContainer => Core + SignViaDark(50);
+    private int OnCoreContainer => IsDarkScheme ? 90 : 10;
+    private int SignViaDark(int tone) => IsDarkScheme ? -tone : tone;
+
+    public HCTA Error => CorePalette.ErrorPalette.GetWithTone(Core);
+    public HCTA OnError => CorePalette.ErrorPalette.GetWithTone(OnCore);
+    public HCTA ErrorContainer => CorePalette.ErrorPalette.GetWithTone(CoreContainer);
+    public HCTA OnErrorContainer => CorePalette.ErrorPalette.GetWithTone(OnCoreContainer);
 
     public HCTA Outline => CurrentScheme.Outline;
     public HCTA OutlineVariant => CurrentScheme.OutlineVariant;
@@ -61,43 +75,36 @@ public class Theme
     
     public Theme(HCTA primary, HCTA secondary, HCTA tertiary, HCTA neutral)
     {
-        CorePalette primaryPalette = new CorePalette(primary);
-        CorePalette secondaryPalette = new CorePalette(secondary);
-        CorePalette tertiaryPalette = new CorePalette(tertiary);
-        CorePalette neutralPalette = new CorePalette(neutral);
+        TonalPalette primaryPalette = new(primary);
+        TonalPalette secondaryPalette = new(secondary);
+        TonalPalette tertiaryPalette = new(tertiary);
+        TonalPalette neutralPalette = new(neutral);
+        TonalPalette neutralVariantPalette = new(primary.H, 8);
 
-        Scheme dark = new(primaryPalette.Primary, secondaryPalette.Primary, tertiaryPalette.Primary,
-            neutralPalette.Neutral, neutralPalette.NeutralVariant, true);
-        Scheme light = new(primaryPalette.Primary, secondaryPalette.Primary, tertiaryPalette.Primary,
-            neutralPalette.Neutral, neutralPalette.NeutralVariant, false);
+        Scheme scheme = new(primaryPalette, secondaryPalette, tertiaryPalette,
+            neutralPalette, neutralVariantPalette, true);
 
-        Schemes = (dark, light);
+        Scheme = scheme;
     }
 
     public Theme(HCTA input)
     {
-        CorePalette core = new(input);
+        ThemeScheme core = new(input, true);
 
-        Scheme dark = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, true);
-        Scheme light = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, false);
+        Scheme scheme = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, true);
 
-        Schemes = (dark, light);
+        Scheme = scheme;
     }
 
-    public void Update(HCTA? primary, HCTA? secondary, HCTA? tertiary = null, HCTA? neutral = null)
+    public void Update(HCTA? primarySource, HCTA? secondarySource, HCTA? tertiarySource = null, HCTA? neutralSource = null)
     {
-        if (primary is null && secondary is null && tertiary is null && neutral is null) return;
-        var (primaryDark, secondaryDark, tertiaryDark, neutralDark, neutralVariantDark) = Schemes.Dark.Sources;
-        Scheme dark = new(NewOrDefault(primary, primaryDark), NewOrDefault(secondary, secondaryDark),
-            NewOrDefault(tertiary, tertiaryDark), NewOrDefault(neutral, neutralDark),
-            NewOrDefault(neutral, neutralVariantDark), true);
-        
-        var (primaryLight, secondaryLight, tertiaryLight, neutralLight, neutralVariantLight) = Schemes.Light.Sources;
-        Scheme light = new(NewOrDefault(primary, primaryLight), NewOrDefault(secondary, secondaryLight),
-            NewOrDefault(tertiary, tertiaryLight), NewOrDefault(neutral, neutralLight),
-            NewOrDefault(neutral, neutralVariantLight), true);
+        if (primarySource is null && secondarySource is null && tertiarySource is null && neutralSource is null) return;
+        var (primary, secondary, tertiary, neutral, neutralVariant) = Scheme.Sources;
+        Scheme scheme = new(NewOrDefault(primarySource, primary), NewOrDefault(secondarySource, secondary),
+            NewOrDefault(tertiarySource, tertiary), NewOrDefault(neutralSource, neutral),
+            NewOrDefault(neutralSource, neutralVariant), true);
 
-        Schemes = (dark, light);
+        Scheme = scheme;
         
         OnUpdate?.Invoke();
 
@@ -109,12 +116,11 @@ public class Theme
 
     public void Update(HCTA input)
     {
-        CorePalette core = new(input);
+        ThemeScheme core = new(input, true);
 
-        Scheme dark = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, true);
-        Scheme light = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, false);
+        Scheme scheme = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, true);
 
-        Schemes = (dark, light);
+        Scheme = scheme;
         
         OnUpdate?.Invoke();
     }

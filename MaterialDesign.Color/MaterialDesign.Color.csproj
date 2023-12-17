@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Forms" Version="8.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />

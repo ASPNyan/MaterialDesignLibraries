@@ -1,6 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-
-namespace MaterialDesign.Color.Blend;
+﻿namespace MaterialDesign.Color.Blend;
 
 /// <summary>
 /// This class provides methods for blending colors using various color models.

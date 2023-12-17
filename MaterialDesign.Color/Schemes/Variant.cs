@@ -2,6 +2,7 @@
 
 public enum Variant
 {
+    Custom = -1,
     Monochrome,
     Neutral,
     TonalSpot,

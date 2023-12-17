@@ -1,7 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-using MaterialDesign.Color.Common;
-
-namespace MaterialDesign.Color.Quantize;
+﻿namespace MaterialDesign.Color.Quantize;
 
 /// <summary>
 /// An image quantizer that improves on the speed of a standard K-Means algorithm

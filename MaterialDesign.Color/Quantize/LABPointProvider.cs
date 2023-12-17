@@ -1,6 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-
-namespace MaterialDesign.Color.Quantize;
+﻿namespace MaterialDesign.Color.Quantize;
 
 public static class LABPointProvider
 {

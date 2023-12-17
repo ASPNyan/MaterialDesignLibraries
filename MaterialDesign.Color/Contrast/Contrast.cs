@@ -1,6 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-
-namespace MaterialDesign.Color.Contrast;
+﻿namespace MaterialDesign.Color.Contrast;
 
 public static class Contrast
 {
@@ -104,10 +102,26 @@ public static class Contrast
     /// </summary>
     /// <param name="tone">The original tone value.</param>
     /// <param name="ratio">The ratio by which the tone should be darkened.</param>
-    /// <returns>The darker tone value. Returns 100 if the resulting tone is less than 0.</returns>
+    /// <returns>The darker tone value. Returns 0 if the resulting tone if an error occurs.</returns>
     public static double ForceDarkerViaRatio(double tone, double ratio)
     {
         double darkerSafe = DarkerViaRatio(tone, ratio);
-        return darkerSafe < 0 ? 100 : darkerSafe;
+        return darkerSafe < 0 ? 0 : darkerSafe;
+    }
+
+    public static HCTA HCTADarkerViaRatio(HCTA hcta, ContrastRatio contrastRatio)
+    {
+        double ratio = contrastRatio.Ratio;
+
+        double newTone = ForceDarkerViaRatio(hcta.T, ratio);
+        return new HCTA(hcta.H, hcta.C, newTone, hcta.A);
+    }
+    
+    public static HCTA HCTALighterViaRatio(HCTA hcta, ContrastRatio contrastRatio)
+    {
+        double ratio = contrastRatio.Ratio;
+
+        double newTone = ForceLighterViaRatio(hcta.T, ratio);
+        return new HCTA(hcta.H, hcta.C, newTone, hcta.A);
     }
 }

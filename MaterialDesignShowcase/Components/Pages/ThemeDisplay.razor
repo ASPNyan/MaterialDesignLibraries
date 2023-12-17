@@ -1,0 +1,11 @@
+﻿@using MaterialDesign.Theming.Web
+@using MaterialDesign.Theming
+@page "/Theme"
+
+<BoundTheme @bind-Theme="@Theme"/>
+
+<ThemeTilesDisplay Theme="@Theme"/>
+
+@code {
+    private Theme? Theme { get; set; }
+}

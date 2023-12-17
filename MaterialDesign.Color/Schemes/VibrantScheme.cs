@@ -1,10 +1,7 @@
-﻿using MaterialDesign.Color.Colorspaces;
-using MaterialDesign.Color.Palettes;
+﻿namespace MaterialDesign.Color.Schemes;
 
-namespace MaterialDesign.Color.Schemes;
-
-public record VibrantScheme(HCTA Source, bool IsDark, double ContrastLevel = 0)
-    : DynamicScheme(Source, Variant.Vibrant, ContrastLevel, IsDark,
+public record VibrantScheme(HCTA Source, bool IsDark)
+    : DynamicScheme(Source, Variant.Vibrant, IsDark,
         Primary: new TonalPalette(Source.H, 120),
         Secondary: new TonalPalette(GetRotatedHue(Source, Hues, SecondaryRotations), 24),
         Tertiary: new TonalPalette(GetRotatedHue(Source, Hues, TertiaryRotations), 32),

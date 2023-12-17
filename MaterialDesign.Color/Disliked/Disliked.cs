@@ -1,6 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-
-namespace MaterialDesign.Color.Disliked;
+﻿namespace MaterialDesign.Color.Disliked;
 
 /// <summary>
 ///  Checks and/or fixes universally disliked colors.

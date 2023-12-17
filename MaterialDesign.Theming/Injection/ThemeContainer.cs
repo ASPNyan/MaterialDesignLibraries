@@ -1,16 +1,16 @@
 ﻿namespace MaterialDesign.Theming.Injection;
 
-public class ThemeGetter
+public class ThemeContainer
 {
     public Theme Theme { get; private set; }
 
-    private ThemeGetter(Theme theme)
+    private ThemeContainer(Theme theme)
     {
         Theme = theme;
     }
 
-    public static ThemeGetter CreateFromTheme(Theme theme) => new(theme);
-    public static async Task<ThemeGetter> CreateFromThemeSource(IThemeSource themeSource) => 
+    public static ThemeContainer CreateFromTheme(Theme theme) => new(theme);
+    public static async Task<ThemeContainer> CreateFromThemeSource(IThemeSource themeSource) => 
         new(new Theme(await themeSource.GetSource())); 
     
     public void UpdateTheme(Theme newTheme)

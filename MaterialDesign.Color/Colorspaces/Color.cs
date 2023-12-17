@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using MaterialDesign.Color.Common;
 
 namespace MaterialDesign.Color.Colorspaces;
 

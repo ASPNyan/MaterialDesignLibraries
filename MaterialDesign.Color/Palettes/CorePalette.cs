@@ -1,6 +1,4 @@
-﻿using MaterialDesign.Color.Colorspaces;
-
-namespace MaterialDesign.Color.Palettes;
+﻿namespace MaterialDesign.Color.Palettes;
 
 /// <summary>
 /// Represents a core palette used for color theming.

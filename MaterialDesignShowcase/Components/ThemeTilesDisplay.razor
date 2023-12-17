@@ -1,0 +1,130 @@
+﻿@using MaterialDesign.Theming
+@inject IServiceProvider ServiceProvider
+
+@if (Theme is null) throw new Exception($"Cannot create {nameof(ThemeTilesDisplay)} with no Theme.");
+
+<div class="SchemeWrapper">
+    @{
+        bool isDark = Theme.IsDarkScheme;
+        for (int i = 0; i < 2; i++)
+        {
+            if (i is 0) Theme.SetLight();
+            else Theme.SetDark();
+            <div class="Scheme">
+                <span>@(i is 0 ? "Light" : "Dark") Scheme</span>
+                <div class="ThemeSchemeGrid">
+                    <div class="PrimaryPalette Core" style="background: @Theme.Primary.ToRGBA().ToString();
+color: @Theme.OnPrimary.ToRGBA().ToString()">
+                        Primary
+                    </div>
+                    <div class="PrimaryPalette OnCore" style="background: @Theme.OnPrimary.ToRGBA().ToString();
+color: @Theme.Primary.ToRGBA().ToString()">
+                        On Primary
+                    </div>
+                    <div class="PrimaryPalette Container" style="background: @Theme.PrimaryContainer.ToRGBA().ToString();
+color: @Theme.OnPrimaryContainer.ToRGBA().ToString()">
+                        Primary Container
+                    </div>
+                    <div class="PrimaryPalette OnContainer" style="background: @Theme.OnPrimaryContainer.ToRGBA().ToString();
+color: @Theme.PrimaryContainer.ToRGBA().ToString()">
+                        On Primary Container
+                    </div>
+
+                    <div class="SecondaryPalette Core" style="background: @Theme.Secondary.ToRGBA().ToString();
+color: @Theme.OnSecondary.ToRGBA().ToString()">
+                        Secondary
+                    </div>
+                    <div class="SecondaryPalette OnCore" style="background: @Theme.OnSecondary.ToRGBA().ToString();
+color: @Theme.Secondary.ToRGBA().ToString()">
+                        On Secondary
+                    </div>
+                    <div class="SecondaryPalette Container" style="background: @Theme.SecondaryContainer.ToRGBA().ToString();
+color: @Theme.OnSecondaryContainer.ToRGBA().ToString()">
+                        Secondary Container
+                    </div>
+                    <div class="SecondaryPalette OnContainer" style="background: @Theme.OnSecondaryContainer.ToRGBA().ToString();
+color: @Theme.SecondaryContainer.ToRGBA().ToString()">
+                        On Secondary Container
+                    </div>
+
+                    <div class="TertiaryPalette Core" style="background: @Theme.Tertiary.ToRGBA().ToString();
+color: @Theme.OnTertiary.ToRGBA().ToString()">
+                        Tertiary
+                    </div>
+                    <div class="TertiaryPalette OnCore" style="background: @Theme.OnTertiary.ToRGBA().ToString();
+color: @Theme.Tertiary.ToRGBA().ToString()">
+                        On Tertiary
+                    </div>
+                    <div class="TertiaryPalette Container" style="background: @Theme.TertiaryContainer.ToRGBA().ToString();
+color: @Theme.OnTertiaryContainer.ToRGBA().ToString()">
+                        Tertiary Container
+                    </div>
+                    <div class="TertiaryPalette OnContainer" style="background: @Theme.OnTertiaryContainer.ToRGBA().ToString();
+color: @Theme.TertiaryContainer.ToRGBA().ToString()">
+                        On Tertiary Container
+                    </div>
+
+                    <div class="ErrorPalette Core" style="background: @Theme.Error.ToRGBA().ToString();
+color: @Theme.OnError.ToRGBA().ToString()">
+                        Error
+                    </div>
+                    <div class="ErrorPalette OnCore" style="background: @Theme.OnError.ToRGBA().ToString();
+color: @Theme.Error.ToRGBA().ToString()">
+                        On Error
+                    </div>
+                    <div class="ErrorPalette Container" style="background: @Theme.ErrorContainer.ToRGBA().ToString();
+color: @Theme.OnErrorContainer.ToRGBA().ToString()">
+                        Error Container
+                    </div>
+                    <div class="ErrorPalette OnContainer" style="background: @Theme.OnErrorContainer.ToRGBA().ToString();
+color: @Theme.ErrorContainer.ToRGBA().ToString()">
+                        On Error Container
+                    </div>
+
+                    <div class="NeutralPalette Core" style="background: @Theme.Background.ToRGBA().ToString();
+color: @Theme.OnBackground.ToRGBA().ToString()">
+                        Background
+                    </div>
+                    <div class="NeutralPalette OnCore" style="background: @Theme.OnBackground.ToRGBA().ToString();
+color: @Theme.Background.ToRGBA().ToString()">
+                        On Background
+                    </div>
+                    <div class="NeutralPalette Container" style="background: @Theme.Surface.ToRGBA().ToString();
+color: @Theme.OnSurface.ToRGBA().ToString()">
+                        Surface
+                    </div>
+                    <div class="NeutralPalette OnContainer" style="background: @Theme.OnSurface.ToRGBA().ToString();
+color: @Theme.Surface.ToRGBA().ToString()">
+                        On Surface
+                    </div>
+
+                    <div class="NeutralVariantPalette Outline" style="background: @Theme.Outline.ToRGBA().ToString();
+color: white">
+                        Outline
+                    </div>
+                    <div class="NeutralVariantPalette Container" style="background: @Theme.SurfaceVariant.ToRGBA().ToString();
+color: @Theme.OnSurfaceVariant.ToRGBA().ToString()">
+                        Surface-Variant
+                    </div>
+                    <div class="NeutralVariantPalette OnContainer" style="background: @Theme.OnSurfaceVariant.ToRGBA().ToString();
+color: @Theme.SurfaceVariant.ToRGBA().ToString()">
+                        On Surface-Variant
+                    </div>
+                </div>
+            </div>
+        }
+
+        if (isDark) Theme.SetDark();
+        else Theme.SetLight(); // return to original state
+    }
+</div>
+
+@code {
+    [Parameter] 
+    public Theme? Theme { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Theme ??= ServiceProvider.GetService<Theme>();
+    }
+}

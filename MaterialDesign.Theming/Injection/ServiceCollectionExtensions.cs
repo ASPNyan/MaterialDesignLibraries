@@ -5,37 +5,46 @@ namespace MaterialDesign.Theming.Injection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddThemeService(this IServiceCollection serviceCollection, Theme theme) => 
-        serviceCollection.AddScoped<ThemeGetter>(_ => ThemeGetter.CreateFromTheme(theme));
+    public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection, Theme theme)
+    {
+        serviceCollection.AddScoped<Theme>(sp => sp.GetRequiredService<ThemeContainer>().Theme);
+        return serviceCollection.AddScoped<ThemeContainer>(_ => ThemeContainer.CreateFromTheme(theme));
+    }
 
-    public static IServiceCollection AddThemeService(this IServiceCollection serviceCollection,
-        Func<IServiceProvider, Theme> builderMethod) =>
-            serviceCollection.AddScoped<ThemeGetter>(serviceProvider =>
-                ThemeGetter.CreateFromTheme(builderMethod(serviceProvider)));
-    
-    public static async Task<IServiceCollection> AddThemeService(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection,
+        ThemeFromServiceProvider builderMethod)
+    {
+        serviceCollection.AddScoped<Theme>(sp => sp.GetRequiredService<ThemeContainer>().Theme);
+        return serviceCollection.AddScoped<ThemeContainer>(serviceProvider =>
+            ThemeContainer.CreateFromTheme(builderMethod(serviceProvider)));
+    }
+
+    public static async Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
         IThemeSource themeSource)
     {
-        ThemeGetter getter = await ThemeGetter.CreateFromThemeSource(themeSource);
-        return serviceCollection.AddScoped<ThemeGetter>(_ => getter);
+        serviceCollection.AddScoped<Theme>(sp => sp.GetRequiredService<ThemeContainer>().Theme);
+        ThemeContainer container = await ThemeContainer.CreateFromThemeSource(themeSource);
+        return serviceCollection.AddScoped<ThemeContainer>(_ => container);
     }
 
-    public static async Task<IServiceCollection> AddThemeService(this IServiceCollection serviceCollection,
-        Func<ThemeSourceBuilder, IThemeSource> builderMethod)
+    public static async Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
+        ThemeSourceFromBuilder builderMethod)
     {
-        ThemeGetter getter = await ThemeGetter.CreateFromThemeSource(builderMethod(new ThemeSourceBuilder()));
-        return serviceCollection.AddScoped<ThemeGetter>(_ => getter);
+        serviceCollection.AddScoped<Theme>(sp => sp.GetRequiredService<ThemeContainer>().Theme);
+        ThemeContainer container = await ThemeContainer.CreateFromThemeSource(builderMethod(new ThemeSourceBuilder()));
+        return serviceCollection.AddScoped<ThemeContainer>(_ => container);
     }
 
-    public static Task<IServiceCollection> AddThemeService(this IServiceCollection serviceCollection,
-        Func<ThemeSourceBuilder, IServiceProvider, IThemeSource> builderMethod)
+    public static Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
+        ThemeSourceFromBuilderAndServiceProvider builderMethod)
     {
-        return Task.Run(() => serviceCollection.AddScoped<ThemeGetter>(serviceProvider =>
+        serviceCollection.AddScoped<Theme>(sp => sp.GetRequiredService<ThemeContainer>().Theme);
+        return new Task<IServiceCollection>(() => serviceCollection.AddScoped<ThemeContainer>(serviceProvider =>
         {
             ThemeSourceBuilder builder = new ThemeSourceBuilder();
             IThemeSource themeSource = builderMethod(builder, serviceProvider);
-            ThemeGetter getter = Task.Run(() => ThemeGetter.CreateFromThemeSource(themeSource)).Result;
-            return getter;
+            ThemeContainer container = Task.Run(() => ThemeContainer.CreateFromThemeSource(themeSource)).Result;
+            return container;
         }));
     }
 }
