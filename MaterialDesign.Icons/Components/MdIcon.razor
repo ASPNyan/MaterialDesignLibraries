@@ -1,0 +1,37 @@
+﻿@using MaterialDesign.Icons.Exceptions
+@inherits MdIconConfigComponent
+
+<span class="material-symbols-@LineStyleString @(@class)" style="@StyleRuleString; @style" 
+      @attributes="@UnmatchedParameters">
+    @GetIcon
+</span>
+
+@code {
+    [Parameter, EditorRequired]
+    public string? Icon { get; set; }
+
+    private string GetIcon 
+        => Icon!.Trim().ToLowerInvariant().Replace(' ', '_'); // "More Horiz" => "more_horiz"
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? UnmatchedParameters { get; set; }
+    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    // ReSharper disable InconsistentNaming | Give parameter catches in order to not override icon settings
+    [Parameter] public string? @class { get; set; }
+    [Parameter] public string? style { get; set; }
+    // ReSharper restore InconsistentNaming
+
+    private string LineStyleString
+        => (LineStyle ?? CascadingIconConfig?.LineStyle ?? MdIconLineStyle.Outlined).ToString().ToLowerInvariant();
+
+    protected override void OnInitialized()
+    {
+        if (Icon is null) throw new ArgumentNullException(nameof(Icon), 
+            $"Icons must have a valid name provided to the `{nameof(Icon)}` parameter");
+        
+        if (ChildContent is not null) throw VoidElementException.ChildContentIsDisallowed<MdIcon>();
+    }
+}

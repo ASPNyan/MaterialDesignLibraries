@@ -1,0 +1,50 @@
+﻿@implements IDisposable
+
+@_renderContent
+
+@foreach (Type componentType in ExtraSources)
+{
+    <DynamicComponent Type="componentType"/>
+}
+
+@code {
+    private static readonly List<Type> ExtraSources = [];
+    public static void AddComponentSource<T>() where T : ComponentBase
+        => ExtraSources.Add(typeof(T));
+    
+    private static RenderFragment? _renderContent;
+    
+    protected override void OnInitialized()
+    {
+        DynamicHeadContent.OnChange += UpdateState;
+        _renderContent = builder =>
+        {
+            List<RenderFragment> headContent = DynamicHeadContent.GetHeadContent();
+            for (int i = 0; i < headContent.Count; i++) builder.AddContent(i, headContent[i]);
+        };
+    }
+
+    private async void UpdateState()
+    {
+        await InvokeAsync(() =>
+        {
+            _renderContent = builder =>
+            {
+                List<RenderFragment> headContent = DynamicHeadContent.GetHeadContent();
+                for (int i = 0; i < headContent.Count; i++) builder.AddContent(i, headContent[i]);
+            };
+
+            StateHasChanged();
+        });
+    }
+
+    // Unsubscribe from the event when this component is disposed of 
+    public void Dispose()
+    {
+        try
+        {
+            DynamicHeadContent.OnChange -= UpdateState;
+        }
+        catch(ObjectDisposedException) {}
+    }
+}
