@@ -27,7 +27,7 @@ else
     <br>
     Dynamic Scheme Variant: <InputSelect @bind-Value="@Variant">
         <option value="">Default</option>
-        @foreach (Variant variant in Enum.GetValues<Variant>()[..^1])
+        @foreach (Variant variant in Enum.GetValues<Variant>()[..^1]) // skip the Custom option
         {
             <option value="@variant">@variant</option>
         }

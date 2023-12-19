@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics.Contracts;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using static System.Math;
 
 namespace MaterialDesign.Color.Colorspaces;
@@ -19,7 +17,8 @@ namespace MaterialDesign.Color.Colorspaces;
 /// different way of thinking about color, the total number of unique colors it can represent is still bound by these
 /// digital constraints while it's used on a display.
 /// </remarks>
-public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquatable<IRGB>, IEquatable<Color>, IEquatable<HCTA>
+public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquatable<IRGB>, 
+    IEquatable<Color>, IEquatable<HCTA>, IRGBAConvertible<HCTA>
 {
     private const double Precision = 5e-5;
     

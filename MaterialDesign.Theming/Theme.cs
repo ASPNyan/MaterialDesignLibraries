@@ -1,4 +1,5 @@
-﻿using MaterialDesign.Color.Palettes;
+﻿using MaterialDesign.Color.Blend;
+using MaterialDesign.Color.Palettes;
 
 namespace MaterialDesign.Theming;
 
@@ -123,6 +124,19 @@ public class Theme
         Scheme = scheme;
         
         OnUpdate?.Invoke();
+    }
+
+    private Dictionary<string, ColorRole> CustomColorRoles { get; } = new();
+    
+    public bool TryAddCustomColorRole(string id, HCTA source, bool harmonize = false) => 
+        CustomColorRoles.TryAdd(id, new ColorRole(source, harmonize));
+
+    public bool TryGetCustomColorRole(string id, out TonalPalette palette)
+    {
+        bool success = CustomColorRoles.TryGetValue(id, out ColorRole role);
+        if (!success) return false;
+        palette = new TonalPalette(role.Harmonize ? Blend.Harmonize(Primary, role.Source) : role.Source);
+        return true;
     }
 
     public event Action? OnUpdate;

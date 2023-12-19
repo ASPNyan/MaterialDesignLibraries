@@ -1,17 +1,21 @@
 ﻿namespace MaterialDesign.Color.Common;
 
-internal class Vector
+public class Vector
 {
-    internal readonly double[] Data;
+    private readonly double[] _data;
 
-    private Vector(ICollection<double> col)
+    private Vector(IEnumerable<double> col)
     {
-        Data = [..col]; // copy col into _data by spreading it into a new collection.
+        _data = col.ToArray();
     }
     
     public static Vector From(ICollection<double> col) => new(col);
 
-    public double this[int i] => Data[i];
+    public double this[int i]
+    {
+        get => _data[i];
+        set => _data[i] = value;
+    }
 
     public double DotProduct(Vector vector)
     {
@@ -24,5 +28,5 @@ internal class Vector
         return result;
     }
     
-    public int Count => Data.Length;
+    public int Count => _data.Length;
 }

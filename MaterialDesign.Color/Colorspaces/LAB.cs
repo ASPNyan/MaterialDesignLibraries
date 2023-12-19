@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a color in LAB color space.
 /// </summary>
-public class LAB(double l, double a, double b)
+public class LAB(double l, double a, double b) : IRGBAConvertible<LAB>
 {
     /// <summary>
     /// Gets or sets the lightness value of the color. 
@@ -68,6 +68,11 @@ public class LAB(double l, double a, double b)
         byte blue = HCTA.Delinearized(bL);
 
         return new RGBA(red, green, blue);
+    }
+
+    public static LAB FromRGBA()
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>

@@ -1,9 +1,7 @@
 ﻿namespace MaterialDesign.Color.Common;
 
-/* This and the Vector class are internal as they are not fully developed to be used, only containing the methods
- * required by this library.
- */
-internal class Matrix
+
+public class Matrix
 {
     // [col][row]
     private readonly double[][] _data;

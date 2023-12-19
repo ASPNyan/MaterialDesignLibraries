@@ -1,6 +1,7 @@
 ﻿namespace MaterialDesign.Color.Colorspaces;
 
-public class CAM16(double hue, double chroma, double j, double q, double m, double s, double jStar, double aStar, double bStar)
+public class CAM16(double hue, double chroma, double j, double q, double m, double s, double jStar, double aStar, 
+    double bStar) : IRGBAConvertible<CAM16>
 {
     public double Hue { get; set; } = hue;
     /// <summary>
