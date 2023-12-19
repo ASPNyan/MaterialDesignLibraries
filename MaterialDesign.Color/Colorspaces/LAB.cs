@@ -70,11 +70,6 @@ public class LAB(double l, double a, double b) : IRGBAConvertible<LAB>
         return new RGBA(red, green, blue);
     }
 
-    public static LAB FromRGBA()
-    {
-        throw new NotImplementedException();
-    }
-
     /// <summary>
     /// Creates a CIE LAB color from an existing RGBA color.
     /// </summary>
