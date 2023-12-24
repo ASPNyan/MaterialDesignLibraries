@@ -1,0 +1,27 @@
+﻿@implements IDisposable
+
+@code {
+    private static List<RenderFragment> HeadContent { get; } = [];
+
+    public static event Action? OnChange;
+
+    public static List<RenderFragment> GetHeadContent() => HeadContent;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = _ => { };
+
+    protected override void OnInitialized()
+    {
+        if (!HeadContent.Contains(ChildContent))
+        {
+            HeadContent.Add(ChildContent);
+            OnChange?.Invoke();
+        }
+    }
+
+    public void Dispose()
+    {
+        HeadContent.Remove(ChildContent);
+        OnChange?.Invoke();
+    }
+}

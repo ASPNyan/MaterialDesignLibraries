@@ -131,12 +131,13 @@ public class Theme
     public bool TryAddCustomColorRole(string id, HCTA source, bool harmonize = false) => 
         CustomColorRoles.TryAdd(id, new ColorRole(source, harmonize));
 
-    public bool TryGetCustomColorRole(string id, out TonalPalette palette)
+    public bool TryGetCustomColorRole(string id, out TonalPalette? palette)
     {
         bool success = CustomColorRoles.TryGetValue(id, out ColorRole role);
-        if (!success) return false;
-        palette = new TonalPalette(role.Harmonize ? Blend.Harmonize(Primary, role.Source) : role.Source);
-        return true;
+        palette = !success
+            ? null
+            : new TonalPalette(role.Harmonize ? Blend.Harmonize(Primary, role.Source) : role.Source);
+        return success;
     }
 
     public event Action? OnUpdate;

@@ -8,9 +8,9 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\MaterialDesign.Color\MaterialDesign.Color.csproj" />
-      <ProjectReference Include="..\MaterialDesign.Theming.Web\MaterialDesign.Theming.Web.csproj" />
-      <ProjectReference Include="..\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
+      <ProjectReference Include="..\..\_Libs\MaterialDesign.Color\MaterialDesign.Color.csproj" />
+      <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming.Web\MaterialDesign.Theming.Web.csproj" />
+      <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
     </ItemGroup>
 
     <ItemGroup>
