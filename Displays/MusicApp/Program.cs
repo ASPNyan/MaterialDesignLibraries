@@ -1,4 +1,6 @@
+using MaterialDesign.Color.Colorspaces;
 using MaterialDesign.Icons;
+using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -10,12 +12,18 @@ public static class Program
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         builder.RootComponents.Add<App>("body");
-        (await builder.AddDynamicMaterialIcons()
+        await builder
+            .AddDynamicMaterialIcons()
+            .AddScoped(delegate { return SongInfo.Empty; })
+            .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
             .AddMaterialThemeService((themeBuilder, services) =>
             {
+                var info = services.GetRequiredService<SongInfo>();
                 
-            }))
-            .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+                themeBuilder.UsingImage(imageBuilder => imageBuilder.WithStream(streamSource =>
+                    streamSource.FromStreamMethod(() => new HttpClient().GetStreamAsync(info.AlbumCoverUrl))));
+                return Task.FromResult(themeBuilder.Build());
+            }, new Theme(new HCTA(177.1, 62.585, 89.691)));
 
         await builder.Build().RunAsync();
     }

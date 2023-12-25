@@ -19,8 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\background.png" />
-      <_ContentIncludedByDefault Remove="wwwroot\exampleJsInterop.js" />
+      <ProjectReference Include="..\MaterialDesign.Icons\MaterialDesign.Icons.csproj" />
     </ItemGroup>
 
 </Project>

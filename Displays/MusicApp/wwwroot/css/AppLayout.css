@@ -1,0 +1,27 @@
+﻿#GridLayout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-areas: "top"
+                         "left main"
+                         "left bottom";
+}
+
+#Top {
+    grid-area: top;
+}
+
+#Left {
+    grid-area: left;
+}
+
+main {
+    grid-area: main;
+}
+
+#Bottom {
+    grid-area: bottom;
+}

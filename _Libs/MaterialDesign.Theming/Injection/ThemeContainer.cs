@@ -11,7 +11,7 @@ public class ThemeContainer
 
     public static ThemeContainer CreateFromTheme(Theme theme) => new(theme);
     public static async Task<ThemeContainer> CreateFromThemeSource(IThemeSource themeSource) => 
-        new(new Theme(await themeSource.GetSource())); 
+        new(await themeSource.GetTheme()); 
     
     public void UpdateTheme(Theme newTheme)
     {
@@ -21,7 +21,7 @@ public class ThemeContainer
     
     public async Task UpdateThemeSource(IThemeSource themeSource)
     {
-        Theme = new Theme(await themeSource.GetSource());
+        Theme = await themeSource.GetTheme();
         OnThemeUpdate?.Invoke();
     }
 

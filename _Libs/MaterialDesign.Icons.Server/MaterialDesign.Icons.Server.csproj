@@ -23,4 +23,13 @@
       <_ContentIncludedByDefault Remove="wwwroot\exampleJsInterop.js" />
     </ItemGroup>
 
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Components\MdIcon.razor" />
+      <UpToDateCheckInput Remove="Components\MdIconConfig.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MaterialDesign.Icons\MaterialDesign.Icons.csproj" />
+    </ItemGroup>
+
 </Project>

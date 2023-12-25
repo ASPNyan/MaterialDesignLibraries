@@ -1,9 +1,10 @@
 ﻿using MaterialDesign.Color.Blend;
 using MaterialDesign.Color.Palettes;
+using MaterialDesign.Theming.Injection;
 
 namespace MaterialDesign.Theming;
 
-public class Theme
+public class Theme : IThemeSource
 {
     public bool IsDarkScheme { get; private set; }
     public Scheme CurrentScheme => IsDarkScheme ? Scheme with { IsDark = true } : Scheme with { IsDark = false };
@@ -141,4 +142,10 @@ public class Theme
     }
 
     public event Action? OnUpdate;
+    
+    #region IThemeSource
+
+    Theme IThemeSource.UseActualTheme => this;
+
+    #endregion
 }
