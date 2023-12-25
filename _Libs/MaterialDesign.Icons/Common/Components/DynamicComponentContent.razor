@@ -1,0 +1,35 @@
+﻿@using MaterialDesign.Icons.Exceptions;
+
+@code
+{
+    private static Dictionary<string, List<RenderFragment>> ContentPerId { get; } = [];
+
+    public static event Action<string>? OnChangeWithId;
+
+    public static List<RenderFragment> GetContent(string id) => ContentPerId[id];
+
+    [Parameter, EditorRequired]
+    public virtual string? OutletId { get; set; }
+    
+    [Parameter, EditorRequired]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (OutletId is null) ArgumentException.ThrowIfNullOrWhiteSpace(OutletId);
+        if (ChildContent is null) return;
+
+        if (!DynamicComponentOutlet.ExistingOutlets.Contains(OutletId))
+            throw new ComponentException($"Outlet for outlet id `{OutletId}` does not exist.");
+        
+        if (ContentPerId.TryGetValue(OutletId, out var list)) list.Add(ChildContent);
+        else ContentPerId[OutletId] = [ChildContent];
+    }
+    
+    public void Dispose()
+    {
+        if (OutletId is null || ChildContent is null) return;
+        ContentPerId[OutletId].Remove(ChildContent);
+        OnChangeWithId?.Invoke(OutletId);
+    }
+}

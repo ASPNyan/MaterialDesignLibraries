@@ -1,13 +1,28 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿@implements IDisposable
 
-namespace MaterialDesign.Icons.Common.Components;
+@_renderContent
 
-public sealed class DynamicComponentOutlet : ComponentBase, IDisposable
+@if (ExtraSources is not null)
+{
+    foreach ((Type type, IDictionary<string, object>? attributes) in ExtraSources)
+    {
+        <DynamicComponent Type="@type" Parameters="@attributes"/>
+    }
+}
+
+@code
 {
     internal static List<string> ExistingOutlets { get; } = [];
     
     [Parameter, EditorRequired]
-    public string? Id { get; set; }
+    public virtual string? Id { get; set; }
+    
+    [Parameter]
+    public List<(Type ComponentType, IDictionary<string, object>? Attributes)>? ExtraSources { get; set; }
+
+    private static readonly List<(Type ComponentType, IDictionary<string, object>? Attributes)> StaticExtraSources = [];
+    public static void AddComponentSource<TComponent>(IDictionary<string, object>? attributes= null) => 
+        StaticExtraSources.Add((typeof(TComponent), attributes));
 
     private RenderFragment? _renderContent;
 
@@ -16,6 +31,7 @@ public sealed class DynamicComponentOutlet : ComponentBase, IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(Id);
         DynamicComponentContent.OnChangeWithId += UpdateState;
         ExistingOutlets.Add(Id);
+        ExtraSources?.AddRange(StaticExtraSources);
     }
 
     private async void UpdateState(string id)
@@ -35,7 +51,8 @@ public sealed class DynamicComponentOutlet : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        ArgumentException.ThrowIfNullOrEmpty(Id); // todo: match head outlet
+        ArgumentException.ThrowIfNullOrEmpty(Id);
+        DynamicComponentContent.OnChangeWithId -= UpdateState;
         ExistingOutlets.Remove(Id);
     }
 }

@@ -1,27 +1,9 @@
-﻿@implements IDisposable
+﻿@inherits DynamicComponentContent
 
 @code {
-    private static List<RenderFragment> HeadContent { get; } = [];
-
-    public static event Action? OnChange;
-
-    public static List<RenderFragment> GetHeadContent() => HeadContent;
-
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = _ => { };
-
-    protected override void OnInitialized()
+    public override string? OutletId
     {
-        if (!HeadContent.Contains(ChildContent))
-        {
-            HeadContent.Add(ChildContent);
-            OnChange?.Invoke();
-        }
-    }
-
-    public void Dispose()
-    {
-        HeadContent.Remove(ChildContent);
-        OnChange?.Invoke();
+        get => nameof(DynamicHeadOutlet);
+        set { } // ignore setting, as it should not be possible to do for permanent Ids
     }
 }
