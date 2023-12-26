@@ -434,21 +434,6 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
             return new Color(r, g, b, a);
         }
 
-        if (value.StartsWith("rgb")) // rgb()
-        {
-            if (format?.Format is not null and not WebFormat.CSS && format.Value.Option is not WebFormat.RGBA)
-                throw new FormatException("Expected CSS RGBA function but input was not valid.");
-            
-            value = new string(value.Skip(4).ToArray());
-            value = value.Replace(")", null);
-            string[] values = value.Split(",", StringSplitOptions.TrimEntries);
-            byte r = byte.Parse(values[0]);
-            byte g = byte.Parse(values[1]);
-            byte b = byte.Parse(values[2]);
-            
-            return new Color(r, g, b);
-        }
-        
         if (value.StartsWith("rgba")) // rgba()
         {
             if (format?.Format is not null and not WebFormat.CSS && format.Value.Option is not WebFormat.RGBA)
@@ -463,6 +448,21 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
             float a = float.Parse(values[3]);
             
             return new Color(h, s, l, a);
+        }
+
+        if (value.StartsWith("rgb")) // rgb()
+        {
+            if (format?.Format is not null and not WebFormat.CSS && format.Value.Option is not WebFormat.RGBA)
+                throw new FormatException("Expected CSS RGBA function but input was not valid.");
+            
+            value = new string(value.Skip(4).ToArray());
+            value = value.Replace(")", null);
+            string[] values = value.Split(",", StringSplitOptions.TrimEntries);
+            byte r = byte.Parse(values[0]);
+            byte g = byte.Parse(values[1]);
+            byte b = byte.Parse(values[2]);
+            
+            return new Color(r, g, b);
         }
 
         if (value.StartsWith('#'))

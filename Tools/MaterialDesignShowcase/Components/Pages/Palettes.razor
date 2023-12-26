@@ -2,14 +2,34 @@
 @using MaterialDesign.Color.Colorspaces
 @using MaterialDesign.Color.Schemes
 @using MaterialDesign.Theming.Web
+@using System.Diagnostics.CodeAnalysis
+@using MaterialDesign.Color.Extensions
 @rendermode InteractiveServer
 
 <h1>Palettes</h1>
 <h2>Original</h2>
 
-<HCTSelector @bind-Color="@Color"/>
+@{
+    RGBA rgba = HCTA.ToRGBA();
+    <div style="background: @rgba.ToString(); color: @HCTA.ContrastTo(4.5).ToRGBA().ToString(); width: 300px;">
+        @rgba.ToString()
+    </div>
+}
 
-<p style="background: @Color.ToRGBA().ToString()">@Color.ToRGBA().ToUIntRepresentation().ToString("X8")</p>
+<HCTSelector Hue="@Hue" Chroma="@Chroma" Tone="@Tone" @bind-OnHCTUpdate="@HCTUpdate" 
+             UseChromaPercentage="@true" UsePreciseChromaPercentage="@true">
+    <HSlider>
+        <input type="range" min="0" max="359" step="0.1" value="@Hue" @oninput="@OnHueChange"/>
+    </HSlider>
+    <CSlider>
+        <input type="range" min="0" max="100" step="0.1" value="@Chroma" @oninput="@OnChromaChange"/>
+    </CSlider>
+    <TSlider>
+        <input type="range" min="0" max="100" step="0.1" value="@Tone" @oninput="@OnToneChange"/>
+    </TSlider>
+</HCTSelector>
+
+<p style="background: @HCTA.ToRGBA().ToString()">@HCTA.ToRGBA().ToUIntRepresentation().ToString("X8")</p>
 
 @foreach (DynamicScheme scheme in AllSchemes)
 {
@@ -19,29 +39,72 @@
 @code {
     private static readonly double[] Tones = [100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
 
-    private HCTA Color { get; set; } = new(0, 100, 50);
+    private HCTA HCTA => new(Hue, Chroma, Tone);
+    
+    private double Hue { get; set; }
+
+    private double Chroma { get; set; }
+
+    private double Tone { get; set; }
+
+    [NotNull] private Func<Task>? HCTUpdate { get; set; }
+
+    private DateTime _lastUpdate = DateTime.MinValue;
+    
+    private Task OnHueChange(ChangeEventArgs args)
+    {
+        if (!double.TryParse(args.Value as string, out double value)) 
+            throw new Exception("Invalid method for onchange event.");
+        if (_lastUpdate - DateTime.Now > TimeSpan.FromMilliseconds(1)) return Task.CompletedTask;
+        _lastUpdate = DateTime.Now;
+
+        Hue = value;
+        return HCTUpdate();
+    }
+    
+    private Task OnChromaChange(ChangeEventArgs args)
+    {
+        if (!double.TryParse(args.Value as string, out double value)) 
+            throw new Exception("Invalid method for onchange event.");
+        if (_lastUpdate - DateTime.Now > TimeSpan.FromMilliseconds(1)) return Task.CompletedTask;
+        _lastUpdate = DateTime.Now;
+
+        Chroma = value;
+        return HCTUpdate();
+    }
+    
+    private Task OnToneChange(ChangeEventArgs args)
+    {
+        if (!double.TryParse(args.Value as string, out double value)) 
+            throw new Exception("Invalid method for onchange event.");
+        if (_lastUpdate - DateTime.Now > TimeSpan.FromMilliseconds(1)) return Task.CompletedTask;
+        _lastUpdate = DateTime.Now;
+
+        Tone = value;
+        return HCTUpdate();
+    }
 
     private const bool IsDark = true;
     private const bool IsNotDark = false;
     
-    private ContentScheme ContentScheme => new(Color, IsDark);
-    private ContentScheme LightContentScheme => new(Color, IsNotDark);
-    private ExpressiveScheme ExpressiveScheme => new(Color, IsDark);
-    private ExpressiveScheme LightExpressiveScheme => new(Color, IsNotDark);
-    private FidelityScheme FidelityScheme => new(Color, IsDark);
-    private FidelityScheme LightFidelityScheme => new(Color, IsNotDark);
-    private FruitSaladScheme FruitSaladScheme => new(Color, IsDark);
-    private FruitSaladScheme LightFruitSaladScheme => new(Color, IsNotDark);
-    private MonochromeScheme MonochromeScheme => new(Color, IsDark);
-    private MonochromeScheme LightMonochromeScheme => new(Color, IsNotDark);
-    private NeutralScheme NeutralScheme => new(Color, IsDark);
-    private NeutralScheme LightNeutralScheme => new(Color, IsNotDark);
-    private RainbowScheme RainbowScheme => new(Color, IsDark);
-    private RainbowScheme LightRainbowScheme => new(Color, IsNotDark);
-    private TonalSpotScheme TonalSpotScheme => new(Color, IsDark);
-    private TonalSpotScheme LightTonalSpotScheme => new(Color, IsNotDark);
-    private VibrantScheme VibrantScheme => new(Color, IsDark);
-    private VibrantScheme LightVibrantScheme => new(Color, IsNotDark);
+    private ContentScheme ContentScheme => new(HCTA, IsDark);
+    private ContentScheme LightContentScheme => new(HCTA, IsNotDark);
+    private ExpressiveScheme ExpressiveScheme => new(HCTA, IsDark);
+    private ExpressiveScheme LightExpressiveScheme => new(HCTA, IsNotDark);
+    private FidelityScheme FidelityScheme => new(HCTA, IsDark);
+    private FidelityScheme LightFidelityScheme => new(HCTA, IsNotDark);
+    private FruitSaladScheme FruitSaladScheme => new(HCTA, IsDark);
+    private FruitSaladScheme LightFruitSaladScheme => new(HCTA, IsNotDark);
+    private MonochromeScheme MonochromeScheme => new(HCTA, IsDark);
+    private MonochromeScheme LightMonochromeScheme => new(HCTA, IsNotDark);
+    private NeutralScheme NeutralScheme => new(HCTA, IsDark);
+    private NeutralScheme LightNeutralScheme => new(HCTA, IsNotDark);
+    private RainbowScheme RainbowScheme => new(HCTA, IsDark);
+    private RainbowScheme LightRainbowScheme => new(HCTA, IsNotDark);
+    private TonalSpotScheme TonalSpotScheme => new(HCTA, IsDark);
+    private TonalSpotScheme LightTonalSpotScheme => new(HCTA, IsNotDark);
+    private VibrantScheme VibrantScheme => new(HCTA, IsDark);
+    private VibrantScheme LightVibrantScheme => new(HCTA, IsNotDark);
 
     private DynamicScheme[] DarkSchemes => [ContentScheme, ExpressiveScheme, FidelityScheme, 
                                                            FruitSaladScheme, MonochromeScheme, NeutralScheme,

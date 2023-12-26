@@ -10,29 +10,28 @@ public static class HCTAExtensions
     /// Generates a new HCTA color with the specified contrast ratio.
     /// </summary>
     /// <param name="current">The color to base the new color from.</param>
-    /// <param name="source">The color to use the tone from.</param>
     /// <param name="ratio">The contrast ratio to generate the new color with.</param>
     /// <param name="darker">Whether the new color should be darker or lighter than the source.
     /// This will be automatically decided if the parameter is null or not provided.</param>
     /// <exception cref="InvalidOperationException">Thrown when <paramref name="darker"/> is null
     /// and neither a lighter nor darker tone can be created with the ratio, or when <paramref name="darker"/>
     /// is specified and the relevant tone cannot be created.</exception>
-    public static HCTA ContrastTo(this HCTA current, HCTA source, double ratio, bool? darker = null)
+    public static HCTA ContrastTo(this HCTA current, double ratio, bool? darker = null)
     {
         double diff = Round(_Contrast.LighterViaRatio(0, ratio), 3, MidpointRounding.ToPositiveInfinity);
 
         if (darker is null)
         {
-            double darkerTone = _Contrast.DarkerViaRatio(source.T, ratio);
+            double darkerTone = _Contrast.DarkerViaRatio(current.T, ratio);
             bool canBeDarker = darkerTone is not -1;
-            double lighterTone = _Contrast.LighterViaRatio(source.T, ratio);
+            double lighterTone = _Contrast.LighterViaRatio(current.T, ratio);
             bool canBeLighter = lighterTone is not -1;
 
             switch (canBeDarker)
             {
                 case false when canBeLighter is false: // neither
                 {
-                    throw new InvalidOperationException($"Cannot create a color with a contrast of {ratio} from {source} " +
+                    throw new InvalidOperationException($"Cannot create a color with a contrast of {ratio} from {current} " +
                                                         $"as it would require a minimum of {diff} in either tone direction.");
                 }
                 case true when canBeLighter: // both
@@ -48,20 +47,20 @@ public static class HCTAExtensions
         }
 
         double tone = darker is true
-            ? _Contrast.DarkerViaRatio(source.T, ratio)
-            : _Contrast.LighterViaRatio(source.T, ratio);
+            ? _Contrast.DarkerViaRatio(current.T, ratio)
+            : _Contrast.LighterViaRatio(current.T, ratio);
 
         if (tone is -1)
         {
             double minTone = darker is true ? 100 - tone : tone;
             string minOrMax = darker is true ? "maximum" : "minimum";
-            throw new InvalidOperationException($"Cannot create a color with a contrast of {ratio} from {source} " +
+            throw new InvalidOperationException($"Cannot create a color with a contrast of {ratio} from {current} " +
                                                 $"as it would allow a ${minOrMax} source tone of {minTone}.");
         }
 
         return new HCTA(current.H, current.C, tone);
     }
 
-    public static HCTA ContrastTo(this HCTA current, HCTA source, ContrastRatio ratio) =>
-        current.ContrastTo(source, ratio.Ratio);
+    public static HCTA ContrastTo(this HCTA current, ContrastRatio ratio, bool? darker = null) =>
+        current.ContrastTo(ratio.Ratio, darker);
 }

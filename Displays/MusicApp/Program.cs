@@ -11,7 +11,6 @@ public static class Program
     public static async Task Main(string[] args)
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        builder.RootComponents.Add<App>("body");
         await builder
             .AddDynamicMaterialIcons()
             .AddScoped(delegate { return SongInfo.Empty; })
@@ -24,6 +23,7 @@ public static class Program
                     streamSource.FromStreamMethod(() => new HttpClient().GetStreamAsync(info.AlbumCoverUrl))));
                 return Task.FromResult(themeBuilder.Build());
             }, new Theme(new HCTA(177.1, 62.585, 89.691)));
+        builder.RootComponents.Add<App>("body");
 
         await builder.Build().RunAsync();
     }

@@ -24,4 +24,8 @@
       <ProjectReference Include="..\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
+    </ItemGroup>
+
 </Project>
