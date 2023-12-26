@@ -1,35 +1,44 @@
 ﻿@using MaterialDesign.Icons.Exceptions;
+@implements IDynamicIdComponentContent
+@implements IDisposable
 
 @code
 {
     private static Dictionary<string, List<RenderFragment>> ContentPerId { get; } = [];
 
-    public static event Action<string>? OnChangeWithId;
+    public static event Action<string>? OnChangeWithOutletId;
 
-    public static List<RenderFragment> GetContent(string id) => ContentPerId[id];
+    public static List<RenderFragment> GetContentWithOutletId(string id) => ContentPerId[id];
 
-    [Parameter, EditorRequired]
-    public virtual string? OutletId { get; set; }
+    [Parameter, EditorRequired] 
+    public string OutletId { get; set; } = null!;
     
     [Parameter, EditorRequired]
     public RenderFragment? ChildContent { get; set; }
 
+    [Parameter] 
+    public bool AssureOutletExists { get; set; }
+
     protected override void OnInitialized()
     {
-        if (OutletId is null) ArgumentException.ThrowIfNullOrWhiteSpace(OutletId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(OutletId);
         if (ChildContent is null) return;
 
-        if (!DynamicComponentOutlet.ExistingOutlets.Contains(OutletId))
-            throw new ComponentException($"Outlet for outlet id `{OutletId}` does not exist.");
+        if (!DynamicComponentOutlet.OutletExistsWithId(OutletId) && !AssureOutletExists)
+        {
+            throw new ComponentException($"Outlet for outlet id `{OutletId}` does not exist. If this is a " +
+                                         $"false positive, set the `AssureOutletExists` attribute to true.");
+        }
         
         if (ContentPerId.TryGetValue(OutletId, out var list)) list.Add(ChildContent);
         else ContentPerId[OutletId] = [ChildContent];
+        OnChangeWithOutletId?.Invoke(OutletId);
     }
     
     public void Dispose()
     {
-        if (OutletId is null || ChildContent is null) return;
+        if (string.IsNullOrWhiteSpace(OutletId) || ChildContent is null) return;
         ContentPerId[OutletId].Remove(ChildContent);
-        OnChangeWithId?.Invoke(OutletId);
+        OnChangeWithOutletId?.Invoke(OutletId);
     }
 }

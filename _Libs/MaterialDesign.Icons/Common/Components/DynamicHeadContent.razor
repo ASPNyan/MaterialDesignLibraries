@@ -1,9 +1,30 @@
-﻿@inherits DynamicComponentContent
+﻿@using MaterialDesign.Icons.Exceptions
+@implements IDynamicComponentContent
 
 @code {
-    public override string? OutletId
+    [Parameter, EditorRequired] 
+    public RenderFragment? ChildContent { get; set; }
+    
+    [Parameter] 
+    public bool AssureOutletExists { get; set; }
+    
+    public static event Action? OnChange;
+
+    private static List<RenderFragment> Content { get; } = [];
+    public static List<RenderFragment> GetContent() => Content;
+
+    protected override void OnInitialized()
     {
-        get => nameof(DynamicHeadOutlet);
-        set { } // ignore setting, as it should not be possible to do for permanent Ids
+        if (ChildContent is null)
+            throw new ComponentException($"{nameof(DynamicHeadContent)} should have child content to add to the head.");
+        
+        if (!DynamicHeadOutlet.OutletExists() && !AssureOutletExists)
+        {
+            throw new ComponentException($"No {nameof(DynamicHeadOutlet)} components exist. If this is a " +
+                                         "false positive, set the `AssureOutletExists` attribute to true.");
+        }
+        
+        Content.Add(ChildContent);
+        OnChange?.Invoke();
     }
 }

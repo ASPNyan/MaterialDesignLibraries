@@ -1,4 +1,12 @@
-﻿@page "/"
+﻿@using MaterialDesign.Icons.Components
+@using MaterialDesign.Icons
+@page "/"
 
 <PageTitle>Home</PageTitle>
 
+<h2>
+    Welcome
+    <MdIcon Icon="Refresh" Fill="true" Grade="100" OpticalSize="24" Weight="300" LineStyle="@MdIconLineStyle.Rounded" 
+            onclick="location.reload()"/>
+</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus, ullam.</p>

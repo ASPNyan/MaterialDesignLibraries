@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+﻿@implements IDynamicIdComponentOutlet
+@implements IDisposable
 
 @_renderContent
 
@@ -12,36 +13,42 @@
 
 @code
 {
-    internal static List<string> ExistingOutlets { get; } = [];
-    
-    [Parameter, EditorRequired]
-    public virtual string? Id { get; set; }
+    private static List<string> ExistingOutlets { get; } = [];
+    public static bool OutletExistsWithId(string id) => ExistingOutlets.Contains(id);
+
+    [Parameter, EditorRequired] 
+    public virtual string Id { get; set; } = null!;
     
     [Parameter]
     public List<(Type ComponentType, IDictionary<string, object>? Attributes)>? ExtraSources { get; set; }
 
-    private static readonly List<(Type ComponentType, IDictionary<string, object>? Attributes)> StaticExtraSources = [];
-    public static void AddComponentSource<TComponent>(IDictionary<string, object>? attributes= null) => 
-        StaticExtraSources.Add((typeof(TComponent), attributes));
+    private static readonly Dictionary<string, List<(Type ComponentType, IDictionary<string, object>? Attributes)>> StaticExtraSources = [];
+
+    public static void AddComponentSourceWithId<TComponent>(string id, IDictionary<string, object>? attributes = null)
+    {
+        (Type ComponentType, IDictionary<string, object>? Attributes) valuePair = (typeof(TComponent), attributes);
+        if (StaticExtraSources.TryGetValue(id, out var list)) list.Add(valuePair);
+        else StaticExtraSources[id] = [valuePair];
+    }
 
     private RenderFragment? _renderContent;
 
     protected override void OnInitialized()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(Id);
-        DynamicComponentContent.OnChangeWithId += UpdateState;
+        DynamicComponentContent.OnChangeWithOutletId += OnChange;
         ExistingOutlets.Add(Id);
-        ExtraSources?.AddRange(StaticExtraSources);
+        ExtraSources?.AddRange(StaticExtraSources[Id]);
     }
 
-    private async void UpdateState(string id)
+    private async void OnChange(string id)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(Id);
         await InvokeAsync(() =>
         {
             _renderContent = builder =>
             {
-                List<RenderFragment> fragments = DynamicComponentContent.GetContent(Id);
+                List<RenderFragment> fragments = DynamicComponentContent.GetContentWithOutletId(Id);
                 for (int i = 0; i < fragments.Count; i++) builder.AddContent(i, fragments[i]);
             };
             
@@ -52,7 +59,7 @@
     public void Dispose()
     {
         ArgumentException.ThrowIfNullOrEmpty(Id);
-        DynamicComponentContent.OnChangeWithId -= UpdateState;
+        DynamicComponentContent.OnChangeWithOutletId -= OnChange;
         ExistingOutlets.Remove(Id);
     }
 }

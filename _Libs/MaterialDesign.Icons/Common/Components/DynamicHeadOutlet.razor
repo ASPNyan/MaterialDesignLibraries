@@ -1,9 +1,48 @@
-﻿@inherits DynamicComponentOutlet
+﻿@implements IDynamicComponentOutlet
+@implements IDisposable
+
+@foreach (RenderFragment fragment in DynamicHeadContent.GetContent())
+{
+    @fragment
+}
+
+@foreach ((Type componentType, IDictionary<string, object>? attributes) in ExtraSources)
+{
+    <DynamicComponent Type="@componentType" Parameters="@attributes"/>
+}
 
 @code {
-    public override string? Id
+    private static int _outlets;
+    private bool _disposed;
+
+    private static event Action? OnExtraSourcesUpdate;
+    
+    private static List<(Type ComponentType, IDictionary<string, object>? Attributes)> ExtraSources { get; } = [];
+    
+    public static void AddComponentSource<TComponent>(IDictionary<string, object>? attributes = null)
     {
-        get => nameof(DynamicHeadOutlet);
-        set { }
+        ExtraSources.Add((typeof(TComponent), attributes));
+        OnExtraSourcesUpdate?.Invoke();
+    }
+
+    public static bool OutletExists() => _outlets > 0;
+    
+    protected override void OnInitialized()
+    {
+        _outlets++;
+        _disposed = false;
+
+        DynamicHeadContent.OnChange += StateHasChanged;
+        OnExtraSourcesUpdate += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+
+        DynamicHeadContent.OnChange -= StateHasChanged;
+        OnExtraSourcesUpdate -= StateHasChanged;
+        _outlets--;
+        _disposed = true;
     }
 }

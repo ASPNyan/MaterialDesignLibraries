@@ -8,7 +8,7 @@ public static class MaterialIconConfigExtensions
 {
     private static IServiceCollection AddMaterialConfig(this IServiceCollection serviceCollection)
     {
-        DynamicComponentOutlet.AddComponentSource<MdConfigurationHeadContent>();
+        DynamicHeadOutlet.AddComponentSource<MdConfigurationHeadContent>();
         return serviceCollection;
     }
     
