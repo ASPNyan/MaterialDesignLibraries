@@ -1,20 +1,13 @@
-﻿@page "/Palettes"
-@using MaterialDesign.Color.Colorspaces
+﻿@using MaterialDesign.Color.Colorspaces
 @using MaterialDesign.Color.Schemes
 @using MaterialDesign.Theming.Web
 @using System.Diagnostics.CodeAnalysis
 @using MaterialDesign.Color.Extensions
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveAuto
+@page "/Palettes"
 
 <h1>Palettes</h1>
 <h2>Original</h2>
-
-@{
-    RGBA rgba = HCTA.ToRGBA();
-    <div style="background: @rgba.ToString(); color: @HCTA.ContrastTo(4.5).ToRGBA().ToString(); width: 300px;">
-        @rgba.ToString()
-    </div>
-}
 
 <HCTSelector Hue="@Hue" Chroma="@Chroma" Tone="@Tone" @bind-OnHCTUpdate="@HCTUpdate" 
              UseChromaPercentage="@true" UsePreciseChromaPercentage="@true">
@@ -29,12 +22,33 @@
     </TSlider>
 </HCTSelector>
 
-<p style="background: @HCTA.ToRGBA().ToString()">@HCTA.ToRGBA().ToUIntRepresentation().ToString("X8")</p>
+@{
+    RGBA rgba = HCTA.ToRGBA();
+    <p style="background: @rgba.ToString(); color: @HCTA.ContrastTo(4.5).ToRGBA().ToString(); width: 300px;">
+        @rgba.ToString()
+    </p>
+}
 
 @foreach (DynamicScheme scheme in AllSchemes)
 {
     <DynamicSchemePalettes Tones="@Tones" Scheme="@scheme" />
 }
+
+<style>
+    .HCTSelector {
+        width: 300px;
+        height: 40vh;
+    }
+    
+    .DisplayWindow {
+        width: 100%;
+        height: 60px;
+    }
+    
+    .HCTSelector input {
+        width: 100%;
+    }
+</style>
 
 @code {
     private static readonly double[] Tones = [100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];

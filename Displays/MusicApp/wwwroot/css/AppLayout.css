@@ -5,9 +5,11 @@
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-areas: "top"
+    grid-template-areas: "top top"
                          "left main"
                          "left bottom";
+    grid-template-columns: 10vw 90vw;
+    grid-template-rows: 10vh 80vh 10vh;
 }
 
 #Top {

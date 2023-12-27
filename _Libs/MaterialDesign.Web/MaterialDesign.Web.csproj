@@ -21,12 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\MdIcon.razor" />
-      <AdditionalFiles Include="Components\MdIconConfig.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\MaterialDesign.Web\MaterialDesign.Web.csproj" />
+      <AdditionalFiles Include="Components\DynamicComponentContent.razor" />
+      <AdditionalFiles Include="Components\DynamicComponentOutlet.razor" />
     </ItemGroup>
 
 </Project>

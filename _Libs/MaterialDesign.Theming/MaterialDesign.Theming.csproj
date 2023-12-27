@@ -10,4 +10,8 @@
     <ItemGroup>
       <ProjectReference Include="..\MaterialDesign.Color\MaterialDesign.Color.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+    </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace MaterialDesign.Icons.Common.Components;
+﻿namespace MaterialDesign.Web.Components;
 
 public interface IDynamicComponentOutlet
 {

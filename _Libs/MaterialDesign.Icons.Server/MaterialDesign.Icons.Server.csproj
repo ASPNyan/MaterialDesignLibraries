@@ -30,6 +30,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MaterialDesign.Icons\MaterialDesign.Icons.csproj" />
+      <ProjectReference Include="..\MaterialDesign.Web\MaterialDesign.Web.csproj" />
     </ItemGroup>
 
 </Project>

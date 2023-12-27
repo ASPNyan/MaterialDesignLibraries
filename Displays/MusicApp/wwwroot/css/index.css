@@ -1,8 +1,6 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
 html, body {
-    background: black;
-    color: white;
     font-family: "Open Sans", system-ui;
 }
 
@@ -19,9 +17,4 @@ html, body {
     --StrokeLength: calc(2 * 3.1415 * 40); /* 2*pi*r */
     stroke-dasharray: calc(var(--StrokeLength) * var(--blazor-load-percentage, 0%) / 100), 1000;
     stroke: color-mix(in srgb, #090 var(--blazor-load-percentage, 0%), #e94a37 calc(100% - var(--blazor-load-percentage, 0%)));
-}
-
-#LoadingProgress #ProgressText::after {
-    content: var(--blazor-load-percentage-text, "Loading..");
-    transform: translate(-50%, -50%);
 }

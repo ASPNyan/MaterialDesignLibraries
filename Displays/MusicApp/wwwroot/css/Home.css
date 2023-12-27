@@ -1,13 +1,19 @@
-﻿.HCTSelector {
-    width: 300px;
-    height: 40vh;
+﻿#PlayingAlbumCover {
+    position: absolute;
+    width: 9.5vw; 
+    height: 9.5vw; 
+    left: 0.25vw;
+    bottom: 0.25vw;
+    border-radius: 0.5vw;
 }
 
-.DisplayWindow {
-    width: 100%;
+#ThemeSwitch {
+    position: absolute;
+    width: 60px;
     height: 60px;
-}
-
-.HCTSelector input {
-    width: 100%;
+    font-size: 60px;
+    top: 5px;
+    right: 5px;
+    user-select: none;
+    cursor: pointer;
 }

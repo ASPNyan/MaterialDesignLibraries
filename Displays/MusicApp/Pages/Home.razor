@@ -1,7 +1,8 @@
-﻿@using MaterialDesign.Icons.Common.Components
-@using MaterialDesign.Icons.Components
-@using MaterialDesign.Icons
+﻿@using MusicApp.Layouts
+@using MaterialDesign.Theming.Injection
 @page "/"
+@inject SongInfo SongInfo
+@inject ThemeContainer ThemeContainer
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Home.css">
@@ -9,9 +10,37 @@
 
 <PageTitle>Home</PageTitle>
 
-<h2>
-    Welcome
-    <MdIcon Icon="Refresh" Fill="true" Grade="100" OpticalSize="24" Weight="300" LineStyle="@MdIconLineStyle.Rounded" 
-            onclick="location.reload()"/>
-</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus, ullam.</p>
+<DynamicComponentContent OutletId="@AppLayout.TopId">
+    <MdIcon Icon="@GetIconString()" id="ThemeSwitch" @onclick="@SwitchTheme"/>
+</DynamicComponentContent>
+<DynamicComponentContent OutletId="@AppLayout.LeftId">
+    @if (SongPlaying)
+    {
+        <img src="@SongInfo.AlbumCoverUrl" alt="@SongInfo.Album" id="PlayingAlbumCover"/>
+    }
+</DynamicComponentContent>
+<DynamicComponentContent OutletId="@AppLayout.BottomId">
+    <p>bottom</p>
+</DynamicComponentContent>
+
+<p>main</p>
+
+@code {
+    private bool SongPlaying => SongInfo != SongInfo.Empty;
+    
+    private string GetIconString() => (ThemeContainer.Theme.IsDarkScheme ? "Dark" : "Light") + " Mode";
+
+    private void SwitchTheme()
+    {
+        if (ThemeContainer.Theme.IsDarkScheme) ThemeContainer.Theme.SetLight();
+        else ThemeContainer.Theme.SetDark();
+
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        ThemeContainer.OnThemeUpdate += async () => await InvokeAsync(StateHasChanged);
+    }
+
+}

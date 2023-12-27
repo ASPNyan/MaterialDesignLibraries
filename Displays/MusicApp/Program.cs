@@ -11,20 +11,28 @@ public static class Program
     public static async Task Main(string[] args)
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        await builder
+        builder
             .AddDynamicMaterialIcons()
-            .AddScoped(delegate { return SongInfo.Empty; })
-            .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
-            .AddMaterialThemeService((themeBuilder, services) =>
+            .AddScoped(delegate { return new SongInfo
             {
-                var info = services.GetRequiredService<SongInfo>();
-                
-                themeBuilder.UsingImage(imageBuilder => imageBuilder.WithStream(streamSource =>
-                    streamSource.FromStreamMethod(() => new HttpClient().GetStreamAsync(info.AlbumCoverUrl))));
-                return Task.FromResult(themeBuilder.Build());
-            }, new Theme(new HCTA(177.1, 62.585, 89.691)));
+                Name = "a",
+                Album = "Album",
+                Author = "a",
+                AlbumCoverUrl = "https://raw.githubusercontent.com/julien-gargot/images-placeholder/master/placeholder-square.png"
+            }; })
+            .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+            .AddMaterialThemeService();
         builder.RootComponents.Add<App>("body");
 
-        await builder.Build().RunAsync();
+        var host = builder.Build();
+        await host.SetMaterialThemeService((themeBuilder, services) =>
+        {
+            var info = services.GetRequiredService<SongInfo>();
+
+            themeBuilder.UsingImage(imageBuilder => imageBuilder.WithStream(streamSource =>
+                streamSource.FromStreamMethod(() => new HttpClient().GetStreamAsync(info.AlbumCoverUrl))));
+            return Task.FromResult(themeBuilder.Build());
+        }, new Theme(new HCTA(177.1, 62.585, 89.691)));
+        await host.RunAsync();
     }
 }

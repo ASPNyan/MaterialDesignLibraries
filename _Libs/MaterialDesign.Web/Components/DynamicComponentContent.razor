@@ -1,5 +1,5 @@
-﻿@using MaterialDesign.Icons.Exceptions;
-@implements IDynamicIdComponentContent
+﻿@implements IDynamicIdComponentContent
+@using MaterialDesign.Web.Exceptions
 @implements IDisposable
 
 @code
@@ -22,7 +22,7 @@
     protected override void OnInitialized()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(OutletId);
-        if (ChildContent is null) return;
+        ArgumentNullException.ThrowIfNull(ChildContent);
 
         if (!DynamicComponentOutlet.OutletExistsWithId(OutletId) && !AssureOutletExists)
         {
@@ -34,7 +34,9 @@
         else ContentPerId[OutletId] = [ChildContent];
         OnChangeWithOutletId?.Invoke(OutletId);
     }
-    
+
+    protected override void OnAfterRender(bool firstRender) => OnChangeWithOutletId?.Invoke(OutletId);
+
     public void Dispose()
     {
         if (string.IsNullOrWhiteSpace(OutletId) || ChildContent is null) return;

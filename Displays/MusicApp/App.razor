@@ -1,6 +1,8 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using MusicApp.Layouts
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(AppLayout)"/>
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>

@@ -10,8 +10,17 @@ public class Theme : IThemeSource
     public Scheme CurrentScheme => IsDarkScheme ? Scheme with { IsDark = true } : Scheme with { IsDark = false };
     public Scheme Scheme { get; private set; }
 
-    public void SetDark() => IsDarkScheme = true;
-    public void SetLight() => IsDarkScheme = false;
+    public void SetDark()
+    {
+        IsDarkScheme = true;
+        OnUpdate?.Invoke();
+    }
+
+    public void SetLight()
+    {
+        IsDarkScheme = false;
+        OnUpdate?.Invoke();
+    }
 
     public HCTA Primary => CurrentScheme.Primary;
     public HCTA OnPrimary => CurrentScheme.OnPrimary;

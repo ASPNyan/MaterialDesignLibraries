@@ -1,6 +1,6 @@
-﻿using MaterialDesign.Icons.Common.Components;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using MaterialDesign.Web.Components;
 
 namespace MaterialDesign.Icons;
 

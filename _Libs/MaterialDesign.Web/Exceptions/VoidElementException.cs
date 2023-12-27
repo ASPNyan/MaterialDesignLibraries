@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace MaterialDesign.Icons.Exceptions;
+namespace MaterialDesign.Web.Exceptions;
 
 public class VoidElementException(string? message = null, Exception? innerException = null)
     : ComponentException(message, innerException)

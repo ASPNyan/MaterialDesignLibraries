@@ -1,6 +1,6 @@
 ﻿// This file provides XML docs for the MdIconConfig component
 
-using MaterialDesign.Icons.Exceptions;
+using MaterialDesign.Web.Exceptions;
 
 namespace MaterialDesign.Icons.Components;
 

@@ -1,4 +1,6 @@
 ﻿@using MaterialDesign.Color.Colorspaces
+@using Microsoft.AspNetCore.Components.Web
+
 <div class="HCTSelector" id="@SelectorId">
     <div class="@(DisplayWindowClassName) @(DisplayWindowClassName)Hue" style="background: linear-gradient(to right, @HueString)"></div>
     @HSlider
@@ -44,6 +46,8 @@
     public RenderFragment? TSlider { get; set; }
 
     private double _hue;
+    private double _chroma;
+
     [Parameter, EditorRequired]
     public double Hue
     {
@@ -52,8 +56,12 @@
     }
 
     [Parameter, EditorRequired]
-    public double Chroma { get; set; }
-    
+    public double Chroma
+    {
+        get => _chroma;
+        set => _chroma = UseChromaPercentage ? value / 100 * _maxChroma : value;
+    }
+
     [Parameter, EditorRequired]
     public double Tone { get; set; }
     
@@ -97,10 +105,12 @@
         return OnHCTUpdateChanged.InvokeAsync(OnHCTUpdate);
     }
 
+    private double _maxChroma = 150;
+    
     private string GetChromaString()
     {
         string chromaString = string.Empty;
-        double maxChroma = 150;
+        _maxChroma = 150;
 
         if (Tone >= 98) // 98 tone is almost indistinguishable from white
         {
@@ -111,16 +121,16 @@
         if (UseChromaPercentage)
         {
             HCTA hcta = new(Hue, Chroma, Tone);
-            maxChroma = UsePreciseChromaPercentage ? hcta.ExactMaxChroma(3) : hcta.MaxChroma();
+            _maxChroma = UsePreciseChromaPercentage ? hcta.ExactMaxChroma(3) : hcta.MaxChroma();
         }
 
         for (double chroma = 0; ; chroma += Additive)
         {
             bool shouldEnd = false;
-            if (chroma >= maxChroma)
+            if (chroma >= _maxChroma)
             {
                 shouldEnd = true;
-                chroma = maxChroma;
+                chroma = _maxChroma;
             }
 
             chromaString += $"{new HCTA(Hue, chroma, Tone).ToRGBA()}, ";

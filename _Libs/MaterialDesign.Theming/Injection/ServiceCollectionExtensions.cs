@@ -1,10 +1,13 @@
 ﻿using MaterialDesign.Theming.Injection.ThemeSources;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MaterialDesign.Theming.Injection;
 
 public static class ServiceCollectionExtensions
 {
+    internal static bool CheckSetFail;
+    
     private static bool _themeServiceSet;
 
     private static void SetThemeService(IServiceCollection serviceCollection)
@@ -80,29 +83,25 @@ public static class ServiceCollectionExtensions
         return serviceCollection.AddScoped<ThemeContainer>(_ => container);
     }
 
-    public static Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
-        ThemeSourceFromBuilderAndServiceProvider builderMethod, IThemeSource? fallback = null)
+    public static void AddMaterialThemeService(this IServiceCollection serviceCollection)
     {
         SetThemeService(serviceCollection);
 
-        return AddServiceExtension();
+        serviceCollection.AddScoped<ThemeContainer>(_ => ThemeContainer.CreateFromTheme(null!));
 
-        Task<IServiceCollection> AddServiceExtension()
-        {
-            return Task.FromResult(serviceCollection.AddScoped<ThemeContainer>(serviceProvider =>
-            {
-                ThemeSourceBuilder builder = new ThemeSourceBuilder();
+        CheckSetFail = true;
+    }
 
-                TaskCompletionSource<ThemeContainer> tcs = new(TaskCreationOptions.LongRunning); // image processing, for example, could make this long running.
-                ContainerMethod().ContinueWith(task => tcs.SetResult(task.Result), TaskScheduler.Current);
-                return tcs.Task.Result;
+    public static async Task SetMaterialThemeService(this WebAssemblyHost host,
+        ThemeSourceFromBuilderAndServiceProvider builderMethod, IThemeSource? fallback)
+    {
+        IServiceProvider serviceProvider = host.Services;
+        
+        ThemeContainer result = await ThemeContainer.CreateFromThemeSource(
+                await TryWithFallback(() => builderMethod(new ThemeSourceBuilder(), serviceProvider), fallback));
+        
+        serviceProvider.GetRequiredService<ThemeContainer>().UpdateTheme(result.Theme);
 
-                async Task<ThemeContainer> ContainerMethod()
-                {
-                    return await ThemeContainer.CreateFromThemeSource(
-                        await TryWithFallback(() => builderMethod(builder, serviceProvider), fallback));
-                }
-            }));
-        }
+        CheckSetFail = false;
     }
 }

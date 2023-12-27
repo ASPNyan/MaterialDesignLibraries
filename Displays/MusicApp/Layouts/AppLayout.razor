@@ -1,17 +1,21 @@
-﻿@using MaterialDesign.Icons.Common.Components
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/AppLayout.css">
 </DynamicHeadContent>
 
+<MdIconConfig Fill="false" Weight="300" Grade="0" OpticalSize="40" LineStyle="@MdIconLineStyle.Sharp">
 <div id="GridLayout">
-    <div id="Top"></div>
-    <div id="Left"></div>
-    <main></main>
-    <div id="Bottom"></div>
+    <div id="Top"><DynamicComponentOutlet Id="@TopId"/></div>
+    <div id="Left"><DynamicComponentOutlet Id="@LeftId"/></div>
+    <main>@Body</main>
+    <div id="Bottom"><DynamicComponentOutlet Id="@BottomId"/></div>
 </div>
+</MdIconConfig>
 
 @code {
-    
+    public const string TopId = "TopComponentId";
+    public const string LeftId = "LeftComponentId";
+    public const string BottomId = "BottomComponentId";
 }

@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using MaterialDesign.Icons.Common.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MaterialDesign.Web.Components;
 
 namespace MaterialDesign.Icons;
 
