@@ -22,10 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="CSS\" />
+      <ProjectReference Include="..\MaterialDesign.Web\MaterialDesign.Web.csproj" />
     </ItemGroup>
 
 </Project>

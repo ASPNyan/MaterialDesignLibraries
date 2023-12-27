@@ -2,6 +2,7 @@ using MaterialDesign.Color.Colorspaces;
 using MaterialDesign.Icons;
 using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
+using MaterialDesign.Theming.Web.Setup;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace MusicApp;
@@ -21,18 +22,11 @@ public static class Program
                 AlbumCoverUrl = "https://raw.githubusercontent.com/julien-gargot/images-placeholder/master/placeholder-square.png"
             }; })
             .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
-            .AddMaterialThemeService();
+            .AddMaterialThemeService(new Theme(new HCTA(177.1, 62.585, 89.691)));
         builder.RootComponents.Add<App>("body");
+        ThemeSetup.Setup();
 
         var host = builder.Build();
-        await host.SetMaterialThemeService((themeBuilder, services) =>
-        {
-            var info = services.GetRequiredService<SongInfo>();
-
-            themeBuilder.UsingImage(imageBuilder => imageBuilder.WithStream(streamSource =>
-                streamSource.FromStreamMethod(() => new HttpClient().GetStreamAsync(info.AlbumCoverUrl))));
-            return Task.FromResult(themeBuilder.Build());
-        }, new Theme(new HCTA(177.1, 62.585, 89.691)));
         await host.RunAsync();
     }
 }

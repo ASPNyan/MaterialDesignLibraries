@@ -1,0 +1,83 @@
+﻿@using MaterialDesign.Color.Colorspaces;
+
+@if (Theme is null)
+{
+    <BoundTheme @bind-Theme="@Theme"></BoundTheme>
+}
+
+@{
+    if (Theme is null) throw new Exception("Theme is null after Bound Theme");
+}
+
+<style>
+    :root {
+        --md-sys-color-primary-light: @RGBA(Theme.Primary);
+        --md-sys-color-on-primary-light: @RGBA(Theme.OnPrimary);
+        --md-sys-color-primary-container-light: @RGBA(Theme.PrimaryContainer);
+        --md-sys-color-on-primary-container-light: @RGBA(Theme.OnPrimaryContainer);
+        --md-sys-color-secondary-light: @RGBA(Theme.Secondary);
+        --md-sys-color-on-secondary-light: @RGBA(Theme.OnSecondary);
+        --md-sys-color-secondary-container-light: @RGBA(Theme.SecondaryContainer);
+        --md-sys-color-on-secondary-container-light: @RGBA(Theme.OnSecondaryContainer);
+        --md-sys-color-tertiary-light: @RGBA(Theme.Tertiary);
+        --md-sys-color-on-tertiary-light: @RGBA(Theme.OnTertiary);
+        --md-sys-color-tertiary-container-light: @RGBA(Theme.TertiaryContainer);
+        --md-sys-color-on-tertiary-container-light: @RGBA(Theme.OnTertiaryContainer);
+        --md-sys-color-error-light: @RGBA(Theme.Error);
+        --md-sys-color-error-container-light: @RGBA(Theme.ErrorContainer);
+        --md-sys-color-on-error-light: @RGBA(Theme.OnError);
+        --md-sys-color-on-error-container-light: @RGBA(Theme.OnErrorContainer);
+        --md-sys-color-background-light: @RGBA(Theme.Background);
+        --md-sys-color-on-background-light: @RGBA(Theme.OnBackground);
+        --md-sys-color-surface-light: @RGBA(Theme.Surface);
+        --md-sys-color-on-surface-light: @RGBA(Theme.OnSurface);
+        --md-sys-color-surface-variant-light: @RGBA(Theme.SurfaceVariant);
+        --md-sys-color-on-surface-variant-light: @RGBA(Theme.OnSurfaceVariant);
+        --md-sys-color-outline-light: @RGBA(Theme.Outline);
+        --md-sys-color-inverse-on-surface-light: @RGBA(Theme.OnSurfaceInverse);
+        --md-sys-color-inverse-surface-light: @RGBA(Theme.SurfaceInverse);
+        --md-sys-color-inverse-primary-light: @RGBA(new HCTA(Theme.Primary.H, Theme.Primary.C, 80));
+        --md-sys-color-shadow-light: @(new RGBA(0, 0, 0));
+        --md-sys-color-surface-tint-light: @RGBA(Theme.SurfaceVariant);
+        --md-sys-color-outline-variant-light: @RGBA(Theme.OutlineVariant);
+        --md-sys-color-scrim-light: @(new RGBA(0, 0, 0));
+        --md-sys-color-primary-dark: @RGBA(Theme.Primary);
+        --md-sys-color-on-primary-dark: @RGBA(Theme.OnPrimary);
+        --md-sys-color-primary-container-dark: @RGBA(Theme.PrimaryContainer);
+        --md-sys-color-on-primary-container-dark: @RGBA(Theme.OnPrimaryContainer);
+        --md-sys-color-secondary-dark: @RGBA(Theme.Secondary);
+        --md-sys-color-on-secondary-dark: @RGBA(Theme.OnSecondary);
+        --md-sys-color-secondary-container-dark: @RGBA(Theme.SecondaryContainer);
+        --md-sys-color-on-secondary-container-dark: @RGBA(Theme.OnSecondaryContainer);
+        --md-sys-color-tertiary-dark: @RGBA(Theme.Tertiary);
+        --md-sys-color-on-tertiary-dark: @RGBA(Theme.OnTertiary);
+        --md-sys-color-tertiary-container-dark: @RGBA(Theme.TertiaryContainer);
+        --md-sys-color-on-tertiary-container-dark: @RGBA(Theme.OnTertiaryContainer);
+        --md-sys-color-error-dark: @RGBA(Theme.Error);
+        --md-sys-color-error-container-dark: @RGBA(Theme.ErrorContainer);
+        --md-sys-color-on-error-dark: @RGBA(Theme.OnError);
+        --md-sys-color-on-error-container-dark: @RGBA(Theme.OnErrorContainer);
+        --md-sys-color-background-dark: @RGBA(Theme.Background);
+        --md-sys-color-on-background-dark: @RGBA(Theme.OnBackground);
+        --md-sys-color-surface-dark: @RGBA(Theme.Surface);
+        --md-sys-color-on-surface-dark: @RGBA(Theme.OnSurface);
+        --md-sys-color-surface-variant-dark: @RGBA(Theme.SurfaceVariant);
+        --md-sys-color-on-surface-variant-dark: @RGBA(Theme.OnSurfaceVariant);
+        --md-sys-color-outline-dark: @RGBA(Theme.Outline);
+        --md-sys-color-inverse-on-surface-dark: @RGBA(Theme.OnSurfaceInverse);
+        --md-sys-color-inverse-surface-dark: @RGBA(Theme.SurfaceInverse);
+        --md-sys-color-inverse-primary-dark: @RGBA(new HCTA(Theme.Primary.H, Theme.Primary.C, 80));
+        --md-sys-color-shadow-dark: @(new RGBA(0, 0, 0));
+        --md-sys-color-surface-tint-dark: @RGBA(Theme.SurfaceVariant);
+        --md-sys-color-outline-variant-dark: @RGBA(Theme.OutlineVariant);
+        --md-sys-color-scrim-dark: @(new RGBA(0, 0, 0));
+    }
+</style>
+
+@code
+{
+    [Parameter]
+    public Theme? Theme { get; set; }
+    
+    private static RGBA RGBA(HCTA color) => color.ToRGBA();
+}

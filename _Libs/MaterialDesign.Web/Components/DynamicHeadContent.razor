@@ -21,7 +21,6 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        
         if (!DynamicHeadOutlet.OutletExists())
         {
             throw new ComponentException($"No {nameof(DynamicHeadOutlet)} components exist. If this seems wrong, " +
@@ -29,6 +28,8 @@
                                          "the body of the page (usually labelled `App`) is added after " +
                                          "calling `AddDynamicMaterialIcons()`.");
         }
+
+        OnChange?.Invoke();
     }
 
 }

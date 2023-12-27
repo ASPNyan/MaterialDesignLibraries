@@ -26,22 +26,24 @@
     }
 
     public static bool OutletExists() => _outlets > 0;
+
+    private async void OnChange() => await InvokeAsync(StateHasChanged);
     
     protected override void OnInitialized()
     {
         _outlets++;
         _disposed = false;
 
-        DynamicHeadContent.OnChange += StateHasChanged;
-        OnExtraSourcesUpdate += StateHasChanged;
+        DynamicHeadContent.OnChange += OnChange;
+        OnExtraSourcesUpdate += OnChange;
     }
 
     public void Dispose()
     {
         if (_disposed) return;
 
-        DynamicHeadContent.OnChange -= StateHasChanged;
-        OnExtraSourcesUpdate -= StateHasChanged;
+        DynamicHeadContent.OnChange -= OnChange;
+        OnExtraSourcesUpdate -= OnChange;
         _outlets--;
         _disposed = true;
     }
