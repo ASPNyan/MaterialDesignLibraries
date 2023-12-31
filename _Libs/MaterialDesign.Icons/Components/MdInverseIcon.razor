@@ -1,0 +1,91 @@
+﻿@using MaterialDesign.Web.Components
+@using System.Text.Json
+@using MaterialDesign.Web.Exceptions
+@using Microsoft.JSInterop
+@inherits MdIconConfigComponent
+@inject IJSRuntime Js
+
+@if (!_scriptAdded)
+{
+    _scriptAdded = true;
+    
+    <DynamicHeadContent>
+        <script>
+            window.SwapElementColors = function (elementId) {
+                let element = document.getElementById(elementId);
+                let color = element.style.color;
+                element.style.color = element.style.backgroundColor;
+                element.style.backgroundColor = color;
+            }
+        </script>
+    </DynamicHeadContent>
+}
+
+<span id="@Guid @id" class="@(@class) material-symbols-@LineStyleString" style="@StyleRuleString @style"
+      @attributes="@UnmatchedParameters">
+    @GetIcon
+</span>
+
+@code {
+    private static bool _scriptAdded;
+    
+    [Parameter, EditorRequired]
+    public string? Icon { get; set; }
+
+    private string GetIcon => Icon!.Trim().ToLowerInvariant().Replace(' ', '_'); // "More Horiz" => "more_horiz"
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? UnmatchedParameters { get; set; }
+    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    // ReSharper disable InconsistentNaming | Give parameter catches in order to not override icon settings
+    [Parameter] public string? @class { get; set; }
+    [Parameter] public string? style { get; set; }
+    [Parameter] public string? id { get; set; }
+    // ReSharper restore InconsistentNaming
+
+    [Parameter]
+    public Action<Action>? SubscribeMethodToColorUpdateEvent { get; set; }
+
+    private string LineStyleString
+        => (LineStyle ?? CascadingIconConfig?.LineStyle ?? MdIconLineStyle.Outlined).ToString().ToLowerInvariant();
+    
+    private Guid Guid { get; } = Guid.NewGuid();
+    
+    private string? Color { get; set; }
+    private string? Background { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Icon is null) throw new ParameterException(nameof(Icon), 
+            $"Icons must have a valid name provided to the `{nameof(Icon)}` parameter");
+
+        if (id is not null) throw new ComponentException("Components cannot have more than one id, " +
+                                                         "and MdInverseIcon sets an id in its implementation");
+        
+        if (ChildContent is not null) throw VoidElementException.ChildContentIsDisallowed<MdIcon>();
+        
+        SubscribeMethodToColorUpdateEvent?.Invoke(UpdateIconColorsVoid);
+    }
+
+    private bool _hasRendered;
+    private async Task UpdateIconColors()
+    {
+        if (!_hasRendered) return;
+        await Js.InvokeVoidAsync("window.SwapElementColors", Guid);
+    }
+
+    private async void UpdateIconColorsVoid() => await UpdateIconColors();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _hasRendered = true;
+            await UpdateIconColors();
+        }
+    }
+
+}

@@ -1,4 +1,5 @@
-﻿<BoundTheme @bind-Theme="@Theme" @Overwrite="@true"/>
+﻿@using MaterialDesign.Web.Exceptions
+<BoundTheme @bind-Theme="@Theme" @Overwrite="@true"/>
 
 @code {
     private Theme? _theme;
@@ -11,5 +12,13 @@
             return _theme;
         }
         set => _theme = value;
+    }
+        
+    [Parameter] 
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (ChildContent is not null) throw VoidElementException.ChildContentIsDisallowed<DarkTheme>();
     }
 }

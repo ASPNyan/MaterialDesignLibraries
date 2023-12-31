@@ -7,11 +7,11 @@
     border-radius: 0.5vw;
 }
 
-#ThemeSwitch {
+.ThemeSwitch {
     position: absolute;
     width: 60px;
     height: 60px;
-    font-size: 60px;
+    font-size: 60px !important;
     top: 5px;
     right: 5px;
     user-select: none;

@@ -12,7 +12,8 @@
 <PageTitle>Home</PageTitle>
 
 <DynamicComponentContent OutletId="@AppLayout.TopId">
-    <MdIcon Icon="@GetIconString()" id="ThemeSwitch" @onclick="@SwitchTheme"/>
+    <MdInverseIcon Icon="Palette" class="ThemeSwitch" @onclick="@SwitchTheme"
+                   SubscribeMethodToColorUpdateEvent="@(m => ThemeContainer.OnThemeUpdate += m)"/>
 </DynamicComponentContent>
 <DynamicComponentContent OutletId="@AppLayout.LeftId">
     @if (SongPlaying)
@@ -29,8 +30,6 @@
 @code {
     private SongInfo SongInfo => SongInfoContainer.SongInfo;
     private bool SongPlaying => SongInfo != SongInfo.Empty;
-    
-    private string GetIconString() => (ThemeContainer.Theme.IsDarkScheme ? "Dark" : "Light") + " Mode";
 
     private void SwitchTheme()
     {

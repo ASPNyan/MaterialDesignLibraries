@@ -23,7 +23,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
         ThemeContainer? container = ServiceProvider.GetService<ThemeContainer>();
         if (container is not null) container.OnThemeUpdate += OnThemeUpdate;
