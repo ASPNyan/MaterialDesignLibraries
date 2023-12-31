@@ -1,8 +1,9 @@
-﻿@using MusicApp.Layouts
+﻿@using MusicApp.Components.Layout
 @using MaterialDesign.Theming.Injection
 @page "/"
-@inject SongInfo SongInfo
+@inject SongInfoContainer SongInfoContainer
 @inject ThemeContainer ThemeContainer
+@inject IWebHostEnvironment Environment
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Home.css">
@@ -19,13 +20,14 @@
         <img src="@SongInfo.AlbumCoverUrl" alt="@SongInfo.Album" id="PlayingAlbumCover"/>
     }
 </DynamicComponentContent>
-<DynamicComponentContent OutletId="@AppLayout.BottomId">
-    <p>bottom</p>
-</DynamicComponentContent>
 
 <p>main</p>
+<div>
+    <div class="primary on-primary-text" @onclick="@ShuffleCover">Shuffle</div>
+</div>
 
 @code {
+    private SongInfo SongInfo => SongInfoContainer.SongInfo;
     private bool SongPlaying => SongInfo != SongInfo.Empty;
     
     private string GetIconString() => (ThemeContainer.Theme.IsDarkScheme ? "Dark" : "Light") + " Mode";
@@ -41,6 +43,29 @@
     protected override void OnInitialized()
     {
         ThemeContainer.OnThemeUpdate += async () => await InvokeAsync(StateHasChanged);
+        // TODO: Remove this placeholder when it is no longer required
+        SongInfoContainer.Update(new SongInfo
+        {
+            Name = "Song Name",
+            Album = "Album Name",
+            Author = "Author Name",
+            AlbumCoverUrl = string.Empty
+        });
+        ShuffleCover();
+    }
+
+    private void ShuffleCover()
+    {
+        string currentCover = SongInfo.AlbumCoverUrl;
+        string[] files = Directory.GetFiles(Path.Combine(Environment.WebRootPath, "img"));
+        string newCover;
+        do
+        {
+            new Random().Shuffle(files);
+            newCover = files[0].Remove(0, files[0].LastIndexOf("img", StringComparison.Ordinal));
+        } while (currentCover == newCover);
+
+        SongInfoContainer.Update(SongInfo with { AlbumCoverUrl = newCover });
     }
 
 }

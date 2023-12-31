@@ -38,7 +38,7 @@
         ArgumentException.ThrowIfNullOrWhiteSpace(Id);
         DynamicComponentContent.OnChangeWithOutletId += OnChange;
         ExistingOutlets.Add(Id);
-        ExtraSources?.AddRange(StaticExtraSources[Id]);
+        if (StaticExtraSources.TryGetValue(Id, out var list)) ExtraSources?.AddRange(list);
     }
 
     private async void OnChange(string id)
@@ -48,7 +48,8 @@
         {
             _renderContent = builder =>
             {
-                List<RenderFragment> fragments = DynamicComponentContent.GetContentWithOutletId(Id);
+                List<RenderFragment>? fragments = DynamicComponentContent.GetContentWithOutletId(Id);
+                if (fragments is null) return;
                 for (int i = 0; i < fragments.Count; i++) builder.AddContent(i, fragments[i]);
             };
             

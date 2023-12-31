@@ -1,0 +1,52 @@
+﻿@using MaterialDesign.Theming.Injection
+@using MaterialDesign.Color.Colorspaces
+@using MaterialDesign.Color.Palettes
+@using MaterialDesign.Theming
+@inject SongInfoContainer SongInfoContainer
+@inject HttpClient HttpClient
+@inject ThemeContainer ThemeContainer
+@inject IWebHostEnvironment Environment
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/PlayingSongInfo.css">
+</DynamicHeadContent>
+
+@if (SongInfo != SongInfo.Empty)
+{
+    <h4 class="primary-fixed-text">@SongInfo.Name</h4>
+    <h5>@SongInfo.Album</h5>
+    <h5>@SongInfo.Author</h5>
+}
+
+@code {
+    private SongInfo SongInfo => SongInfoContainer.SongInfo;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await OnInfoUpdate();
+        SongInfoContainer.OnInfoUpdate += OnInfoUpdateVoid;
+    }
+    
+    private async Task OnInfoUpdate()
+    {
+        HCTA color;
+        if (SongInfo != SongInfo.Empty)
+        {
+            bool isRelativeUrl = File.Exists(Path.Combine(Environment.WebRootPath, SongInfo.AlbumCoverUrl));
+            await using Stream fileGetter = await (isRelativeUrl
+                ? Task.FromResult(new FileStream(Path.Combine(Environment.WebRootPath, SongInfo.AlbumCoverUrl), FileMode.Open) as Stream)
+                : HttpClient.GetStreamAsync(SongInfo.AlbumCoverUrl, CancellationToken.None));
+            
+            List<CorePalette> colorPalettes = await MaterialDesign.Color.Image.FromImage.PalettesFromImageStream(fileGetter);
+            color = colorPalettes.First().Origin;
+        }
+        else color = Program.DefaultThemeSource;
+
+        Theme theme = new(color);
+        ThemeContainer.UpdateTheme(theme);
+    }
+
+    private async void OnInfoUpdateVoid() => await OnInfoUpdate();
+
+}

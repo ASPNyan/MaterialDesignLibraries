@@ -8,7 +8,11 @@
 
     public static event Action<string>? OnChangeWithOutletId;
 
-    public static List<RenderFragment> GetContentWithOutletId(string id) => ContentPerId[id];
+    public static List<RenderFragment>? GetContentWithOutletId(string id)
+    {
+        ContentPerId.TryGetValue(id, out List<RenderFragment>? fragments);
+        return fragments;
+    }
 
     [Parameter, EditorRequired] 
     public string OutletId { get; set; } = null!;

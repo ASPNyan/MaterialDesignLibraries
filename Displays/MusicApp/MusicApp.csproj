@@ -1,22 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>MusicApp</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all"/>
+        <ProjectReference Include="..\..\_Libs\MaterialDesign.Color.Extensions\MaterialDesign.Color.Extensions.csproj" />
+        <ProjectReference Include="..\..\_Libs\MaterialDesign.Color\MaterialDesign.Color.csproj" />
+        <ProjectReference Include="..\..\_Libs\MaterialDesign.Icons\MaterialDesign.Icons.csproj" />
+        <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming.Web\MaterialDesign.Theming.Web.csproj" />
+        <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Color.Extensions\MaterialDesign.Color.Extensions.csproj" />
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Color\MaterialDesign.Color.csproj" />
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Icons.WebAssembly\MaterialDesign.Icons.WebAssembly.csproj" />
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming.Web\MaterialDesign.Theming.Web.csproj" />
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
-    </ItemGroup>
-
 </Project>

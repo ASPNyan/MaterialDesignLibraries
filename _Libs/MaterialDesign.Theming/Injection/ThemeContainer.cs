@@ -15,7 +15,7 @@ public class ThemeContainer
         if (ServiceCollectionExtensions.CheckSetFail)
             throw new Exception("ThemeContainer cannot be used when SetMaterialThemeService was not called.");
     }
-
+    
     private ThemeContainer(Theme theme)
     {
         _theme = theme;

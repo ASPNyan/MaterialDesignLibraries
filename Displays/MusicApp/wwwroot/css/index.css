@@ -4,17 +4,6 @@ html, body {
     font-family: "Open Sans", system-ui;
 }
 
-#LoadingProgress {
-    position: absolute;
-    width: 30vmin;
-    height: 30vmin;
-    top: calc(50vh - 15vmin);
-    left: calc(50vw - 15vmin);
-    rotate: -90deg;
-}
-
-#LoadingProgress #ProgressCircle {
-    --StrokeLength: calc(2 * 3.1415 * 40); /* 2*pi*r */
-    stroke-dasharray: calc(var(--StrokeLength) * var(--blazor-load-percentage, 0%) / 100), 1000;
-    stroke: color-mix(in srgb, #090 var(--blazor-load-percentage, 0%), #e94a37 calc(100% - var(--blazor-load-percentage, 0%)));
+body * {
+    transition: background-color 200ms ease-in, color 200ms ease-in;
 }

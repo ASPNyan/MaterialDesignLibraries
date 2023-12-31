@@ -23,5 +23,5 @@ public interface IDynamicIdComponentContent
     protected string OutletId { get; }
 
     public static abstract event Action<string> OnChangeWithOutletId;
-    public static abstract List<RenderFragment> GetContentWithOutletId(string id);
+    public static abstract List<RenderFragment>? GetContentWithOutletId(string id);
 }

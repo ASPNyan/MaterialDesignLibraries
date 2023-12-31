@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MaterialDesign.Web.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace MaterialDesign.Icons;
 
@@ -13,7 +13,13 @@ public static class MaterialIconConfigExtensions
         DynamicHeadOutlet.AddComponentSource<MdConfigurationHeadContent>();
         return serviceCollection;
     }
+    
+    public static IServiceCollection AddDynamicMaterialIconsToWebApplication(this IServiceCollection services) => 
+        services.AddMaterialConfig().AddSingleton<MdIconConfiguration>(_ => MdIconConfiguration.CreateDynamic());
 
+    public static IServiceCollection AddStaticMaterialIconsToWebApplication(this IServiceCollection services) => 
+        services.AddMaterialConfig().AddSingleton<MdIconConfiguration>(_ => MdIconConfiguration.CreateStatic());
+    
     private static IServiceCollection AddDynamicHeadContentOutlet(this WebAssemblyHostBuilder builder)
     {
         _ = builder.RootComponents.Any(mapping => mapping.Selector is "head::after" 
@@ -29,10 +35,10 @@ public static class MaterialIconConfigExtensions
     }
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DynamicHeadOutlet))]
-    public static IServiceCollection AddStaticMaterialIcons(this WebAssemblyHostBuilder builder) => 
+    public static IServiceCollection AddStaticMaterialIconsToWebAssembly(this WebAssemblyHostBuilder builder) => 
         builder.AddDynamicHeadContentOutlet().AddSingleton<MdIconConfiguration>(_ => MdIconConfiguration.CreateStatic());
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DynamicHeadOutlet))]
-    public static IServiceCollection AddDynamicMaterialIcons(this WebAssemblyHostBuilder builder) => 
+    public static IServiceCollection AddDynamicMaterialIconsToWebAssembly(this WebAssemblyHostBuilder builder) => 
         builder.AddDynamicHeadContentOutlet().AddSingleton<MdIconConfiguration>(_ => MdIconConfiguration.CreateDynamic());
 }
