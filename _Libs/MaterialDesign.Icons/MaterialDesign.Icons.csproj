@@ -30,4 +30,8 @@
       <ProjectReference Include="..\MaterialDesign.Web\MaterialDesign.Web.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="wwwroot\js\inverseIcon.js" />
+    </ItemGroup>
+
 </Project>

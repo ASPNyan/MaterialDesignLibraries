@@ -15,7 +15,7 @@ internal static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+        // Add services to the container.
         builder.Services
             .AddDynamicMaterialIconsToWebApplication()
             .AddMaterialThemeService(new Theme(DefaultThemeSource))
@@ -27,8 +27,8 @@ internal static class Program
         ThemeSetup.Setup();
 
         var app = builder.Build();
-
-// Configure the HTTP request pipeline.
+        
+        // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Error", createScopeForErrors: true);

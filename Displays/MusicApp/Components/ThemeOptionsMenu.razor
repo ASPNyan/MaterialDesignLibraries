@@ -1,0 +1,47 @@
+@using MaterialDesign.Theming.Injection
+@using MudBlazor
+@using MaterialDesign.Theming.Web
+@using MaterialDesign.Color.Colorspaces
+@inject ThemeContainer ThemeContainer
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/ThemeOptionsMenu.css">
+</DynamicHeadContent>
+
+<div class="ThemeMenu surface">
+    @* TODO: Implement remaining values, fix slider thumbs. *@
+    <HCTSelector Hue="@Hcta.H" Chroma="@Hcta.C" Tone="@Hcta.T" @bind-OnHCTUpdate="@OnHCTUpdate">
+        <HSlider>
+            <MudSlider T="double" Min="0" Max="359" Value="@Hcta.H" ValueChanged="@OnHueUpdate" Class="HueSlider"></MudSlider>
+        </HSlider>
+        <CSlider>
+            <MudSlider T="double" Min="0" Max="150" Value="@Hcta.C" ValueChanged="OnChromaUpdate" Class="ChromaSlider"></MudSlider>
+        </CSlider>
+        <TSlider>
+            <MudSlider T="double" Min="0" Max="100" Value="@Hcta.T" ValueChanged="OnToneUpdate" Class="ToneSlider"></MudSlider>
+        </TSlider>
+    </HCTSelector>
+</div>
+
+@code {
+    private HCTA Hcta { get; set; } = new(0, 0, 0);
+    private Func<Task>? OnHCTUpdate { get; set; }
+
+    private async Task OnHueUpdate(double tone)
+    {
+        Hcta.H = tone;
+        if (OnHCTUpdate is not null) await OnHCTUpdate();
+    }
+    
+    private async Task OnChromaUpdate(double chroma)
+    {
+        Hcta.C = chroma;
+        if (OnHCTUpdate is not null) await OnHCTUpdate();
+    }
+    
+    private async Task OnToneUpdate(double tone)
+    {
+        Hcta.T = tone;
+        if (OnHCTUpdate is not null) await OnHCTUpdate();
+    }
+}

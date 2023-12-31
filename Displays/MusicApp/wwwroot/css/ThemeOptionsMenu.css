@@ -1,0 +1,47 @@
+.ThemeMenu {
+    position: absolute;
+    right: 15px;
+    top: 12vh;
+    grid-template-areas: "SchemeText    SchemeSwitch"
+                         "DynamicText   DynamicSwitch"
+                         "HueDisplay    HueDisplay"
+                         "HueSlider     HueSlider"
+                         "ChromaDisplay ChromaDisplay"
+                         "ChromaSlider  ChromaSlider"
+                         "ToneDisplay   ToneDisplay"
+                         "ToneSlider    ToneSlider"
+}
+
+.DisplayWindow {
+    height: 1vh;
+}
+
+.HueSlider {
+    grid-column: HueSlider;
+    grid-row: HueSlider;
+}
+
+.DisplayWindowHue {
+    grid-column: HueDisplay;
+    grid-row: HueDisplay;
+}
+
+.ChromaSlider {
+    grid-column: ChromaSlider;
+    grid-row: ChromaSlider;
+}
+
+.DisplayWindowChroma {
+    grid-column: ChromaDisplay;
+    grid-row: ChromaDisplay;
+}
+
+.ToneSlider {
+    grid-column: ToneSlider;
+    grid-row: ToneSlider;
+}
+
+.DisplayWindowTone {
+    grid-column: ToneDisplay;
+    grid-row: ToneDisplay;
+}

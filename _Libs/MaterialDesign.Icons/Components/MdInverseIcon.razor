@@ -5,30 +5,12 @@
 @inherits MdIconConfigComponent
 @inject IJSRuntime Js
 
-@if (!_scriptAdded)
-{
-    _scriptAdded = true;
-    
-    <DynamicHeadContent>
-        <script>
-            window.SwapElementColors = function (elementId) {
-                let element = document.getElementById(elementId);
-                let color = element.style.color;
-                element.style.color = element.style.backgroundColor;
-                element.style.backgroundColor = color;
-            }
-        </script>
-    </DynamicHeadContent>
-}
-
-<span id="@Guid @id" class="@(@class) material-symbols-@LineStyleString" style="@StyleRuleString @style"
+<span id="@_guid" class="@(@class) material-symbols-@LineStyleString" style="@StyleRuleString @style"
       @attributes="@UnmatchedParameters">
     @GetIcon
 </span>
 
 @code {
-    private static bool _scriptAdded;
-    
     [Parameter, EditorRequired]
     public string? Icon { get; set; }
 
@@ -52,7 +34,7 @@
     private string LineStyleString
         => (LineStyle ?? CascadingIconConfig?.LineStyle ?? MdIconLineStyle.Outlined).ToString().ToLowerInvariant();
     
-    private Guid Guid { get; } = Guid.NewGuid();
+    private Guid _guid = Guid.NewGuid();
     
     private string? Color { get; set; }
     private string? Background { get; set; }
@@ -71,10 +53,13 @@
     }
 
     private bool _hasRendered;
+    private static IJSObjectReference? _module;
     private async Task UpdateIconColors()
     {
         if (!_hasRendered) return;
-        await Js.InvokeVoidAsync("window.SwapElementColors", Guid);
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", 
+            Path.Combine(Helper.ContentPathRoot, "js/inverseIcon.js"));
+        await _module.InvokeVoidAsync("SwapElementColors", _guid.ToString());
     }
 
     private async void UpdateIconColorsVoid() => await UpdateIconColors();
@@ -87,5 +72,4 @@
             await UpdateIconColors();
         }
     }
-
 }

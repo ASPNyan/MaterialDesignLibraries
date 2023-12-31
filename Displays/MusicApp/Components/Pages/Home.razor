@@ -12,8 +12,12 @@
 <PageTitle>Home</PageTitle>
 
 <DynamicComponentContent OutletId="@AppLayout.TopId">
-    <MdInverseIcon Icon="Palette" class="ThemeSwitch" @onclick="@SwitchTheme"
+    <MdInverseIcon Icon="Palette" class="ThemeSwitch" @onclick="@ToggleThemeMenu"
                    SubscribeMethodToColorUpdateEvent="@(m => ThemeContainer.OnThemeUpdate += m)"/>
+    @if (ThemeMenuOpen)
+    {
+        <ThemeOptionsMenu/>
+    }
 </DynamicComponentContent>
 <DynamicComponentContent OutletId="@AppLayout.LeftId">
     @if (SongPlaying)
@@ -30,13 +34,12 @@
 @code {
     private SongInfo SongInfo => SongInfoContainer.SongInfo;
     private bool SongPlaying => SongInfo != SongInfo.Empty;
+    
+    private bool ThemeMenuOpen { get; set; }
 
-    private void SwitchTheme()
+    private void ToggleThemeMenu()
     {
-        if (ThemeContainer.Theme.IsDarkScheme) ThemeContainer.Theme.SetLight();
-        else ThemeContainer.Theme.SetDark();
-
-        StateHasChanged();
+        ThemeMenuOpen = !ThemeMenuOpen;
     }
 
     protected override void OnInitialized()

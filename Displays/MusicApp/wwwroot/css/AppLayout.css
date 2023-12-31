@@ -9,7 +9,7 @@
                          "left main"
                          "left bottom";
     grid-template-columns: 10vw 90vw;
-    grid-template-rows: 10vh 80vh 10vh;
+    grid-template-rows: 10vh 1fr 5.5em;
 }
 
 #Top {
