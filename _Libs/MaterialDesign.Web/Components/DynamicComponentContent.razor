@@ -1,19 +1,10 @@
-﻿@implements IDynamicIdComponentContent
-@using MaterialDesign.Web.Exceptions
+﻿@using MaterialDesign.Web.Exceptions
+@using MaterialDesign.Web.Services
 @implements IDisposable
+@inject DynamicComponentStorage Storage
 
 @code
 {
-    private static Dictionary<string, List<RenderFragment>> ContentPerId { get; } = [];
-
-    public static event Action<string>? OnChangeWithOutletId;
-
-    public static List<RenderFragment>? GetContentWithOutletId(string id)
-    {
-        ContentPerId.TryGetValue(id, out List<RenderFragment>? fragments);
-        return fragments;
-    }
-
     [Parameter, EditorRequired] 
     public string OutletId { get; set; } = null!;
     
@@ -33,18 +24,16 @@
             throw new ComponentException($"Outlet for outlet id `{OutletId}` does not exist. If this is a " +
                                          $"false positive, set the `AssureOutletExists` attribute to true.");
         }
-        
-        if (ContentPerId.TryGetValue(OutletId, out var list)) list.Add(ChildContent);
-        else ContentPerId[OutletId] = [ChildContent];
-        OnChangeWithOutletId?.Invoke(OutletId);
-    }
 
-    protected override void OnAfterRender(bool firstRender) => OnChangeWithOutletId?.Invoke(OutletId);
+        if (ChildContent is not null)
+        {
+            Storage.UpdateContentAtId(OutletId, ChildContent);
+        }
+    }
 
     public void Dispose()
     {
         if (string.IsNullOrWhiteSpace(OutletId) || ChildContent is null) return;
-        ContentPerId[OutletId].Remove(ChildContent);
-        OnChangeWithOutletId?.Invoke(OutletId);
+        Storage.RemoveFromId(OutletId, ChildContent);
     }
 }

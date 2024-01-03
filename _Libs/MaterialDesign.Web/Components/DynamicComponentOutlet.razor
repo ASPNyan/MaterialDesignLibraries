@@ -1,5 +1,6 @@
-﻿@implements IDynamicIdComponentOutlet
+﻿@using MaterialDesign.Web.Services
 @implements IDisposable
+@inject DynamicComponentStorage Storage
 
 @_renderContent
 
@@ -36,7 +37,7 @@
     protected override void OnInitialized()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(Id);
-        DynamicComponentContent.OnChangeWithOutletId += OnChange;
+        Storage.OnUpdateAtId += OnChange;
         ExistingOutlets.Add(Id);
         if (StaticExtraSources.TryGetValue(Id, out var list)) ExtraSources?.AddRange(list);
     }
@@ -48,8 +49,8 @@
         {
             _renderContent = builder =>
             {
-                List<RenderFragment>? fragments = DynamicComponentContent.GetContentWithOutletId(Id);
-                if (fragments is null) return;
+                bool gotContent = Storage.GetContentFromId(Id, out var fragments);
+                if (!gotContent || fragments is null) return;
                 for (int i = 0; i < fragments.Count; i++) builder.AddContent(i, fragments[i]);
             };
             
@@ -60,7 +61,7 @@
     public void Dispose()
     {
         ArgumentException.ThrowIfNullOrEmpty(Id);
-        DynamicComponentContent.OnChangeWithOutletId -= OnChange;
+        Storage.OnUpdateAtId -= OnChange;
         ExistingOutlets.Remove(Id);
     }
 }

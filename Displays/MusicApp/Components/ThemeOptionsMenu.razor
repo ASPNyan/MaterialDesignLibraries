@@ -10,15 +10,18 @@
 
 <div class="ThemeMenu surface">
     @* TODO: Implement remaining values, fix slider thumbs. *@
-    <HCTSelector Hue="@Hcta.H" Chroma="@Hcta.C" Tone="@Hcta.T" @bind-OnHCTUpdate="@OnHCTUpdate">
+    <HCTSelector Hue="@Hcta.H" Chroma="@Hcta.C" Tone="@Hcta.T" @bind-OnHCTUpdate="@OnHCTUpdate" UseParentDiv="false">
         <HSlider>
-            <MudSlider T="double" Min="0" Max="359" Value="@Hcta.H" ValueChanged="@OnHueUpdate" Class="HueSlider"></MudSlider>
+            <MudSlider T="double" Min="0" Max="359" Value="@Hcta.H" ValueChanged="@OnHueUpdate" Class="HueSlider Slider"
+                       Style="@($"--Position: {Hcta.H}; --Max: 359")"/>
         </HSlider>
         <CSlider>
-            <MudSlider T="double" Min="0" Max="150" Value="@Hcta.C" ValueChanged="OnChromaUpdate" Class="ChromaSlider"></MudSlider>
+            <MudSlider T="double" Min="0" Max="150" Value="@Hcta.C" ValueChanged="OnChromaUpdate" Class="ChromaSlider Slider"
+                       Style="@($"--Position: {Hcta.C}; --Max: 150")"/>
         </CSlider>
         <TSlider>
-            <MudSlider T="double" Min="0" Max="100" Value="@Hcta.T" ValueChanged="OnToneUpdate" Class="ToneSlider"></MudSlider>
+            <MudSlider T="double" Min="0" Max="100" Value="@Hcta.T" ValueChanged="OnToneUpdate" Class="ToneSlider Slider"
+                       Style="@($"--Position: {Hcta.T}; --Max: 100")"/>
         </TSlider>
     </HCTSelector>
 </div>

@@ -1,7 +1,8 @@
-﻿@implements IDynamicComponentOutlet
+﻿@using MaterialDesign.Web.Services
 @implements IDisposable
+@inject DynamicHeadStorage Storage
 
-@foreach (RenderFragment fragment in DynamicHeadContent.GetContent())
+@foreach (RenderFragment fragment in Storage.GetContent())
 {
     @fragment
 }
@@ -12,7 +13,6 @@
 }
 
 @code {
-    private static int _outlets;
     private bool _disposed;
 
     private static event Action? OnExtraSourcesUpdate;
@@ -25,16 +25,13 @@
         OnExtraSourcesUpdate?.Invoke();
     }
 
-    public static bool OutletExists() => _outlets > 0;
-
     private async void OnChange() => await InvokeAsync(StateHasChanged);
     
     protected override void OnInitialized()
     {
-        _outlets++;
         _disposed = false;
 
-        DynamicHeadContent.OnChange += OnChange;
+        Storage.OnUpdate += OnChange;
         OnExtraSourcesUpdate += OnChange;
     }
 
@@ -42,9 +39,8 @@
     {
         if (_disposed) return;
 
-        DynamicHeadContent.OnChange -= OnChange;
+        Storage.OnUpdate -= OnChange;
         OnExtraSourcesUpdate -= OnChange;
-        _outlets--;
         _disposed = true;
     }
 }

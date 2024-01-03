@@ -3,6 +3,7 @@ using MaterialDesign.Icons;
 using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
 using MaterialDesign.Theming.Web.Setup;
+using MaterialDesign.Web.Services;
 using MusicApp.Components;
 
 namespace MusicApp;
@@ -21,6 +22,8 @@ internal static class Program
             .AddMaterialThemeService(new Theme(DefaultThemeSource))
             .AddScoped<SongInfoContainer>()
             .AddScoped<HttpClient>()
+            .AddDynamicHeadStorage()
+            .AddDynamicComponentStorage()
             .AddRazorComponents()
             .AddInteractiveServerComponents();
         

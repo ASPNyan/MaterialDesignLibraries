@@ -1,7 +1,8 @@
 .ThemeMenu {
     position: absolute;
     right: 15px;
-    top: 12vh;
+    top: 75px;
+    display: grid;
     grid-template-areas: "SchemeText    SchemeSwitch"
                          "DynamicText   DynamicSwitch"
                          "HueDisplay    HueDisplay"
@@ -9,11 +10,17 @@
                          "ChromaDisplay ChromaDisplay"
                          "ChromaSlider  ChromaSlider"
                          "ToneDisplay   ToneDisplay"
-                         "ToneSlider    ToneSlider"
+                         "ToneSlider    ToneSlider";
+    grid-row-gap: 0.5em;
 }
 
 .DisplayWindow {
-    height: 1vh;
+    height: 1em;
+}
+
+.mud-slider-container,
+.mud-slider-container input {
+    height: 1.5em;
 }
 
 .HueSlider {

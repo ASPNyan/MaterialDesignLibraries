@@ -12,8 +12,7 @@
 <PageTitle>Home</PageTitle>
 
 <DynamicComponentContent OutletId="@AppLayout.TopId">
-    <MdInverseIcon Icon="Palette" class="ThemeSwitch" @onclick="@ToggleThemeMenu"
-                   SubscribeMethodToColorUpdateEvent="@(m => ThemeContainer.OnThemeUpdate += m)"/>
+    <MdIcon Icon="Palette" class="ThemeSwitch" @onclick="@ToggleThemeMenu"/>
     @if (ThemeMenuOpen)
     {
         <ThemeOptionsMenu/>

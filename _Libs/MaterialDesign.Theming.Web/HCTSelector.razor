@@ -1,14 +1,26 @@
 ﻿@using MaterialDesign.Color.Colorspaces
 @using Microsoft.AspNetCore.Components.Web
 
-<div class="HCTSelector" id="@SelectorId">
+@if (UseParentDiv)
+{
+    <div class="HCTSelector" id="@SelectorId">
+        <div class="@(DisplayWindowClassName) @(DisplayWindowClassName)Hue" style="background: linear-gradient(to right, @HueString)"></div>
+        @HSlider
+        <div class="@(DisplayWindowClassName) @(DisplayWindowClassName)Chroma" style="background: linear-gradient(to right, @GetChromaString())"></div>
+        @CSlider
+        <div class="@(DisplayWindowClassName) @(DisplayWindowClassName)Tone" style="background: linear-gradient(to right, @ToneString)"></div>
+        @TSlider
+    </div>
+}
+else
+{
     <div class="@(DisplayWindowClassName) @(DisplayWindowClassName)Hue" style="background: linear-gradient(to right, @HueString)"></div>
     @HSlider
     <div class="@(DisplayWindowClassName) @(DisplayWindowClassName)Chroma" style="background: linear-gradient(to right, @GetChromaString())"></div>
     @CSlider
     <div class="@(DisplayWindowClassName) @(DisplayWindowClassName)Tone" style="background: linear-gradient(to right, @ToneString)"></div>
     @TSlider
-</div>
+}
 
 @code {
     private const double Precision = 2;
@@ -73,6 +85,9 @@
 
     [Parameter]
     public string? SelectorId {get; set; }
+
+    [Parameter]
+    public bool UseParentDiv { get; set; } = true;
     
     /// <summary>
     /// The class name provided to the individual color element (H, C, or T) display windows, followed by the

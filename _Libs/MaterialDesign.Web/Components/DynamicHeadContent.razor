@@ -1,41 +1,16 @@
 ﻿@using MaterialDesign.Web.Exceptions
-@implements IDynamicComponentContent
+@using MaterialDesign.Web.Services
+@inject DynamicHeadStorage Storage
 
 @code {
     [Parameter, EditorRequired] 
     public RenderFragment? ChildContent { get; set; }
-
-    public static event Action? OnChange;
-
-    private static List<RenderFragment> Content { get; } = [];
-    public static List<RenderFragment> GetContent() => Content;
 
     protected override void OnInitialized()
     {
         if (ChildContent is null)
             throw new ComponentException($"{nameof(DynamicHeadContent)} should have child content to add to the head.");
         
-        Content.Add(ChildContent);
-        OnChange?.Invoke();
+        Storage.UpdateContent(ChildContent);
     }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (!DynamicHeadOutlet.OutletExists())
-        {
-            // ReSharper disable once UseRawString | Raw strings compile weirdly in Blazor for some reason.
-            throw new ComponentException($@"
-No {nameof(DynamicHeadOutlet)} components exist. If this seems wrong, please follow either of the following directions:
-
-If WebAssembly:
- - Please check the order of your builder RootComponent setting so that the body of the page (usually labelled `App`) is added after calling `AddDynamicMaterialIcons()`.
-
-If Web App:
- - Please check that your DynamicHeadOutlet is defined in your root component and has an interactive render mode.
-");
-        }
-
-        OnChange?.Invoke();
-    }
-
 }
