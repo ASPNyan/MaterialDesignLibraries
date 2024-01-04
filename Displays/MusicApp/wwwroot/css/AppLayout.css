@@ -9,7 +9,7 @@
                          "left main"
                          "left bottom";
     grid-template-columns: 10vw 90vw;
-    grid-template-rows: 10vh 1fr 5.5em;
+    grid-template-rows: 10vh 1fr 10vh;
 }
 
 #Top {
@@ -22,6 +22,9 @@
 
 main {
     grid-area: main;
+    border-radius: 2vw 0 0 0;
+    padding: 1.5vw;
+    font-size: 1rem;
 }
 
 #Bottom {

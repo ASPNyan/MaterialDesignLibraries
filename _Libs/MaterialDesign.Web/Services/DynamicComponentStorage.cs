@@ -27,5 +27,7 @@ public class DynamicComponentStorage
         }
     }
 
+    public void InvokeUpdate(string id) => OnUpdateAtId?.Invoke(id);
+    
     public event Action<string>? OnUpdateAtId;
 }

@@ -7,13 +7,13 @@
     border-radius: 0.5vw;
 }
 
-.ThemeSwitch {
+.ThemeMenu {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    font-size: 60px !important;
-    top: 5px;
-    right: 5px;
+    width: 6vh;
+    height: 6vh;
+    font-size: 6vh !important;
+    top: 1vh;
+    right: 1vh;
     user-select: none;
     cursor: pointer;
 }

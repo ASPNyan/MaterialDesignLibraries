@@ -21,5 +21,7 @@ public class DynamicHeadStorage
         if (updated) OnUpdate?.Invoke();
     }
 
+    public void InvokeUpdate() => OnUpdate?.Invoke();
+    
     public event Action? OnUpdate;
 }

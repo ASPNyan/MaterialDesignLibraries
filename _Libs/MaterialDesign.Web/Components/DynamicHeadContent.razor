@@ -13,4 +13,7 @@
         
         Storage.UpdateContent(ChildContent);
     }
+
+    protected override void OnAfterRender(bool firstRender) => Storage.InvokeUpdate();
+
 }

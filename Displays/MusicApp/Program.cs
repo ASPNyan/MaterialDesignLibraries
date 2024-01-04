@@ -4,7 +4,9 @@ using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
 using MaterialDesign.Theming.Web.Setup;
 using MaterialDesign.Web.Services;
+using MudBlazor.Services;
 using MusicApp.Components;
+using MusicApp.Services;
 
 namespace MusicApp;
 
@@ -21,9 +23,11 @@ internal static class Program
             .AddDynamicMaterialIconsToWebApplication()
             .AddMaterialThemeService(new Theme(DefaultThemeSource))
             .AddScoped<SongInfoContainer>()
+            .AddScoped<DynamicThemeSettings>()
             .AddScoped<HttpClient>()
             .AddDynamicHeadStorage()
             .AddDynamicComponentStorage()
+            .AddMudServices()
             .AddRazorComponents()
             .AddInteractiveServerComponents();
         

@@ -1,5 +1,6 @@
 ﻿@using MusicApp.Components.Layout
 @using MaterialDesign.Theming.Injection
+@using MusicApp.Services
 @page "/"
 @inject SongInfoContainer SongInfoContainer
 @inject ThemeContainer ThemeContainer
@@ -12,7 +13,7 @@
 <PageTitle>Home</PageTitle>
 
 <DynamicComponentContent OutletId="@AppLayout.TopId">
-    <MdIcon Icon="Palette" class="ThemeSwitch" @onclick="@ToggleThemeMenu"/>
+    <MdIcon Icon="Palette" class="ThemeMenu" @onclick="@ToggleThemeMenu"/>
     @if (ThemeMenuOpen)
     {
         <ThemeOptionsMenu/>
@@ -25,10 +26,7 @@
     }
 </DynamicComponentContent>
 
-<p>main</p>
-<div>
-    <div class="primary on-primary-text" @onclick="@ShuffleCover">Shuffle</div>
-</div>
+<SongListComponent />
 
 @code {
     private SongInfo SongInfo => SongInfoContainer.SongInfo;

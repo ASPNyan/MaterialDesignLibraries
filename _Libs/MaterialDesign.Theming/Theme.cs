@@ -6,6 +6,10 @@ namespace MaterialDesign.Theming;
 
 public class Theme : IThemeSource
 {
+    /// <summary>
+    /// The color that created the theme, null when theme is created with multiple colours.
+    /// </summary>
+    public HCTA? Origin { get; private set; }
     public bool IsDarkScheme { get; private set; }
     public Scheme CurrentScheme => IsDarkScheme ? Scheme with { IsDark = true } : Scheme with { IsDark = false };
     public Scheme Scheme { get; private set; }
@@ -100,6 +104,8 @@ public class Theme : IThemeSource
 
     public Theme(HCTA input)
     {
+        Origin = input;
+        
         ThemeScheme core = new(input, true);
 
         Scheme scheme = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, true);
@@ -110,6 +116,8 @@ public class Theme : IThemeSource
     public void Update(HCTA? primarySource, HCTA? secondarySource, HCTA? tertiarySource = null, HCTA? neutralSource = null)
     {
         if (primarySource is null && secondarySource is null && tertiarySource is null && neutralSource is null) return;
+        Origin = null;
+        
         var (primary, secondary, tertiary, neutral, neutralVariant) = Scheme.Sources;
         Scheme scheme = new(NewOrDefault(primarySource, primary), NewOrDefault(secondarySource, secondary),
             NewOrDefault(tertiarySource, tertiary), NewOrDefault(neutralSource, neutral),
@@ -127,6 +135,8 @@ public class Theme : IThemeSource
 
     public void Update(HCTA input)
     {
+        Origin = input;
+        
         ThemeScheme core = new(input, true);
 
         Scheme scheme = new(core.Primary, core.Secondary, core.Tertiary, core.Neutral, core.NeutralVariant, true);

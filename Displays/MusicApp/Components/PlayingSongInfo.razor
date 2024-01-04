@@ -2,9 +2,11 @@
 @using MaterialDesign.Color.Colorspaces
 @using MaterialDesign.Color.Palettes
 @using MaterialDesign.Theming
+@using MusicApp.Services
 @inject SongInfoContainer SongInfoContainer
 @inject HttpClient HttpClient
 @inject ThemeContainer ThemeContainer
+@inject DynamicThemeSettings DynamicThemeSettings
 @inject IWebHostEnvironment Environment
 
 <DynamicHeadContent>
@@ -26,17 +28,20 @@
         if (!firstRender) return;
         await OnInfoUpdate();
         SongInfoContainer.OnInfoUpdate += OnInfoUpdateVoid;
+        DynamicThemeSettings.OnUpdate += OnInfoUpdateVoid;
     }
     
     private async Task OnInfoUpdate()
     {
+        if (!DynamicThemeSettings.DynamicTheme) return;
+        
         HCTA color;
         if (SongInfo != SongInfo.Empty)
         {
             bool isRelativeUrl = File.Exists(Path.Combine(Environment.WebRootPath, SongInfo.AlbumCoverUrl));
-            await using Stream fileGetter = await (isRelativeUrl
-                ? Task.FromResult(new FileStream(Path.Combine(Environment.WebRootPath, SongInfo.AlbumCoverUrl), FileMode.Open) as Stream)
-                : HttpClient.GetStreamAsync(SongInfo.AlbumCoverUrl, CancellationToken.None));
+            await using Stream fileGetter = isRelativeUrl
+                ? new FileStream(Path.Combine(Environment.WebRootPath, SongInfo.AlbumCoverUrl), FileMode.Open)
+                : await HttpClient.GetStreamAsync(SongInfo.AlbumCoverUrl, CancellationToken.None);
             
             List<CorePalette> colorPalettes = await MaterialDesign.Color.Image.FromImage.PalettesFromImageStream(fileGetter);
             color = colorPalettes.First().Origin;

@@ -31,6 +31,8 @@
         }
     }
 
+    protected override void OnAfterRender(bool firstRender) => Storage.InvokeUpdate(OutletId);
+
     public void Dispose()
     {
         if (string.IsNullOrWhiteSpace(OutletId) || ChildContent is null) return;

@@ -1,15 +1,18 @@
 ﻿@using MaterialDesign.Icons
+@using MaterialDesign.Theming.Web.MudBlazor
 @inherits LayoutComponentBase
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/AppLayout.css">
 </DynamicHeadContent>
 
+<MdMudThemeProvider/>
+
 <MdIconConfig Fill="false" Weight="300" Grade="0" OpticalSize="40" LineStyle="@MdIconLineStyle.Sharp">
-    <div id="GridLayout" class="surface-container secondary-text">
-        <div id="Top" class="primary-container on-primary-container-text"><DynamicComponentOutlet Id="@TopId"/></div>
+    <div id="GridLayout" class="surface-variant secondary-text">
+        <div id="Top" class="surface-variant on-surface-variant-text"><DynamicComponentOutlet Id="@TopId"/></div>
         <div id="Left" class="surface-variant on-surface-variant-text"><DynamicComponentOutlet Id="@LeftId"/></div>
-        <main>@Body</main>
+        <main class="surface-container">@Body</main>
         <div id="Bottom" class="on-tertiary-fixed tertiary-fixed-dim-text">
             <DynamicComponentOutlet Id="@BottomId" ExtraSources="@([(typeof(PlayingSongInfo), null)])"/>
         </div>

@@ -1,4 +1,4 @@
-﻿namespace MusicApp;
+﻿namespace MusicApp.Services;
 
 public class SongInfoContainer(SongInfo? info = null)
 {
