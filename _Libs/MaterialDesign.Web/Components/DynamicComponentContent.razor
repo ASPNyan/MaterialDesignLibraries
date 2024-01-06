@@ -5,25 +5,19 @@
 
 @code
 {
-    [Parameter, EditorRequired] 
+    /// <summary>
+    /// The id correlated with the outlet that will be used to display the provided child content.
+    /// </summary>
+    [Parameter, EditorRequired]
     public string OutletId { get; set; } = null!;
     
     [Parameter, EditorRequired]
     public RenderFragment? ChildContent { get; set; }
 
-    [Parameter] 
-    public bool AssureOutletExists { get; set; }
-
     protected override void OnInitialized()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(OutletId);
         ArgumentNullException.ThrowIfNull(ChildContent);
-
-        if (!DynamicComponentOutlet.OutletExistsWithId(OutletId) && !AssureOutletExists)
-        {
-            throw new ComponentException($"Outlet for outlet id `{OutletId}` does not exist. If this is a " +
-                                         $"false positive, set the `AssureOutletExists` attribute to true.");
-        }
 
         if (ChildContent is not null)
         {

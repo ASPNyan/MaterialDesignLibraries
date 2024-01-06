@@ -3,6 +3,12 @@ using MaterialDesign.Color.Schemes;
 
 namespace MaterialDesign.Theming;
 
+/// <summary>
+/// A customized type of <see cref="DynamicScheme"/> that behaves similarly to what's seen at
+/// https://m3.material.io/theme-builder#/custom
+/// </summary>
+/// <param name="Source"></param>
+/// <param name="IsDark"></param>
 public record ThemeScheme(HCTA Source, bool IsDark)
     : DynamicScheme(Source, Variant.Custom, IsDark,
         Primary: new TonalPalette(Source),

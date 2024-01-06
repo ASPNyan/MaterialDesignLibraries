@@ -1,5 +1,8 @@
 ﻿namespace MaterialDesign.Icons;
 
+/// <summary>
+/// A configuration for Material Icons, used in <see cref="Components.MdIconConfig"/>.
+/// </summary>
 public class MdIconConfiguration
 {
     public bool IsStatic { get; }
@@ -20,10 +23,16 @@ public class MdIconConfiguration
         IsStatic = isStatic;
     }
     
-    public static MdIconConfiguration CreateStatic(bool fill = false, int weight = 400, 
+    /// <summary>
+    /// Creates a Material Icon configuration with pre-defined static values.
+    /// </summary>
+    public static MdIconConfiguration CreateStatic(bool fill = false, int weight = 400,
         int grade = 0, int opticalSize = 24) 
             => new(Static, fill, weight, grade, opticalSize);
 
+    /// <summary>
+    /// Creates a Material Icon configuration with dynamic values, but allows for custom default values to be set.
+    /// </summary>
     public static MdIconConfiguration CreateDynamic(bool defaultFill = false, int defaultWeight = 400,
         int defaultGrade = 0, int defaultOpticalSize = 24)
             => new(Dynamic, defaultFill, defaultWeight, 
@@ -43,11 +52,18 @@ public class MdIconConfiguration
     }
 
     // ReSharper disable StringLiteralTypo
+    /// <summary>
+    /// Creates a configuration string to append to a font file request.
+    /// </summary>
+    /// <returns></returns>
     public string GetFontConfigurationString() 
         => ":opsz,wght,FILL,GRAD@" // Optical Size, Weight, Fill, Grad
            + (IsStatic ? $"{OpticalSize},{Weight},{(Fill ? 1 : 0)},{Grade}" : "20..48,100..700,0..1,-50..200");
     // ReSharper restore StringLiteralTypo
 
-    public string GetFontVariationStyle() 
+    /// <summary>
+    /// Creates a CSS font-variation-settings style for use on icon components to provide correct styling.
+    /// </summary>
+    public string GetFontVariationStyle()
         => $"font-variation-settings: 'FILL' {(Fill ? 1 : 0)}, 'wght' {Weight}, 'GRAD' {Grade}, 'opsz' {OpticalSize};";
 }

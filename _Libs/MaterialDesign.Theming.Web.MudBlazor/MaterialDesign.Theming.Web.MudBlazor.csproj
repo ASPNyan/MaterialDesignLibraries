@@ -4,8 +4,14 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <PackageId>Nyan.MaterialDesign.Theming.Web.MudBlazor</PackageId>
+        <Authors>ASPNyan</Authors>
+        <Description>Provides Additional Components for MudBlazor support to Nyan.MaterialDesign.Web</Description>
+        <Copyright>Sebastian Ricketts</Copyright>
+        <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
     </PropertyGroup>
-
 
     <ItemGroup>
         <SupportedPlatform Include="browser"/>

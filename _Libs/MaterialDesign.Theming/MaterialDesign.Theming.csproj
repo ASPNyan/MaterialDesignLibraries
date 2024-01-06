@@ -4,7 +4,13 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>MaterialDesign.Theming</RootNamespace>
+        <PackageId>Nyan.MaterialDesign.Theming</PackageId>
+        <Authors>ASPNyan</Authors>
+        <Description>Provides Material Design Themes to .NET</Description>
+        <Copyright>Sebastian Ricketts</Copyright>
+        <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

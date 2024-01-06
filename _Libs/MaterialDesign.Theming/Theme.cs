@@ -1,9 +1,14 @@
-﻿using MaterialDesign.Color.Blend;
+﻿using System.Diagnostics.CodeAnalysis;
+using MaterialDesign.Color.Blend;
 using MaterialDesign.Color.Palettes;
 using MaterialDesign.Theming.Injection;
 
 namespace MaterialDesign.Theming;
 
+/// <summary>
+/// A Material Theme, containing getters for all colors in the active <see cref="Scheme"/> as well as methods to update
+/// the scheme, and support for custom color roles (see https://m3.material.io/styles/color/advanced/define-new-colors)
+/// </summary>
 public class Theme : IThemeSource
 {
     /// <summary>
@@ -14,14 +19,22 @@ public class Theme : IThemeSource
     public Scheme CurrentScheme => IsDarkScheme ? Scheme with { IsDark = true } : Scheme with { IsDark = false };
     public Scheme Scheme { get; private set; }
 
+    /// <summary>
+    /// Sets a theme to dark mode. Does nothing if this is already the case.
+    /// </summary>
     public void SetDark()
     {
+        if (IsDarkScheme) return;
         IsDarkScheme = true;
         OnUpdate?.Invoke();
     }
 
+    /// <summary>
+    /// Sets a theme to light mode. Does nothing if this is already the case.
+    /// </summary>
     public void SetLight()
     {
+        if (!IsDarkScheme) return;
         IsDarkScheme = false;
         OnUpdate?.Invoke();
     }
@@ -88,6 +101,14 @@ public class Theme : IThemeSource
     public HCTA OnTertiaryFixed => CurrentScheme.OnTertiaryFixed;
     public HCTA OnTertiaryFixedVariant => CurrentScheme.OnTertiaryFixedVariant;
     
+    /// <summary>
+    /// Creates a theme based on four individual colors. <see cref="Origin"/> is null when this is used, as it only
+    /// supplies one color.
+    /// </summary>
+    /// <param name="primary">The primary color, also used for neutral variant colors.</param>
+    /// <param name="secondary">The secondary color</param>
+    /// <param name="tertiary">The tertiary color</param>
+    /// <param name="neutral">The neutral color</param>
     public Theme(HCTA primary, HCTA secondary, HCTA tertiary, HCTA neutral)
     {
         TonalPalette primaryPalette = new(primary);
@@ -102,6 +123,10 @@ public class Theme : IThemeSource
         Scheme = scheme;
     }
 
+    /// <summary>
+    /// Creates a theme based on a single color, which is used as the primary color.
+    /// </summary>
+    /// <param name="input">The input color, which is used to generate the remaining colors with <see cref="ThemeScheme"/>.</param>
     public Theme(HCTA input)
     {
         Origin = input;
@@ -113,6 +138,15 @@ public class Theme : IThemeSource
         Scheme = scheme;
     }
 
+    /// <summary>
+    /// Updates the current theme based on four individual colors. <see cref="Origin"/> is null when this is used, as it only
+    /// supplies one color. Null sources are treated as unchanged, and will just get the current relevant color.
+    /// <see cref="Origin"/> is set to null when this is used, as it can only contain a single color.
+    /// </summary>
+    /// <param name="primarySource">The primary color, also used for neutral variant colors.</param>
+    /// <param name="secondarySource">The secondary color</param>
+    /// <param name="tertiarySource">The tertiary color</param>
+    /// <param name="neutralSource">The neutral color</param>
     public void Update(HCTA? primarySource, HCTA? secondarySource, HCTA? tertiarySource = null, HCTA? neutralSource = null)
     {
         if (primarySource is null && secondarySource is null && tertiarySource is null && neutralSource is null) return;
@@ -133,6 +167,10 @@ public class Theme : IThemeSource
             value is null ? defaultPalette : new TonalPalette(value);
     }
 
+    /// <summary>
+    /// Updates the entire current theme by basing it on a single color, which is used as the primary color.
+    /// </summary>
+    /// <param name="input">The input color, which is used to generate the remaining colors with <see cref="ThemeScheme"/>.</param>
     public void Update(HCTA input)
     {
         Origin = input;
@@ -147,11 +185,24 @@ public class Theme : IThemeSource
     }
 
     private Dictionary<string, ColorRole> CustomColorRoles { get; } = new();
-    
-    public bool TryAddCustomColorRole(string id, HCTA source, bool harmonize = false) => 
+
+    /// <summary>
+    /// Tries to add a custom color role to the theme. See https://m3.material.io/styles/color/advanced/define-new-colors
+    /// </summary>
+    /// <param name="id">The Id of the custom role, used to store the role in a Dictionary.</param>
+    /// <param name="source">The color role source color.</param>
+    /// <param name="harmonize">Whether the color should be harmonized to match the primary hue or not.</param>
+    /// <returns>A bool indicating the success of adding the value to the custom roles dictionary.</returns>
+    public bool TryAddCustomColorRole(string id, HCTA source, bool harmonize = false) =>
         CustomColorRoles.TryAdd(id, new ColorRole(source, harmonize));
 
-    public bool TryGetCustomColorRole(string id, out TonalPalette? palette)
+    /// <summary>
+    /// Tries to get a custom color role from the current theme.
+    /// </summary>
+    /// <param name="id">The Id of the role in the dictionary.</param>
+    /// <param name="palette">The palette stored.</param>
+    /// <returns>A bool indicating the success of getting the value.</returns>
+    public bool TryGetCustomColorRole(string id, [NotNullWhen(true)] out TonalPalette? palette)
     {
         bool success = CustomColorRoles.TryGetValue(id, out ColorRole role);
         palette = !success

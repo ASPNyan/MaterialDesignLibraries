@@ -19,6 +19,9 @@
     
     private static List<(Type ComponentType, IDictionary<string, object>? Attributes)> ExtraSources { get; } = [];
     
+    /// <summary>
+    /// Adds global (application-wide) sources to any head outlets.
+    /// </summary>
     public static void AddComponentSource<TComponent>(IDictionary<string, object>? attributes = null)
     {
         ExtraSources.Add((typeof(TComponent), attributes));

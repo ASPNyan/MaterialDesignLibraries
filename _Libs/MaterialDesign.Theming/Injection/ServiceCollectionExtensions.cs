@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MaterialDesign.Theming.Injection;
 
+/// <summary>
+/// A static class containing extensions for <see cref="IServiceCollection"/>.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
     internal static bool CheckSetFail;
@@ -18,12 +21,20 @@ public static class ServiceCollectionExtensions
         _themeServiceSet = true;
     }
     
+    /// <summary>
+    /// Adds Material Theming services to Dependency Injection through the <see cref="IServiceCollection"/>
+    /// by creating a <see cref="ThemeContainer"/> with the supplied <paramref name="theme"/>.
+    /// </summary>
     public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection, Theme theme)
     {
         SetThemeService(serviceCollection);
         return serviceCollection.AddScoped<ThemeContainer>(_ => ThemeContainer.CreateFromTheme(theme));
     }
     
+    /// <summary>
+    /// Adds Material Theming services to Dependency Injection through the <see cref="IServiceCollection"/>
+    /// by creating a <see cref="ThemeContainer"/> with the supplied <see cref="IThemeSource"/> <paramref name="themeSource"/>.
+    /// </summary>
     public static async Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
         IThemeSource themeSource)
     {
@@ -66,6 +77,11 @@ public static class ServiceCollectionExtensions
         return value;
     }
 
+    /// <summary>
+    /// Adds Material Theming services to Dependency Injection through the <see cref="IServiceCollection"/>
+    /// by creating a <see cref="ThemeContainer"/> when the service is requested through the <see cref="IServiceProvider"/>,
+    /// with the <see cref="IServiceProvider"/> as a parameter or using the provided <paramref name="fallback"/> if that fails.
+    /// </summary>
     public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection,
         ThemeFromServiceProvider builderMethod, Theme? fallback = null)
     {
@@ -74,6 +90,11 @@ public static class ServiceCollectionExtensions
             ThemeContainer.CreateFromTheme(TryWithFallback(() => builderMethod(serviceProvider), fallback)));
     }
 
+    /// <summary>
+    /// Adds Material Theming services to Dependency Injection through the <see cref="IServiceCollection"/>
+    /// by creating a <see cref="ThemeContainer"/> when the service is requested through the <see cref="IServiceProvider"/>,
+    /// with a <see cref="ThemeSourceBuilder"/> as a parameter or using the provided <paramref name="fallback"/> if that fails.
+    /// </summary>
     public static async Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
         ThemeSourceFromBuilder builderMethod, IThemeSource? fallback = null)
     {
@@ -83,15 +104,26 @@ public static class ServiceCollectionExtensions
         return serviceCollection.AddScoped<ThemeContainer>(_ => container);
     }
 
+    /// <summary>
+    /// Adds a null <see cref="Theme"/> to a <see cref="ThemeContainer"/> service. Requires
+    /// <see cref="SetMaterialThemeService"/> be called after. This method should not be used outside Blazor WASM as
+    /// it uses singleton instead of scoped because WASM apps have no differences between singleton and scoped, but
+    /// scoped services cannot be accessed without a scope.
+    /// </summary>
     public static void AddMaterialThemeService(this IServiceCollection serviceCollection)
     {
         SetThemeService(serviceCollection);
 
-        serviceCollection.AddScoped<ThemeContainer>(_ => ThemeContainer.CreateFromTheme(null!));
+        serviceCollection.AddSingleton<ThemeContainer>(_ => ThemeContainer.CreateFromTheme(null!));
 
         CheckSetFail = true;
     }
 
+    /// <summary>
+    /// Sets the <see cref="ThemeContainer"/> service outside of the app (and therefore off of the render thread) so that
+    /// <see cref="IThemeSource"/>s can be used without blocking the render thread. Defaults to the provided
+    /// <paramref name="fallback"/> as required.
+    /// </summary>
     public static async Task SetMaterialThemeService(this WebAssemblyHost host,
         ThemeSourceFromBuilderAndServiceProvider builderMethod, IThemeSource? fallback)
     {

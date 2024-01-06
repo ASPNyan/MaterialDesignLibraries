@@ -14,17 +14,23 @@
 
 @code
 {
-    private static List<string> ExistingOutlets { get; } = [];
-    public static bool OutletExistsWithId(string id) => ExistingOutlets.Contains(id);
-
+    /// <summary>
+    /// The id correlated with the content sources that will be used to provide render fragments to this outlet.
+    /// </summary>
     [Parameter, EditorRequired] 
     public virtual string Id { get; set; } = null!;
     
+    /// <summary>
+    /// Extra component sources, specific to this outlet, that are used to provide more render fragments.
+    /// </summary>
     [Parameter]
     public List<(Type ComponentType, IDictionary<string, object>? Attributes)>? ExtraSources { get; set; }
-
+    
     private static readonly Dictionary<string, List<(Type ComponentType, IDictionary<string, object>? Attributes)>> StaticExtraSources = [];
 
+    /// <summary>
+    /// Adds global (application-wide) sources to any outlets using the provided id.
+    /// </summary>
     public static void AddComponentSourceWithId<TComponent>(string id, IDictionary<string, object>? attributes = null)
     {
         (Type ComponentType, IDictionary<string, object>? Attributes) valuePair = (typeof(TComponent), attributes);
@@ -38,7 +44,6 @@
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(Id);
         Storage.OnUpdateAtId += OnChange;
-        ExistingOutlets.Add(Id);
         if (StaticExtraSources.TryGetValue(Id, out var list)) ExtraSources?.AddRange(list);
     }
 
@@ -62,6 +67,5 @@
     {
         ArgumentException.ThrowIfNullOrEmpty(Id);
         Storage.OnUpdateAtId -= OnChange;
-        ExistingOutlets.Remove(Id);
     }
 }

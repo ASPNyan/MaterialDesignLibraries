@@ -4,20 +4,21 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <PackageId>Nyan.MaterialDesign.Theming.Web</PackageId>
+        <Authors>ASPNyan</Authors>
+        <Description>Provides Material Design Themes to .NET Web-based Projects, like Blazor.</Description>
+        <Copyright>Sebastian Ricketts</Copyright>
+        <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
     </PropertyGroup>
-
-
+    
     <ItemGroup>
         <SupportedPlatform Include="browser"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\background.png" />
-      <_ContentIncludedByDefault Remove="wwwroot\exampleJsInterop.js" />
     </ItemGroup>
 
     <ItemGroup>

@@ -5,12 +5,18 @@ public class ThemeSourceBuilder
     private ImageSourceBuilder? ImageBuilder { get; set; }
     private IThemeSource? ThemeSource { get; set; }
 
+    /// <summary>
+    /// Supplies a builder for an <see cref="IThemeSource"/> using an image with <see cref="ImageSourceBuilder"/>.
+    /// </summary>
     public void UsingImage(Action<ImageSourceBuilder> method)
     {
         ImageBuilder = new ImageSourceBuilder();
         method(ImageBuilder);
     }
 
+    /// <summary>
+    /// Supplies a builder for an <see cref="IThemeSource"/> using a color that can be created or source in various ways.
+    /// </summary>
     public void WithColorMethod(Action<ColorMethodSource> method)
     {
         ColorMethodSource colorSource = new ColorMethodSource();
@@ -19,6 +25,9 @@ public class ThemeSourceBuilder
         ThemeSource = colorSource;
     }
 
+    /// <summary>
+    /// Supplies a builder for an <see cref="IThemeSource"/> using a color that can be created or source in various ways.
+    /// </summary>
     public void WithPresetColor(Action<PresetColorSource> method)
     {
         PresetColorSource colorSource = new();
@@ -26,6 +35,11 @@ public class ThemeSourceBuilder
         ThemeSource = colorSource;
     }
 
+    /// <summary>
+    /// Builds the current ThemeSourceBuilder into a <see cref="IThemeSource"/>
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public IThemeSource Build()
     {
         if (ImageBuilder is null && ThemeSource is null) throw new ArgumentNullException(null,

@@ -1,5 +1,6 @@
 ﻿namespace MaterialDesign.Icons;
 
+// Internal class of const fields and other useful info.
 internal static class Helper
 {
     /// <summary>

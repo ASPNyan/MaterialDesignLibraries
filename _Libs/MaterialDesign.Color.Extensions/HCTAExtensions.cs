@@ -1,4 +1,5 @@
-﻿using MaterialDesign.Color.Contrast;
+﻿using System.Diagnostics.Contracts;
+using MaterialDesign.Color.Contrast;
 using static System.Math;
 using _Contrast = MaterialDesign.Color.Contrast.Contrast;
 
@@ -7,7 +8,7 @@ namespace MaterialDesign.Color.Extensions;
 public static class HCTAExtensions
 {
     /// <summary>
-    /// Generates a new HCTA color with the specified contrast ratio.
+    /// Generates a new HCTA color with the specified contrast ratio. Does not modify the original.
     /// </summary>
     /// <param name="current">The color to base the new color from.</param>
     /// <param name="ratio">The contrast ratio to generate the new color with.</param>
@@ -16,6 +17,7 @@ public static class HCTAExtensions
     /// <exception cref="InvalidOperationException">Thrown when <paramref name="darker"/> is null
     /// and neither a lighter nor darker tone can be created with the ratio, or when <paramref name="darker"/>
     /// is specified and the relevant tone cannot be created.</exception>
+    [Pure]
     public static HCTA ContrastTo(this HCTA current, double ratio, bool? darker = null)
     {
         double diff = Round(_Contrast.LighterViaRatio(0, ratio), 3, MidpointRounding.ToPositiveInfinity);
@@ -61,6 +63,7 @@ public static class HCTAExtensions
         return new HCTA(current.H, current.C, tone);
     }
 
+    /// <inheritdoc cref="ContrastTo(MaterialDesign.Color.Colorspaces.HCTA,double,System.Nullable{bool})"/>
     public static HCTA ContrastTo(this HCTA current, ContrastRatio ratio, bool? darker = null) =>
         current.ContrastTo(ratio.Ratio, darker);
 }

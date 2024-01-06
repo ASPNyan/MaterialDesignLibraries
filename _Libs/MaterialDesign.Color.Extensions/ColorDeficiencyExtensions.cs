@@ -7,6 +7,9 @@ using MaterialDesign.Color.Common;
 namespace MaterialDesign.Color.Extensions;
 
 // This was all done based on nburrus' CVD simulation project at https://github.com/DaltonLens/libDaltonLens
+/// <summary>
+/// A class containing static methods to modify colors using CVD (color vision deficiency) filtering.
+/// </summary>
 public static class ColorDeficiencyExtensions
 {
     /// <summary>
