@@ -3,7 +3,7 @@
 @using MusicApp.Services
 @inject SongInfoContainer SongInfoContainer
 
-<div class="Song @TileStyle.ToString() primary-fixed-text">
+<div class="Song @TileStyle.ToString() @GetBackgroundClass() primary-text">
     @if (TileStyle is SongTileStyle.Comfy)
     {
         <img src="@Info.AlbumCoverUrl" alt="" class="SongBackground">
@@ -20,10 +20,10 @@
         else
         {
             @Info.Name <br/>
-            <span class="SongTitleSubtext secondary-fixed-text">@Info.Author</span>
+            <span class="SongTitleSubtext secondary-text">@Info.Author</span>
         }
     </b>
-    <p class="SongAlbum tertiary-fixed-text">@Info.Album</p>
+    <p class="SongAlbum tertiary-text">@Info.Album</p>
     @if (TileStyle is SongTileStyle.Comfy)
     {
         <p class="SongArtist">
@@ -39,6 +39,12 @@
     [Parameter]
     public SongTileStyle TileStyle { get; set; }
 
+    private string GetBackgroundClass()
+    {
+        if (TileStyle is SongTileStyle.Compact) return "on-primary";
+        return string.Empty;
+    }
+    
     private void Select()
     {
         SongInfoContainer.Update(Info);

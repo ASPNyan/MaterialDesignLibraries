@@ -1,17 +1,70 @@
 ﻿.Song {
+    position: relative;
     display: grid;
     overflow: hidden;
 }
 
 .Song.Compact {
     font-size: 18px;
-    height: 2em;
+    height: 4em;
     grid-template-areas: "Cover Title Album";
-    grid-template-columns: 2em 3fr 1fr;
+    grid-template-columns: 3em 3fr 1fr;
+    grid-gap: 0.2em;
+    padding: 0 0.4em;
+    transition: margin 100ms ease-in, border-radius 100ms ease-in;
+}
+
+.Song.Compact:first-child {
+    border-radius: 0.5em 0.5em 0 0;
+}
+
+.Song.Compact:last-child {
+    border-radius: 0 0 0.5em 0.5em;
+}
+
+.Song.Compact:first-child ~ .Song.Compact {
+    border-top: var(--md-sys-color-secondary) 1px solid;
+    transition: border-top-color 100ms ease-in-out, background-color 100ms ease-in-out, margin 100ms ease-in, 
+                border-radius 100ms ease-in;
+}
+
+.Song.Compact > * {
+    position: relative;
+    top: 0.5em;
+}
+
+.Song.Compact:hover {
+    border-top-color: transparent !important;
+    background-color: var(--md-sys-color-on-secondary);
+    margin: 0.5em 0;
+    border-radius: 0.5em;
+}
+
+.Song.Compact:first-child:hover {
+    margin: 0 0 0.5em 0;
+}
+
+.Song.Compact:last-child:hover {
+    margin: 0.5em 0 0 0;
+}
+
+.Song.Compact:has(+ .Song.Compact:hover) {
+    border-radius: 0 0 0.5em 0.5em;
+}
+
+.Song.Compact:hover + .Song.Compact {
+    border-top-color: transparent;
+    border-radius: 0.5em 0.5em 0 0;
+}
+
+/* check edge cases, literally. checks for when the outer ones are triggered so that their outward-facing edges don't
+ lose their border radii */
+.Song.Compact:first-child:has(+ .Song.Compact:hover),
+.Song.Compact:hover + .Song.Compact:last-child { 
+    border-radius: 0.5em;
 }
 
 .Song.Comfy {
-    position: relative;
     width: 23.5%;
     padding: 1%;
     grid-template-areas: "Cover"
@@ -29,7 +82,6 @@
 
 .Song.Comfy .SongBackground {
     position: absolute;
-    top: 0;
     left: 50%;
     transform: translateX(-50%);
     height: 100%;
@@ -46,8 +98,9 @@
 }
 
 .Song.Compact .SongCover {
-    width: 2em;
-    height: 2em;
+    border-radius: 0.5em;
+    width: 3em;
+    height: 3em;
 }
 
 .Song.Comfy .SongCover {
@@ -57,7 +110,6 @@
 
 .Song .SongPlayButtonContainer {
     position: absolute;
-    top: 0;
     left: 0;
     background-color: rgba(0, 0, 0, 0);
     opacity: 0;
@@ -88,10 +140,16 @@
     font-size: 1em;
 }
 
+.Song.Compact .SongTitle,
+.Song.Compact .SongAlbum {
+    height: 3em;
+}
+
 .Song .SongTitle .SongTitleSubtext {
     position: absolute;
     bottom: 0;
     font-size: 0.9em;
+    font-weight: normal;
 }
 
 .Song.Comfy .SongTitle ~ p {
@@ -104,6 +162,10 @@
 
 .Song.Comfy .SongAlbum {
     font-weight: 250;
+}
+
+.Song.Compact .SongAlbum {
+    top: calc(50% - 0.7em);
 }
 
 .Song .SongArtist {

@@ -11,11 +11,11 @@
     overflow: scroll;
     height: calc(80vh - 3vw);
     padding: calc((80vh - 3vw) * 0.03) 0;
-    gap: 1.5%;
 }
 
 #SongList:has(.Comfy) {
     flex-flow: row wrap;
+    gap: 1.5%;
 }
 
 #SongList:has(.Comfy) ~ #SongListOverlay {

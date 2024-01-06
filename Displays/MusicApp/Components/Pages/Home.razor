@@ -1,6 +1,8 @@
 ﻿@using MusicApp.Components.Layout
 @using MaterialDesign.Theming.Injection
+@using MusicApp.Enums
 @using MusicApp.Services
+@using MaterialDesign.Icons
 @page "/"
 @inject SongInfoContainer SongInfoContainer
 @inject ThemeContainer ThemeContainer
@@ -25,13 +27,18 @@
     }
 </DynamicComponentContent>
 
-<SongListComponent/>
+<MdIcon Icon="@GetListViewIcon()" Fill="false" LineStyle="MdIconLineStyle.Rounded" 
+        class="SongListViewToggle on-surface-variant-text surface-container" @onclick="@ToggleSongListView"/>
+
+<SongListComponent TileStyle="@ListTileStyle"/>
 
 @code {
     private SongInfo SongInfo => SongInfoContainer.SongInfo;
     private bool SongPlaying => SongInfo != SongInfo.Empty;
     
     private bool ThemeMenuOpen { get; set; }
+    
+    private SongTileStyle ListTileStyle { get; set; }
 
     private void ToggleThemeMenu()
     {
@@ -43,4 +50,12 @@
         ThemeContainer.OnThemeUpdate += async () => await InvokeAsync(StateHasChanged);
         SongInfoContainer.OnInfoUpdate += async () => await InvokeAsync(StateHasChanged);
     }
+
+    private void ToggleSongListView()
+    {
+        ListTileStyle = ListTileStyle is SongTileStyle.Comfy ? SongTileStyle.Compact : SongTileStyle.Comfy;
+        StateHasChanged();
+    }
+
+    private string GetListViewIcon() => ListTileStyle is SongTileStyle.Comfy ? "Grid View" : "List";
 }

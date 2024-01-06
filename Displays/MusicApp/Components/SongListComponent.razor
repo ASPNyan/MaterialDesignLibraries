@@ -21,10 +21,15 @@
                 string name = Path.GetFileNameWithoutExtension(path);
                 
                 <SongTile Info="@(new SongInfo { Name = name, Album = "Album", Author = "Author", AlbumCoverUrl = path })"
-                          TileStyle="@SongTileStyle.Comfy"/>
+                          TileStyle="@TileStyle"/>
             }
         }
     </div>
     
     <div id="SongListOverlay"></div>
 </div>
+
+@code {
+    [Parameter]
+    public SongTileStyle TileStyle { get; set; }
+}

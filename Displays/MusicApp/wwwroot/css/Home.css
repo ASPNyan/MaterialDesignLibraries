@@ -17,3 +17,17 @@
     user-select: none;
     cursor: pointer;
 }
+
+main {
+    position: relative;
+}
+
+.SongListViewToggle {
+    position: absolute;
+    font-size: 5vh !important;
+    top: 0;
+    right: 0;
+    width: 5vh;
+    height: 5vh;
+    z-index: 5;
+}
