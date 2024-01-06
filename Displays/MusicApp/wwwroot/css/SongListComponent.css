@@ -1,0 +1,31 @@
+﻿#SongListWrapper {
+    position: relative;
+    width: 100%;
+    height: calc(80vh - 3vw);
+}
+
+#SongList {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    overflow: scroll;
+    height: calc(80vh - 3vw);
+    padding: calc((80vh - 3vw) * 0.03) 0;
+    gap: 1.5%;
+}
+
+#SongList:has(.Comfy) {
+    flex-flow: row wrap;
+}
+
+#SongList:has(.Comfy) ~ #SongListOverlay {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(80vh - 3vw);
+    pointer-events: none;
+    background: linear-gradient(var(--md-sys-color-surface-container), transparent 3%, transparent 97%, var(--md-sys-color-surface-container));
+    z-index: 2;
+}

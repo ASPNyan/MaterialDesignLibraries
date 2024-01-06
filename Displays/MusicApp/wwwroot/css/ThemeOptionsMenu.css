@@ -18,6 +18,7 @@
     grid-row-gap: 0.5em;
     box-shadow: var(--md-sys-color-shadow) 0 2px 8px;
     border-radius: 1em;
+    z-index: 100;
 }
 
 .ThemeSettingsTooltip {

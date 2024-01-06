@@ -1,0 +1,115 @@
+﻿.Song {
+    display: grid;
+    overflow: hidden;
+}
+
+.Song.Compact {
+    font-size: 18px;
+    height: 2em;
+    grid-template-areas: "Cover Title Album";
+    grid-template-columns: 2em 3fr 1fr;
+}
+
+.Song.Comfy {
+    position: relative;
+    width: 23.5%;
+    padding: 1%;
+    grid-template-areas: "Cover"
+                         "Title"
+                         "Album"
+                         "Artist";
+    grid-template-rows: 1fr 0.9em 0.70em 0.9em;
+    grid-row-gap: 0.5em;
+    border-radius: 3%;
+}
+
+.Song.Comfy * {
+    z-index: 1;
+}
+
+.Song.Comfy .SongBackground {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+    filter: blur(5px) brightness(50%);
+    z-index: 0;
+}
+
+.Song .SongCover {
+    grid-area: Cover;
+    border-radius: 2%;
+}
+
+.Song.Compact .SongCover {
+    width: 2em;
+    height: 2em;
+}
+
+.Song.Comfy .SongCover {
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.Song .SongPlayButtonContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0;
+    cursor: pointer;
+    transition: background-color 100ms ease-in-out, opacity 100ms ease-in-out;
+}
+
+.Song .SongPlayButtonContainer:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.Song .SongPlayButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    user-select: none;
+}
+
+.Song.Comfy .SongPlayButton {
+    font-size: 10em;
+}
+
+.Song .SongTitle {
+    grid-area: Title;
+    font-size: 1em;
+}
+
+.Song .SongTitle .SongTitleSubtext {
+    position: absolute;
+    bottom: 0;
+    font-size: 0.9em;
+}
+
+.Song.Comfy .SongTitle ~ p {
+    font-size: 0.85em;
+}
+
+.Song .SongAlbum {
+    grid-area: Album;
+}
+
+.Song.Comfy .SongAlbum {
+    font-weight: 250;
+}
+
+.Song .SongArtist {
+    grid-area: Artist;
+}
+
+.Song.Comfy .SongArtist {
+    font-weight: 500;
+}

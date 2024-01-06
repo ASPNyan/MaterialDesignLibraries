@@ -4,7 +4,6 @@
 @page "/"
 @inject SongInfoContainer SongInfoContainer
 @inject ThemeContainer ThemeContainer
-@inject IWebHostEnvironment Environment
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Home.css">
@@ -26,7 +25,7 @@
     }
 </DynamicComponentContent>
 
-<SongListComponent />
+<SongListComponent/>
 
 @code {
     private SongInfo SongInfo => SongInfoContainer.SongInfo;
@@ -42,29 +41,6 @@
     protected override void OnInitialized()
     {
         ThemeContainer.OnThemeUpdate += async () => await InvokeAsync(StateHasChanged);
-        // TODO: Remove this placeholder when it is no longer required
-        SongInfoContainer.Update(new SongInfo
-        {
-            Name = "Song Name",
-            Album = "Album Name",
-            Author = "Author Name",
-            AlbumCoverUrl = string.Empty
-        });
-        ShuffleCover();
+        SongInfoContainer.OnInfoUpdate += async () => await InvokeAsync(StateHasChanged);
     }
-
-    private void ShuffleCover()
-    {
-        string currentCover = SongInfo.AlbumCoverUrl;
-        string[] files = Directory.GetFiles(Path.Combine(Environment.WebRootPath, "img"));
-        string newCover;
-        do
-        {
-            new Random().Shuffle(files);
-            newCover = files[0].Remove(0, files[0].LastIndexOf("img", StringComparison.Ordinal));
-        } while (currentCover == newCover);
-
-        SongInfoContainer.Update(SongInfo with { AlbumCoverUrl = newCover });
-    }
-
 }

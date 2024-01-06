@@ -1,5 +1,30 @@
-﻿<h3>SongListComponent</h3>
+﻿@using MusicApp.Enums
+@inject IWebHostEnvironment Environment
 
-@code {
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/SongListComponent.css">
+    <link rel="stylesheet" href="css/SongTile.css">
+</DynamicHeadContent>
+
+<div id="SongListWrapper">
+    <div id="SongList">
+        @{
+            string[] files = Directory.GetFiles(Path.Combine(Environment.WebRootPath, "img"));
+            new Random().Shuffle(files);
+            
+            foreach (string file in files)
+            {
+                string path = file
+                    .Remove(0, files[0].LastIndexOf("img", StringComparison.Ordinal))
+                    .Replace('\\', '/');
     
-}
+                string name = Path.GetFileNameWithoutExtension(path);
+                
+                <SongTile Info="@(new SongInfo { Name = name, Album = "Album", Author = "Author", AlbumCoverUrl = path })"
+                          TileStyle="@SongTileStyle.Comfy"/>
+            }
+        }
+    </div>
+    
+    <div id="SongListOverlay"></div>
+</div>

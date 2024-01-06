@@ -33,6 +33,8 @@
     
     private async Task OnInfoUpdate()
     {
+        StateHasChanged();
+
         if (!DynamicThemeSettings.DynamicTheme) return;
         
         HCTA color;
