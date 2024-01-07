@@ -13,7 +13,7 @@ public struct RGBA(byte r, byte g, byte b, float a = 100f) : IRGB, IAlpha, IEqua
     /// This conversion is lossy if your color was created with HSL, since using RGB for HSL implementations is lossy
     /// by implementation. The alpha is also converted to a byte, which is also lossy.
     /// </summary>
-    [CLSCompliant(false)]
+    
     public uint ToUIntRepresentation()
     {
         uint value = R;
@@ -26,7 +26,7 @@ public struct RGBA(byte r, byte g, byte b, float a = 100f) : IRGB, IAlpha, IEqua
         return value;
     }
 
-    [CLSCompliant(false)]
+    
     public static RGBA FromUIntRepresentation(uint rep)
     {
         float a = (byte)rep / 255f * 100;
@@ -42,11 +42,11 @@ public struct RGBA(byte r, byte g, byte b, float a = 100f) : IRGB, IAlpha, IEqua
     public static implicit operator Color(RGBA rgba) => new(rgba.R, rgba.G, rgba.B, rgba.A);
     public static implicit operator RGBA(Color color) => new(color.R, color.G, color.B, color.A);
     
-    [CLSCompliant(false)]
+    
     public static explicit operator uint(RGBA color)
         => color.ToUIntRepresentation();
 
-    [CLSCompliant(false)]
+    
     public static explicit operator RGBA(uint rep)
         => FromUIntRepresentation(rep);
 

@@ -10,7 +10,6 @@ namespace MaterialDesign.Color.Colorspaces;
 /// <see cref="System.Drawing.Color"/> as it is a float and read from 0-100 instead of a byte from 0-255. To access
 /// a byte implementation of the alpha, there is the get-only <see cref="A255"/>.
 /// </summary>
-[CLSCompliant(true)]
 public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
 {
     #region Class Implementation
@@ -328,19 +327,19 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
         return $"hsla({roundedH}, {roundedS}%, {roundedL}%, {roundedA}%)";
     }
     
-    [CLSCompliant(false)]
+    
     public static implicit operator Color(System.Drawing.Color color) 
         => new(color.R, color.G, color.B, color.A / 255f * 100);
     
-    [CLSCompliant(false)]
+    
     public static implicit operator System.Drawing.Color(Color color) 
         => System.Drawing.Color.FromArgb(color.A255, color.R, color.G, color.B);
 
-    [CLSCompliant(false)]
+    
     public static explicit operator uint(Color color)
         => color.ToUIntRepresentation();
 
-    [CLSCompliant(false)]
+    
     public static explicit operator Color(uint rep)
         => FromUIntRepresentation(rep);
     
@@ -353,7 +352,7 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
     /// This conversion is lossy if your color was created with HSL, since using RGB for HSL implementations is lossy
     /// by implementation. The alpha is also converted to a byte, which is also lossy.
     /// </summary>
-    [CLSCompliant(false)]
+    
     public uint ToUIntRepresentation()
     {
         uint value = R;
@@ -366,7 +365,7 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
         return value;
     }
 
-    [CLSCompliant(false)]
+    
     public static Color FromUIntRepresentation(uint rep)
     {
         float a = (byte)rep / 255f * 100;

@@ -9,7 +9,7 @@
         <Description>Provides Material Design Color Utilities to .NET</Description>
         <Copyright>Sebastian Ricketts</Copyright>
         <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageLicenseUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
     </PropertyGroup>
 

@@ -9,7 +9,7 @@
         <Description>Provides Material Design Icons (see https://fonts.google.com/icons) to .NET</Description>
         <Copyright>Sebastian Ricketts</Copyright>
         <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageLicenseUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
     </PropertyGroup>
 
@@ -21,14 +21,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <AdditionalFiles Include="Components\MdIcon.razor" />
-      <AdditionalFiles Include="Components\MdIconConfig.razor" />
-    </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MaterialDesign.Web\MaterialDesign.Web.csproj" />
+        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.0.0" />
     </ItemGroup>
-
 </Project>

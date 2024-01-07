@@ -9,7 +9,7 @@
         <Description>Provides Material Design Themes to .NET Web-based Projects, like Blazor.</Description>
         <Copyright>Sebastian Ricketts</Copyright>
         <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageLicenseUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
     </PropertyGroup>
     
@@ -22,8 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
-      <ProjectReference Include="..\MaterialDesign.Web\MaterialDesign.Web.csproj" />
+        <PackageReference Include="Nyan.MaterialDesign.Theming" Version="1.0.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.0.0" />
     </ItemGroup>
 
 </Project>

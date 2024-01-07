@@ -9,12 +9,12 @@
         <Description>Provides Material Design Themes to .NET</Description>
         <Copyright>Sebastian Ricketts</Copyright>
         <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageLicenseUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MaterialDesign.Color\MaterialDesign.Color.csproj" />
+        <PackageReference Include="Nyan.MaterialDesign.Color" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>

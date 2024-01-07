@@ -1,12 +1,11 @@
-﻿@using MaterialDesign.Color.Colorspaces;
-
-@if (Theme is null)
-{
-    <BoundTheme @bind-Theme="@Theme"></BoundTheme>
-}
+﻿@using MaterialDesign.Color.Colorspaces
+@using MaterialDesign.Theming.Injection
+@using Microsoft.Extensions.DependencyInjection
+@inject IServiceProvider ServiceProvider
 
 @{
-    if (Theme is null) throw new Exception("Theme is null after Bound Theme");
+    Theme ??= ServiceProvider.GetService<ThemeContainer>()?.Theme;
+    if (Theme is null) throw new Exception("Theme is null after getting from Service Provider");
 }
 
 <style>
