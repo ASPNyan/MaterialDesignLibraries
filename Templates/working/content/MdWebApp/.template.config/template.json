@@ -1,0 +1,146 @@
+﻿{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "ASPNyan",
+  "classifications": ["Web", "Blazor"],
+  "identity": "Nyan.MaterialDesign.Templates.WebApp",
+  "name": "Material Design Blazor Web App",
+  "shortName": "md-blazor",
+  "sourceName": "MdWebApp",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "postActions": [
+    {
+      "description": "Restores required NuGet packages.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ],
+  "symbols": {
+    "UseStaticIcons": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Whether static icon sizes should be used instead of dynamic.",
+      "defaultValue": "false"
+    },
+    "GenerateIconType": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "/*$IconType$*/",
+      "parameters": {
+        "cases": [
+          {
+            "condition": "(UseStaticIcons)",
+            "value": "Static"
+          },
+          {
+            "condition": "",
+            "value": "Dynamic"
+          }
+        ]
+      }
+    },
+    "UseMudBlazor": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Whether MudBlazor should be added to the project.",
+      "defaultValue": "true"
+    },
+    "GenerateMudBlazorSymbolsInProgram": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "/*$MudBlazorSymbols$*/",
+      "parameters": {
+        "datatype": "bool",
+        "cases": [
+          {
+            "condition": "(UseMudBlazor)",
+            "value": "\n    .AddMudServices()"
+          },
+          {
+            "condition": "",
+            "value": ""
+          }
+        ]
+      }
+    },
+    "GenerateMudBlazorImportsInProgram": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "/*$MudBlazorProgramImport$*/",
+      "parameters": {
+        "datatype": "bool",
+        "cases": [
+          {
+            "condition": "(UseMudBlazor)",
+            "value": "\nusing MudBlazor.Services;"
+          },
+          {
+            "condition": "",
+            "value": ""
+          }
+        ]
+      }
+    },
+    "GenerateMudBlazorImportInAppLayout": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "/*$MudBlazorLayoutImport$*/",
+      "parameters": {
+        "datatype": "bool",
+        "cases": [
+          {
+            "condition": "(UseMudBlazor)",
+            "value": "@using MaterialDesign.Theming.Web.MudBlazor\n@inherits LayoutComponentBase\n\n<MdMudThemeProvider/>"
+          },
+          {
+            "condition": "",
+            "value": "@inherits LayoutComponentBase"
+          }
+        ]
+      }
+    },
+    "GenerateMudBlazorAppHtml": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "/*$MudBlazorHtmlLinks$*/",
+      "parameters": {
+        "datatype": "bool",
+        "cases": [
+          {
+            "condition": "(UseMudBlazor)",
+            "value": "\n    <link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap\">\n    <link rel=\"stylesheet\" href=\"_content/MudBlazor/MudBlazor.min.css\">\n    <script src=\"_content/MudBlazor/MudBlazor.min.js\"></script>"
+          },
+          {
+            "condition": "",
+            "value": ""
+          }
+        ]
+      }
+    },
+    "GenerateImportsInCsProj": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "<!--MudBlazorReference-->",
+      "parameters": {
+        "datatype": "bool",
+        "cases": [
+          {
+            "condition": "(UseMudBlazor)",
+            "value": "\n    <PackageReference Include=\"Nyan.MaterialDesign.Theming.Web.MudBlazor\" Version=\"1.0.0\" />\n    <PackageReference Include=\"MudBlazor\" Version=\"6.11.2\" />"
+          },
+          {
+            "condition": "",
+            "value": ""
+          }
+        ]
+      }
+    }
+  }
+}
