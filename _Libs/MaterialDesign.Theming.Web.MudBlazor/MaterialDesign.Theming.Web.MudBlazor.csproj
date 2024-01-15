@@ -24,7 +24,7 @@
 
     <ItemGroup>
         <PackageReference Include="Nyan.MaterialDesign.Theming" Version="1.0.0" />
-        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.0.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.0" />
     </ItemGroup>
 
 </Project>
