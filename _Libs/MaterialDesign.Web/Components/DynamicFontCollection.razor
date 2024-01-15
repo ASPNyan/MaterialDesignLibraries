@@ -1,0 +1,206 @@
+﻿@using MaterialDesign.Web.Exceptions
+@using MaterialDesign.Web.Fonts
+@using Microsoft.Extensions.DependencyInjection
+@implements IDisposable
+@inject IServiceProvider ServiceProvider
+
+@if (RenderIndividually)
+{
+    <DynamicHeadContent>
+        <style>
+            @if (MainFontFace is not null)
+            {
+                @MainFontFace.Value.ToMarkupString()
+                foreach ((FontWeight fontWeight, Action<FontSourceBuilder> sourceBuilderMethod) in ExtraFontWeights)
+                {
+                    FontSourceBuilder builder = new();
+                    sourceBuilderMethod(builder);
+                    @((MainFontFace.Value with
+                    {
+                        SourceString = builder.ToString(),
+                        Weight = fontWeight.ToString()
+                    }).ToMarkupString())
+                }
+            }
+            else
+            {
+                FontFaceBuilder builder = new();
+                MainFontFaceBuilder!(builder);
+                FontFace fontFace = builder.Build();
+                @fontFace.ToMarkupString()
+                
+                foreach ((FontWeight fontWeight, Action<FontSourceBuilder> sourceBuilderMethod) in ExtraFontWeights)
+                {
+                    FontSourceBuilder extraBuilder = new();
+                    sourceBuilderMethod(extraBuilder);
+                    @((fontFace with
+                    {
+                        SourceString = extraBuilder.ToString(),
+                        Weight = fontWeight.ToString()
+                    }).ToMarkupString())
+                }
+            }
+            
+            @FormattedClassName {
+                font-family: "@FontFamily";
+            }
+            
+            @foreach (string css in ExtraFontWeights.Keys.Select(weight => 
+                          $".{weight.ToString().Replace(' ', '-')} {{\n  font-weight: {weight}\n}}"))
+            {
+                @((MarkupString)css)
+            }
+        </style>
+    </DynamicHeadContent>
+}
+
+@code {
+    /// <summary>
+    /// A <see cref="FontFace"/>, created previously.
+    /// </summary>
+    [Parameter]
+    public FontFace? MainFontFace { get; set; }
+    
+    /// <summary>
+    /// A method receiving a <see cref="FontFaceBuilder"/> that builds a
+    /// <see cref="FontFace"/>.
+    /// </summary>
+    [Parameter]
+    public Action<FontFaceBuilder>? MainFontFaceBuilder { get; set; }
+
+    /// <summary>
+    /// Extra font weights (and sources for the weights) to add to the <see cref="MainFontFace"/>.
+    /// Extra font class names can be modified from <see cref="FontWeightClassNames"/>
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Dictionary<FontWeight, Action<FontSourceBuilder>> ExtraFontWeights { get; set; } = [];
+    
+    /// <summary>
+    /// Defaults to the font's display-name. Spaces are replaced with hyphens (<c>-</c>).
+    /// </summary>
+    [Parameter] 
+    public string? ClassName { get; set; }
+
+    private string FormattedClassName
+    {
+        get
+        {
+            if (MainFontFace is not null) return (ClassName ?? MainFontFace.Value.Family)
+                .Replace(' ', '-').Replace('"', (char)0);
+            
+            FontFaceBuilder builder = new();
+            MainFontFaceBuilder!(builder);
+            return (ClassName ?? builder.Build().Family)
+                .Replace(' ', '-').Replace('"', '\u0000');
+        }
+    }
+
+    private string FontFamily
+    {
+        get
+        {
+            if (MainFontFace is not null) return MainFontFace.Value.Family;
+            
+            FontFaceBuilder builder = new();
+            MainFontFaceBuilder!(builder);
+            return builder.Build().Family;
+        }
+    }
+
+    private bool RenderIndividually { get; set; }
+
+    private FontFaceCollection? FontFaceCollection { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (MainFontFace is null && MainFontFaceBuilder is null)
+        {
+            throw new ParameterException("Either a FontFace or FontFaceBuilder method must be provided to the " +
+                                         "Font component.", "FontFace and FontFaceBuilder");
+        }
+
+        FontFaceCollection = ServiceProvider.GetService<FontFaceCollection>();
+        
+        RenderIndividually = FontFaceCollection is null;
+        
+        if (FontFaceCollection is not null)
+        {
+            if (MainFontFace is not null)
+            {
+                FontFaceCollection.Add(FormattedClassName, MainFontFace.Value);
+                foreach ((FontWeight fontWeight, Action<FontSourceBuilder> sourceBuilderMethod) in ExtraFontWeights)
+                {
+                    FontSourceBuilder builder = new();
+                    sourceBuilderMethod(builder);
+                    FontFaceCollection.Add(FormattedClassName, 
+                        MainFontFace.Value with
+                        {
+                            SourceString = builder.ToString(),
+                            Weight = fontWeight.ToString()
+                        });
+                }
+            }
+            else
+            {
+                FontFaceBuilder builder = new();
+                MainFontFaceBuilder!(builder);
+                FontFace fontFace = builder.Build();
+                FontFaceCollection.Add(FormattedClassName, fontFace);
+                
+                foreach ((FontWeight fontWeight, Action<FontSourceBuilder> sourceBuilderMethod) in ExtraFontWeights)
+                {
+                    FontSourceBuilder extraBuilder = new();
+                    sourceBuilderMethod(extraBuilder);
+                    FontFaceCollection.Add(FormattedClassName, 
+                        fontFace with
+                        {
+                            SourceString = extraBuilder.ToString(),
+                            Weight = fontWeight.ToString()
+                        });
+                }
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (FontFaceCollection is not null)
+        {
+            if (MainFontFace is not null)
+            {
+                FontFaceCollection.Remove(FormattedClassName, MainFontFace.Value);
+                
+                foreach ((FontWeight fontWeight, Action<FontSourceBuilder> sourceBuilderMethod) in ExtraFontWeights)
+                {
+                    FontSourceBuilder builder = new();
+                    sourceBuilderMethod(builder);
+                    FontFaceCollection.Remove(FormattedClassName, 
+                        MainFontFace.Value with
+                        {
+                            SourceString = builder.ToString(),
+                            Weight = fontWeight.ToString()
+                        });
+                }
+            }
+            else
+            {
+                FontFaceBuilder builder = new();
+                MainFontFaceBuilder!(builder);
+                FontFace fontFace = builder.Build();
+                FontFaceCollection.Remove(FormattedClassName, fontFace);
+                
+                foreach ((FontWeight fontWeight, Action<FontSourceBuilder> sourceBuilderMethod) in ExtraFontWeights)
+                {
+                    FontSourceBuilder extraBuilder = new();
+                    sourceBuilderMethod(extraBuilder);
+                    FontFaceCollection.Remove(FormattedClassName, 
+                        fontFace with
+                        {
+                            SourceString = extraBuilder.ToString(),
+                            Weight = fontWeight.ToString()
+                        });
+                }
+            }
+        }
+    }
+}
