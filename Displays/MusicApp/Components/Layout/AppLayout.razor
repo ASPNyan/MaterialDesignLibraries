@@ -1,6 +1,8 @@
 ﻿@using MaterialDesign.Icons
 @using MaterialDesign.Theming.Web.MudBlazor
+@using MusicApp.Services
 @inherits LayoutComponentBase
+@inject ScopedSettings Settings
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/AppLayout.css">
@@ -9,7 +11,7 @@
 <MdMudThemeProvider/>
 
 <MdIconConfig Fill="false" Weight="300" Grade="0" OpticalSize="40" LineStyle="@MdIconLineStyle.Sharp">
-    <div id="GridLayout" class="surface-variant secondary-text">
+    <div id="GridLayout" class="surface-variant secondary-text @Settings.CurrentFontClass">
         <div id="Top" class="surface-variant on-surface-variant-text"><DynamicComponentOutlet Id="@TopId"/></div>
         <div id="Left" class="surface-variant on-surface-variant-text"><DynamicComponentOutlet Id="@LeftId"/></div>
         <main class="surface-container">@Body</main>

@@ -19,6 +19,7 @@
     {
         <ThemeOptionsMenu/>
     }
+    <MdIcon Icon="Format Size" class="FontMenu" @onclick="@ToggleFontMenu"/>
 </DynamicComponentContent>
 <DynamicComponentContent OutletId="@AppLayout.LeftId">
     @if (SongPlaying)
@@ -37,12 +38,20 @@
     private bool SongPlaying => SongInfo != SongInfo.Empty;
     
     private bool ThemeMenuOpen { get; set; }
+    private bool FontMenuOpen { get; set; }
     
     private SongTileStyle ListTileStyle { get; set; }
 
     private void ToggleThemeMenu()
     {
         ThemeMenuOpen = !ThemeMenuOpen;
+        if (ThemeMenuOpen) FontMenuOpen = false;
+    }
+
+    private void ToggleFontMenu()
+    {
+        FontMenuOpen = !FontMenuOpen;
+        if (FontMenuOpen) ThemeMenuOpen = false;
     }
 
     protected override void OnInitialized()

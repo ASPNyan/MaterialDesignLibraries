@@ -2,6 +2,7 @@
 using MaterialDesign.Web.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MaterialDesign.Web.Fonts;
 
@@ -10,7 +11,7 @@ internal class FontFaceCollection
     private Dictionary<string, List<FontFace>> FontsByClassName { get; } = [];
     private List<string> UniqueWeights { get; } = [];
 
-    public FontFaceCollection()
+    static FontFaceCollection()
     {
         DynamicHeadOutlet.AddComponentSource<CollectionComponent>();
     }
@@ -27,24 +28,48 @@ internal class FontFaceCollection
 
         string weightClassString = fontFace.Weight.Replace(' ', '-');
         if (!UniqueWeights.Contains(weightClassString)) UniqueWeights.Add(weightClassString);
+        
+        OnUpdate?.Invoke();
     }
     
     public void Remove(string className, FontFace fontFace)
     {
         if (FontsByClassName.TryGetValue(className, out List<FontFace>? existingFontFaces))
             existingFontFaces.Remove(fontFace);
+        
+        OnUpdate?.Invoke();
     }
+
+    private event Action? OnUpdate;
     
-    private class CollectionComponent : ComponentBase
+    private class CollectionComponent : ComponentBase, IDisposable
     {
         [Inject, NotNull] 
-        public FontFaceCollection? FontFaceCollection { get; set; }
+        public IServiceProvider? ServiceProvider { get; set; }
 
+        private FontFaceCollection FontFaceCollection { get; set; } = null!;
         private Dictionary<string, List<FontFace>> FontsByClassName => FontFaceCollection.FontsByClassName;
         private List<string> UniqueWeights => FontFaceCollection.UniqueWeights;
-        
+
+        private async void OnUpdate() => await InvokeAsync(StateHasChanged);
+
+        private bool CanRender { get; set; } = true;
+        protected override void OnInitialized()
+        {
+            FontFaceCollection? temp = ServiceProvider.GetService<FontFaceCollection>();
+            if (temp is null)
+            {
+                CanRender = false;
+                return;
+            }
+            FontFaceCollection = temp;
+            FontFaceCollection.OnUpdate += OnUpdate;
+        }
+
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
+            if (!CanRender) return;
+            
             builder.OpenComponent<DynamicHeadContent>(0);
             builder.AddAttribute(1, "ChildContent", (RenderFragment)(childBuilder =>
             {
@@ -79,6 +104,12 @@ internal class FontFaceCollection
             }));
             
             builder.CloseComponent();
+        }
+
+        public void Dispose()
+        {
+            if (!CanRender) return;
+            FontFaceCollection.OnUpdate -= OnUpdate;
         }
     }
 }

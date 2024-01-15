@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicApp", "Displays\MusicA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesign.Theming.Web.MudBlazor", "_Libs\MaterialDesign.Theming.Web.MudBlazor\MaterialDesign.Theming.Web.MudBlazor.csproj", "{5BD54A5F-F296-4695-AB38-5BE1B91688B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignWebTesting", "Tools\MaterialDesignWebTesting\MaterialDesignWebTesting.csproj", "{3781EACE-6915-42C5-9832-E742D0B1B3C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{5BD54A5F-F296-4695-AB38-5BE1B91688B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BD54A5F-F296-4695-AB38-5BE1B91688B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BD54A5F-F296-4695-AB38-5BE1B91688B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3781EACE-6915-42C5-9832-E742D0B1B3C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3781EACE-6915-42C5-9832-E742D0B1B3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3781EACE-6915-42C5-9832-E742D0B1B3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3781EACE-6915-42C5-9832-E742D0B1B3C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DBD3EAD2-94CC-4D60-9241-2C85B436DE19} = {278B91CB-008A-457F-BE60-615884410B7B}
@@ -97,5 +103,6 @@ Global
 		{C0D3FFFA-EBFC-461A-A9ED-A8CA7DBFF3B9} = {278B91CB-008A-457F-BE60-615884410B7B}
 		{CFB210BC-2AD4-427E-A5C0-EEF8C37FF082} = {D55D7A3B-D7DA-49D5-B6CF-2C5B68A92B58}
 		{5BD54A5F-F296-4695-AB38-5BE1B91688B7} = {278B91CB-008A-457F-BE60-615884410B7B}
+		{3781EACE-6915-42C5-9832-E742D0B1B3C9} = {08DD0B4F-96FD-46D1-AD8D-51D55E4C99FE}
 	EndGlobalSection
 EndGlobal

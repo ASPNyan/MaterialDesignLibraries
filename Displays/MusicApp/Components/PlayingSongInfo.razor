@@ -6,7 +6,7 @@
 @inject SongInfoContainer SongInfoContainer
 @inject HttpClient HttpClient
 @inject ThemeContainer ThemeContainer
-@inject DynamicThemeSettings DynamicThemeSettings
+@inject ScopedSettings ScopedSettings
 @inject IWebHostEnvironment Environment
 
 <DynamicHeadContent>
@@ -28,14 +28,14 @@
         if (!firstRender) return;
         await OnInfoUpdate();
         SongInfoContainer.OnInfoUpdate += OnInfoUpdateVoid;
-        DynamicThemeSettings.OnUpdate += OnInfoUpdateVoid;
+        ScopedSettings.OnUpdate += OnInfoUpdateVoid;
     }
     
     private async Task OnInfoUpdate()
     {
         StateHasChanged();
 
-        if (!DynamicThemeSettings.DynamicTheme) return;
+        if (!ScopedSettings.DynamicTheme) return;
         
         HCTA color;
         if (SongInfo != SongInfo.Empty)

@@ -7,7 +7,7 @@
 @using MusicApp.Services
 @implements IDisposable
 @inject ThemeContainer ThemeContainer
-@inject DynamicThemeSettings DynamicThemeSettings
+@inject ScopedSettings ScopedSettings
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/ThemeOptionsMenu.css">
@@ -19,20 +19,20 @@
         <MdIcon Icon="@GetThemeIconString()" id="ThemeSwitch" class="on-tertiary" @onclick="@SwitchTheme"/>
     </MudTooltip>
     <MudTooltip Text="Toggle Dynamic Theming" RootClass="DynamicTooltip" Class="ThemeSettingsTooltip">
-        <MdIcon Icon="@GetDynamicIconString()" id="DynamicSwitch" class="on-tertiary" @onclick="@DynamicThemeSettings.ToggleDynamicTheme"/>
+        <MdIcon Icon="@GetDynamicIconString()" id="DynamicSwitch" class="on-tertiary" @onclick="@ScopedSettings.ToggleDynamicTheme"/>
     </MudTooltip>
     <HCTSelector Hue="@Hcta.H" Chroma="@Hcta.C" Tone="@Hcta.T" @bind-OnHCTUpdate="@OnHCTUpdate" UseParentDiv="false">
         <HSlider>
             <MudSlider T="double" Min="0" Max="359" Value="@Hcta.H" ValueChanged="@OnHueUpdate" Class="HueSlider Slider"
-                       ValueLabel="true" Size="@Size.Medium" Disabled="@DynamicThemeSettings.DynamicTheme"/>
+                       ValueLabel="true" Size="@Size.Medium" Disabled="@ScopedSettings.DynamicTheme"/>
         </HSlider>
         <CSlider>
             <MudSlider T="double" Min="0" Max="150" Value="@Hcta.C" ValueChanged="OnChromaUpdate" Class="ChromaSlider Slider"
-                       ValueLabel="true" Size="@Size.Medium" Disabled="@DynamicThemeSettings.DynamicTheme" Variant="@Variant.Filled"/>
+                       ValueLabel="true" Size="@Size.Medium" Disabled="@ScopedSettings.DynamicTheme" Variant="@Variant.Filled"/>
         </CSlider>
         <TSlider>
             <MudSlider T="double" Min="0" Max="100" Value="@Hcta.T" ValueChanged="OnToneUpdate" Class="ToneSlider Slider"
-                       ValueLabel="true" Size="@Size.Medium" Disabled="@DynamicThemeSettings.DynamicTheme" Variant="@Variant.Filled"/>
+                       ValueLabel="true" Size="@Size.Medium" Disabled="@ScopedSettings.DynamicTheme" Variant="@Variant.Filled"/>
         </TSlider>
     </HCTSelector>
 </div>
@@ -42,7 +42,7 @@
     private Func<Task>? OnHCTUpdate { get; set; }
     
     private string GetThemeIconString() => (ThemeContainer.Theme.IsDarkScheme ? "Dark" : "Light") + " Mode";
-    private string GetDynamicIconString() => "Invert Colors " + (DynamicThemeSettings.DynamicTheme ? "Off" : string.Empty);
+    private string GetDynamicIconString() => "Invert Colors " + (ScopedSettings.DynamicTheme ? "Off" : string.Empty);
 
     private void SwitchTheme()
     {
@@ -78,7 +78,7 @@
 
     private async void OnThemeUpdate()
     {
-        if (DynamicThemeSettings.DynamicTheme)
+        if (ScopedSettings.DynamicTheme)
         {
             Hcta = ThemeContainer.Theme.Origin ?? ThemeContainer.Theme.Primary;
             if (OnHCTUpdate is not null) await OnHCTUpdate();

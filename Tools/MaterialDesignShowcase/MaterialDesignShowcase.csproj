@@ -12,6 +12,7 @@
       <ProjectReference Include="..\..\_Libs\MaterialDesign.Color\MaterialDesign.Color.csproj" />
       <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming.Web\MaterialDesign.Theming.Web.csproj" />
       <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming\MaterialDesign.Theming.csproj" />
+      <ProjectReference Include="..\..\_Libs\MaterialDesign.Web\MaterialDesign.Web.csproj" />
       <ProjectReference Include="..\MaterialDesignShowcase.Client\MaterialDesignShowcase.Client.csproj" />
     </ItemGroup>
 

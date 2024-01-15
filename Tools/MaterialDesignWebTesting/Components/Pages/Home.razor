@@ -1,0 +1,93 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<DynamicFont ClassName="Roboto" FontFaceBuilder="@Roboto" />
+<DynamicFontCollection ClassName="Poppins" MainFontFaceBuilder="@Poppins" ExtraFontWeights="ExtraPoppinsWeights"/>
+
+<div class="Roboto">
+    <h1>Hello, world!</h1>
+
+    Welcome to this app. This text is all in Roboto font.
+</div>
+
+<ScopedFont FontFaceBuilder="@ZillaSlab">
+    This is Zilla Slab, provided as a scoped font.
+</ScopedFont>
+
+<ScopedFont FontFaceBuilder="@CabinSketch" ObfuscateFontFamily="true">
+    This is Cabin Sketch, provided as a scoped font with obfuscation in CSS/HTML to prevent collisions with other code.<br/>
+    If this has been run in debug mode, the obfuscation will not appear.
+</ScopedFont>
+
+<p class="Poppins">
+    <span class="thin">This is</span>
+    <span class="extra-light">Poppins, and</span>
+    <span class="light">this sentence</span> 
+    gradually increases
+    <span class="medium">in weight</span>
+    <span class="semi-bold">in orders of</span>
+    <span class="bold">100, from 100</span> 
+    <span class="extra-bold">(thin) to</span>
+    <span class="black">900 (black)</span>
+</p>
+
+@code {
+    private static void Roboto(FontFaceBuilder builder)
+    {
+        builder
+            .FontFamily("Roboto")
+            .FontWeight(new FontWeight(FontWeightValue.Regular))
+            .FontSource(sourceBuilder => 
+                sourceBuilder.AddUrlSource("https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2",
+                    FontFormat.Woff2));
+    }
+
+    private static void ZillaSlab(FontFaceBuilder builder)
+    {
+        builder
+            .FontFamily("Zilla Slab")
+            .FontWeight(new FontWeight(FontWeightValue.Regular))
+            .FontSource(sourceBuilder =>
+                sourceBuilder.AddUrlSource("https://fonts.gstatic.com/s/zillaslab/v11/dFa6ZfeM_74wlPZtksIFajo6_Q.woff2",
+                    FontFormat.Woff2));
+    }
+
+    private static void CabinSketch(FontFaceBuilder builder)
+    {
+        builder
+            .FontFamily("Cabin Sketch")
+            .FontWeight(new FontWeight(FontWeightValue.Regular))
+            .FontSource(sourceBuilder =>
+                sourceBuilder.AddUrlSource("https://fonts.gstatic.com/s/cabinsketch/v21/QGYpz_kZZAGCONcK2A4bGOj8mNhN.woff2",
+                    FontFormat.Woff2));
+    }
+
+    private static void Poppins(FontFaceBuilder builder)
+    {
+        builder
+            .FontFamily("Poppins")
+            .FontWeight(new FontWeight(FontWeightValue.Regular))
+            .FontSource(sourceBuilder =>
+                sourceBuilder.AddUrlSource("https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfecg.woff2",
+                    FontFormat.Woff2));
+    }
+
+    private static FontWeight FontWeight(FontWeightValue weight) => new(weight);
+    
+    private static Action<FontSourceBuilder> PoppinsSource(string url) => 
+        builder => builder.AddLocalSource("Poppins").AddUrlSource(url, FontFormat.Woff2);
+
+    private static Dictionary<FontWeight, Action<FontSourceBuilder>> ExtraPoppinsWeights { get; } = new()
+    {
+        { FontWeight(FontWeightValue.Thin), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiGyp8kv8JHgFVrLPTucHtA.woff2") },
+        { FontWeight(FontWeightValue.ExtraLight), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLFj_Z1xlFQ.woff2") },
+        { FontWeight(FontWeightValue.Light), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLDz8Z1xlFQ.woff2") },
+        { FontWeight(FontWeightValue.Medium), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLGT9Z1xlFQ.woff2") },
+        { FontWeight(FontWeightValue.SemiBold), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLEj6Z1xlFQ.woff2") },
+        { FontWeight(FontWeightValue.Bold), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLCz7Z1xlFQ.woff2") },
+        { FontWeight(FontWeightValue.ExtraBold), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLDD4Z1xlFQ.woff2") },
+        { FontWeight(FontWeightValue.Black), PoppinsSource("https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLBT5Z1xlFQ.woff2") }
+    };
+
+}

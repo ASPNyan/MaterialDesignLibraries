@@ -1,0 +1,84 @@
+﻿@using MaterialDesign.Web.Exceptions
+@using MaterialDesign.Web.Fonts
+
+@* Not doing a check for the FontFaceCollection because it will be annoying to use the attribute in *@
+@* That's also a lie but whatever, it's a separate thing from the standard dynamic fonts *@
+<DynamicHeadContent>
+    <style> 
+@@font-face {
+  font-family: @((MarkupString)ComputedFontFace.Family);
+  font-weight: @((MarkupString)ComputedFontFace.Weight);
+  @((MarkupString)ComputedFontFace.SourceString)
+}
+#@Id {
+  font-family: @((MarkupString)ComputedFontFace.Family) !important;
+}
+    </style>
+</DynamicHeadContent>
+
+<div id="@Id" @attributes="@Attributes">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// A <see cref="Fonts.FontFace"/>, created previously.
+    /// </summary>
+    [Parameter]
+    public FontFace? FontFace { get; set; }
+    
+    /// <summary>
+    /// A method receiving a <see cref="Fonts.FontFaceBuilder"/> that builds a
+    /// <see cref="Fonts.FontFace"/>.
+    /// </summary>
+    [Parameter]
+    public Action<FontFaceBuilder>? FontFaceBuilder { get; set; }
+    
+    /// <summary>
+    /// Whether or not the font family should be obfuscated. The font family is never obfuscated in debug, regardless
+    /// of this setting.
+    /// </summary>
+    [Parameter]
+    public bool ObfuscateFontFamily { get; set; }
+    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? Attributes { get; set; }
+    
+    private string Id { get; } = $"_{Guid.NewGuid()}";
+
+    private FontFace ComputedFontFace { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (FontFace is null && FontFaceBuilder is null)
+        {
+            throw new ParameterException("Either a FontFace or FontFaceBuilder method must be provided to the " +
+                                         "ScopedFont component.", "FontFace and FontFaceBuilder");
+        }
+
+        if (ChildContent is null)
+            throw new ParameterException("ChildContent must be provided to ScopedFont components", nameof(ChildContent));
+
+        if (FontFace is not null) ComputedFontFace = FontFace.Value;
+        else
+        {
+            FontFaceBuilder builder = new();
+            FontFaceBuilder!(builder);
+            ComputedFontFace = builder.Build();
+        }
+
+        if (ComputedFontFace.Weight.Contains(' '))
+        {
+            throw new ParameterException("The FontWeight provided to the ScopedFont must not be a range.",
+                "FontFace or FontFaceBuilder");
+        }
+
+#if !DEBUG
+        if (ObfuscateFontFamily) ComputedFontFace = ComputedFontFace with { Family = Id };
+#endif
+    }
+
+}

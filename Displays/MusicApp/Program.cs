@@ -23,7 +23,7 @@ internal static class Program
             .AddDynamicMaterialIconsToWebApplication()
             .AddMaterialThemeService(new Theme(DefaultThemeSource))
             .AddScoped<SongInfoContainer>()
-            .AddScoped<DynamicThemeSettings>()
+            .AddScoped<ScopedSettings>()
             .AddScoped<HttpClient>()
             .AddDynamicHeadStorage()
             .AddDynamicComponentStorage()
