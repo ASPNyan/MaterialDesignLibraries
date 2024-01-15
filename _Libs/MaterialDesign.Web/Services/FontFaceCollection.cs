@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using MaterialDesign.Web.Components;
+using MaterialDesign.Web.Fonts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MaterialDesign.Web.Fonts;
+namespace MaterialDesign.Web.Services;
 
 internal class FontFaceCollection
 {

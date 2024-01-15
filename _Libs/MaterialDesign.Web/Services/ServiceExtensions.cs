@@ -15,4 +15,7 @@ public static class ServiceExtensions
     /// </summary>
     public static IServiceCollection AddDynamicComponentStorage(this IServiceCollection serviceCollection) =>
         serviceCollection.AddScoped<DynamicComponentStorage>();
+    
+    public static IServiceCollection AddFontCollection(this IServiceCollection serviceCollection) =>
+        serviceCollection.AddScoped<FontFaceCollection>();
 }
