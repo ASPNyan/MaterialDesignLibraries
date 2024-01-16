@@ -61,20 +61,26 @@ public readonly struct FontWeight
     }
     
     
-    private static string GetCSSValue(string value) =>
-        int.TryParse(value, out int intValue)
-            ? $"{intValue}"
-            : Enum.TryParse(value, true, out FontWeightValue enumValue)
-                ? enumValue switch
-                    {
-                        FontWeightValue.Lighter => "lighter",
-                        FontWeightValue.Bolder => "bolder",
-                        FontWeightValue.Regular or FontWeightValue.Normal => "normal",
-                        FontWeightValue.Bold => "bold",
-                        _ => $"{(int)enumValue}"
-                    }
-                : throw new Exception("Invalid weight provided.");
-    
+    private static string GetCSSValue(string value)
+    {
+        if (int.TryParse(value, out int intValue))
+            return $"{intValue}";
+        
+        if (Enum.TryParse(value, true, out FontWeightValue enumValue))
+        {
+            return enumValue switch
+            {
+                FontWeightValue.Lighter => "lighter",
+                FontWeightValue.Bolder => "bolder",
+                FontWeightValue.Regular or FontWeightValue.Normal => "normal",
+                FontWeightValue.Bold => "bold",
+                _ => $"{(int)enumValue}"
+            };
+        }
+
+        throw new Exception("Invalid weight provided.");
+    }
+
     public override string ToString()
     {
         if (Lower == Upper)
