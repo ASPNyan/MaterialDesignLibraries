@@ -1,4 +1,6 @@
-﻿namespace MaterialDesign.Theming;
+﻿using MaterialDesign.Color.Palettes;
+
+namespace MaterialDesign.Theming;
 
 public interface IScheme
 {
@@ -62,4 +64,9 @@ public interface IScheme
     public HCTA TertiaryFixedDim { get; }
     public HCTA OnTertiaryFixed { get; }
     public HCTA OnTertiaryFixedVariant { get; }
+    
+    public HCTA Error => CorePalette.ErrorPalette.GetWithTone(IsDarkScheme ? 80 : 40);
+    public HCTA OnError => CorePalette.ErrorPalette.GetWithTone(Error.T + (IsDarkScheme ? -60 : 60));
+    public HCTA ErrorContainer => CorePalette.ErrorPalette.GetWithTone(Error.T + (IsDarkScheme ? -50 : 50));
+    public HCTA OnErrorContainer => CorePalette.ErrorPalette.GetWithTone(IsDarkScheme ? 90 : 10);
 }
