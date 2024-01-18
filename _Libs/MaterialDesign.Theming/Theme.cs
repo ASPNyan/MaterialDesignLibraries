@@ -9,7 +9,7 @@ namespace MaterialDesign.Theming;
 /// A Material Theme, containing getters for all colors in the active <see cref="Scheme"/> as well as methods to update
 /// the scheme, and support for custom color roles (see https://m3.material.io/styles/color/advanced/define-new-colors)
 /// </summary>
-public class Theme : IThemeSource
+public class Theme : IThemeSource, IScheme
 {
     /// <summary>
     /// The color that created the theme, null when theme is created with multiple colours.

@@ -1,5 +1,10 @@
 ﻿namespace MaterialDesign.Color.Schemes;
 
+[Obsolete("""
+          Scheme in the base MaterialDesign.Color library is obsolete, and was not intended to be released. It is not used in code in any of the MaterialDesign.* libraries.
+          Please reference MaterialDesign.Theming and use its Scheme class instead.
+          This class will be removed in the next major release.
+          """)]
 public readonly struct Scheme(CorePalette palette, bool isDark)
 {
     public CorePalette Palette { get; } = palette;

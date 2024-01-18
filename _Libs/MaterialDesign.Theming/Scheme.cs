@@ -6,8 +6,13 @@ namespace MaterialDesign.Theming;
 /// A Material Design color scheme, providing all the different types of color roles provided by default, alongside
 /// fixed, dimmed, and variant colors, all based on whether the scheme is light or dark.
 /// </summary>
-public readonly struct Scheme(TonalPalette primary, TonalPalette secondary, TonalPalette tertiary, TonalPalette neutral,
-    TonalPalette neutralVariant, bool isDark)
+public readonly struct Scheme(
+    TonalPalette primary,
+    TonalPalette secondary,
+    TonalPalette tertiary,
+    TonalPalette neutral,
+    TonalPalette neutralVariant,
+    bool isDark) : IScheme
 {
     public bool IsDark { get; init; } = isDark;
 

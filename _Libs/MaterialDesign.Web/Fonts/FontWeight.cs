@@ -83,8 +83,7 @@ public readonly struct FontWeight
 
     public override string ToString()
     {
-        if (Lower == Upper)
-            return GetCSSValue(Lower);
+        if (Lower == Upper) return GetCSSValue(Lower);
         
         return $"{GetCSSValue(Lower)} {GetCSSValue(Upper)}";
     }
