@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
     
     private static bool _themeServiceSet;
 
+    // The theme service shouldn't even be a thing honestly. There will be no replacement of it. Remove in next major.
+    [Obsolete("Obsolete due to ThemeContainer.Theme")]
     private static void SetThemeService(IServiceCollection serviceCollection)
     {
         if (_themeServiceSet) return;
@@ -27,10 +29,19 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection, Theme theme)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         SetThemeService(serviceCollection);
-        return serviceCollection.AddScoped<ThemeContainer>(_ => ThemeContainer.CreateFromTheme(theme));
+#pragma warning restore CS0618 // Type or member is obsolete
+        return serviceCollection.AddScoped<ThemeContainer>(_ => ThemeContainer.CreateFromScheme(theme));
     }
-    
+
+    /// <summary>
+    /// Adds Material Theming services to Dependency Injection through the <see cref="IServiceCollection"/>
+    /// by creating a <see cref="ThemeContainer"/> with the supplied <paramref name="scheme"/>.
+    /// </summary>
+    public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection, IScheme scheme) => 
+        serviceCollection.AddScoped<ThemeContainer>(_ => ThemeContainer.CreateFromScheme(scheme));
+
     /// <summary>
     /// Adds Material Theming services to Dependency Injection through the <see cref="IServiceCollection"/>
     /// by creating a <see cref="ThemeContainer"/> with the supplied <see cref="IThemeSource"/> <paramref name="themeSource"/>.
@@ -38,7 +49,9 @@ public static class ServiceCollectionExtensions
     public static async Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
         IThemeSource themeSource)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         SetThemeService(serviceCollection);
+#pragma warning restore CS0618 // Type or member is obsolete
         ThemeContainer container = await ThemeContainer.CreateFromThemeSource(themeSource);
         return serviceCollection.AddScoped<ThemeContainer>(_ => container);
     }
@@ -85,9 +98,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection,
         ThemeFromServiceProvider builderMethod, Theme? fallback = null)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         SetThemeService(serviceCollection);
+#pragma warning restore CS0618 // Type or member is obsolete
         return serviceCollection.AddScoped<ThemeContainer>(serviceProvider =>
-            ThemeContainer.CreateFromTheme(TryWithFallback(() => builderMethod(serviceProvider), fallback)));
+            ThemeContainer.CreateFromScheme(TryWithFallback(() => builderMethod(serviceProvider), fallback)));
     }
 
     /// <summary>
@@ -98,7 +113,9 @@ public static class ServiceCollectionExtensions
     public static async Task<IServiceCollection> AddMaterialThemeService(this IServiceCollection serviceCollection,
         ThemeSourceFromBuilder builderMethod, IThemeSource? fallback = null)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         SetThemeService(serviceCollection);
+#pragma warning restore CS0618 // Type or member is obsolete
         ThemeContainer container = await ThemeContainer.CreateFromThemeSource(await TryWithFallback(
             () => builderMethod(new ThemeSourceBuilder()), fallback));
         return serviceCollection.AddScoped<ThemeContainer>(_ => container);
@@ -112,9 +129,11 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static void AddMaterialThemeService(this IServiceCollection serviceCollection)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         SetThemeService(serviceCollection);
+#pragma warning restore CS0618 // Type or member is obsolete
 
-        serviceCollection.AddSingleton<ThemeContainer>(_ => ThemeContainer.CreateFromTheme(null!));
+        serviceCollection.AddSingleton<ThemeContainer>(_ => ThemeContainer.CreateFromScheme(null!));
 
         CheckSetFail = true;
     }
@@ -132,7 +151,7 @@ public static class ServiceCollectionExtensions
         ThemeContainer result = await ThemeContainer.CreateFromThemeSource(
                 await TryWithFallback(() => builderMethod(new ThemeSourceBuilder(), serviceProvider), fallback));
         
-        serviceProvider.GetRequiredService<ThemeContainer>().UpdateTheme(result.Theme);
+        serviceProvider.GetRequiredService<ThemeContainer>().UpdateScheme(result.Scheme);
 
         CheckSetFail = false;
     }

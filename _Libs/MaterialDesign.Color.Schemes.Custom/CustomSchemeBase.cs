@@ -1,4 +1,5 @@
 ﻿using MaterialDesign.Color.Extensions;
+// ReSharper disable UnusedAutoPropertyAccessor.Global | Remove IDE highlighting for unused get accessors
 
 #pragma warning disable CA2208 // Disable in file for all uses. Prevents ArgumentOutOfRange warnings from appearing
 
@@ -27,7 +28,83 @@ public abstract record CustomSchemeBase
     public event Action? OnUpdate;
     
     public bool IsDark { get; private set; }
-    public CustomCorePalette Palette { get; private set; }
+
+    #nullable disable
+    #region Colors
+
+    private bool BlackAndWhiteText { get; set; }
+
+    public HCTA GetText(Func<HCTA> colorMethod)
+    {
+        HCTA color = colorMethod();
+        
+        if (BlackAndWhiteText)
+        {
+            if (color.T <= 50) return new HCTA(0, 0, 0);
+            return new HCTA(0, 0, 100);
+        }
+
+        return color;
+    }
+    
+    public Func<HCTA> Primary { get; private set; }
+    public Func<HCTA> OnPrimary { get; private set; }
+    public Func<HCTA> PrimaryContainer { get; private set; }
+    public Func<HCTA> OnPrimaryContainer { get; private set; }
+    
+    public Func<HCTA> Secondary { get; private set; }
+    public Func<HCTA> OnSecondary { get; private set; }
+    public Func<HCTA> SecondaryContainer { get; private set; }
+    public Func<HCTA> OnSecondaryContainer { get; private set; }
+    
+    public Func<HCTA> Tertiary { get; private set; }
+    public Func<HCTA> OnTertiary { get; private set; }
+    public Func<HCTA> TertiaryContainer { get; private set; }
+    public Func<HCTA> OnTertiaryContainer { get; private set; }
+
+    public Func<HCTA> Outline { get; private set; }
+    public Func<HCTA> OutlineVariant { get; private set; }
+    
+    public Func<HCTA> Background { get; private set; }
+    public Func<HCTA> OnBackground { get; private set; }
+    public Func<HCTA> SurfaceVariant { get; private set; }
+    public Func<HCTA> OnSurfaceVariant { get; private set; }
+    
+    public Func<HCTA> SurfaceInverse { get; private set; }
+    public Func<HCTA> OnSurfaceInverse { get; private set; }
+    public Func<HCTA> SurfaceBright { get; private set; }
+    public Func<HCTA> SurfaceDim { get; private set; }
+    
+    public Func<HCTA> SurfaceContainer { get; private set; }
+    public Func<HCTA> SurfaceContainerLow { get; private set; }
+    public Func<HCTA> SurfaceContainerLowest { get; private set; }
+    public Func<HCTA> SurfaceContainerHigh { get; private set; }
+    public Func<HCTA> SurfaceContainerHighest { get; private set; }
+
+    private const int FixedTone = 90;
+    private const int FixedDimTone = 80;
+    private const int OnFixedTone = 10;
+    private const int OnFixedBrightTone = 30;
+
+    private static HCTA FixedColor(HCTA color, int tone) => new(color.H, color.C, tone);
+    
+    public HCTA PrimaryFixed() => FixedColor(Primary(), FixedTone);
+    public HCTA PrimaryFixedDim() => FixedColor(Primary(), FixedDimTone);
+    public HCTA OnPrimaryFixed() => FixedColor(Primary(), OnFixedTone);
+    public HCTA OnPrimaryFixedBright() => FixedColor(Primary(), OnFixedBrightTone);
+    
+    public HCTA SecondaryFixed() => FixedColor(Secondary(), FixedTone);
+    public HCTA SecondaryFixedDim() => FixedColor(Secondary(), FixedDimTone);
+    public HCTA OnSecondaryFixed() => FixedColor(Secondary(), OnFixedTone);
+    public HCTA OnSecondaryFixedBright() => FixedColor(Secondary(), OnFixedBrightTone);
+    
+    public HCTA TertiaryFixed() => FixedColor(Tertiary(), FixedTone);
+    public HCTA TertiaryFixedDim() => FixedColor(Tertiary(), FixedDimTone);
+    public HCTA OnTertiaryFixed() => FixedColor(Tertiary(), OnFixedTone);
+    public HCTA OnTertiaryFixedBright() => FixedColor(Tertiary(), OnFixedBrightTone);
+
+    #endregion
+    #nullable restore
     
     /// <summary>
     /// Whether the text should be colored or black & white.
@@ -44,14 +121,14 @@ public abstract record CustomSchemeBase
     /// </summary>
     protected abstract ToneGap DarkLightGap { get; }
     /// <summary>
-    /// The visual distance between a color role and its "on" variant (e.g. <see cref="CustomCorePalette.Primary"/> and
-    /// <see cref="CustomCorePalette.OnPrimary"/>). All options still insure at least a minimal contrast of 4.5 for
+    /// The visual distance between a color role and its "on" variant (e.g. <see cref="Primary"/> and
+    /// <see cref="OnPrimary"/>). All options still insure at least a minimal contrast of 4.5 for
     /// accessibility.
     /// </summary>
     protected abstract ToneGap OnColorGap { get; }
     /// <summary>
-    /// The visual distance between a color role its container variant (e.g. <see cref="CustomCorePalette.Primary"/> and
-    /// <see cref="CustomCorePalette.PrimaryContainer"/>). All options still insure at least a minimal contrast of 4.5
+    /// The visual distance between a color role its container variant (e.g. <see cref="Primary"/> and
+    /// <see cref="PrimaryContainer"/>). All options still insure at least a minimal contrast of 4.5
     /// for accessibility.
     /// </summary>
     protected abstract ToneGap CoreContainerGap { get; }
@@ -189,37 +266,34 @@ public abstract record CustomSchemeBase
         TonalPalette surfacePalette = new(surfaceSource);
         TonalPalette surfaceVariantPalette = new(new HCTA(surfacePalette.Hue, GetSurfaceVariantChroma(), 50));
 
-        Palette = new CustomCorePalette
-        {
-            BlackAndWhiteText = TextStyle is TextStyleType.BlackAndWhite,
-            Primary = CustomSourcePaletteMethod(primaryPalette.Core),
-            OnPrimary = CustomSourcePaletteMethod(primaryPalette.OnCore),
-            PrimaryContainer = CustomSourcePaletteMethod(primaryPalette.Container),
-            OnPrimaryContainer = CustomSourcePaletteMethod(primaryPalette.OnContainer),
-            Secondary = CustomSourcePaletteMethod(secondaryPalette.Core),
-            OnSecondary = CustomSourcePaletteMethod(secondaryPalette.OnCore),
-            SecondaryContainer = CustomSourcePaletteMethod(secondaryPalette.Container),
-            OnSecondaryContainer = CustomSourcePaletteMethod(secondaryPalette.OnContainer),
-            Tertiary = CustomSourcePaletteMethod(tertiaryPalette.Core),
-            OnTertiary = CustomSourcePaletteMethod(tertiaryPalette.OnCore),
-            TertiaryContainer = CustomSourcePaletteMethod(tertiaryPalette.Container),
-            OnTertiaryContainer = CustomSourcePaletteMethod(tertiaryPalette.OnContainer),
-            Outline = () => surfaceVariantPalette.GetWithTone(IsDark ? 60 : 50),
-            OutlineVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 80 : 30),
-            Background = () => surfacePalette.GetWithTone(IsDark ? 6 : 98),
-            OnBackground = () => surfacePalette.GetWithTone(IsDark ? 90 : 10),
-            SurfaceVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 30 : 90),
-            OnSurfaceVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 80 : 30),
-            SurfaceInverse = () => surfacePalette.GetWithTone(IsDark ? 90 : 20),
-            OnSurfaceInverse = () => surfacePalette.GetWithTone(IsDark ? 90 : 20),
-            SurfaceBright = () => surfacePalette.GetWithTone(IsDark ? 90 : 20),
-            SurfaceDim = () => surfacePalette.GetWithTone(IsDark ? 90 : 20),
-            SurfaceContainer = () => surfacePalette.GetWithTone(IsDark ? 12 : 94),
-            SurfaceContainerLow = () => surfacePalette.GetWithTone(IsDark ? 10 : 96),
-            SurfaceContainerLowest = () => surfacePalette.GetWithTone(IsDark ? 4 : 100),
-            SurfaceContainerHigh = () => surfacePalette.GetWithTone(IsDark ? 17 : 92),
-            SurfaceContainerHighest = () => surfacePalette.GetWithTone(IsDark ? 22 : 90)
-        };
+        BlackAndWhiteText = TextStyle is TextStyleType.BlackAndWhite;
+        Primary = CustomSourcePaletteMethod(primaryPalette.Core);
+        OnPrimary = CustomSourcePaletteMethod(primaryPalette.OnCore);
+        PrimaryContainer = CustomSourcePaletteMethod(primaryPalette.Container);
+        OnPrimaryContainer = CustomSourcePaletteMethod(primaryPalette.OnContainer);
+        Secondary = CustomSourcePaletteMethod(secondaryPalette.Core);
+        OnSecondary = CustomSourcePaletteMethod(secondaryPalette.OnCore);
+        SecondaryContainer = CustomSourcePaletteMethod(secondaryPalette.Container);
+        OnSecondaryContainer = CustomSourcePaletteMethod(secondaryPalette.OnContainer);
+        Tertiary = CustomSourcePaletteMethod(tertiaryPalette.Core);
+        OnTertiary = CustomSourcePaletteMethod(tertiaryPalette.OnCore);
+        TertiaryContainer = CustomSourcePaletteMethod(tertiaryPalette.Container);
+        OnTertiaryContainer = CustomSourcePaletteMethod(tertiaryPalette.OnContainer);
+        Outline = () => surfaceVariantPalette.GetWithTone(IsDark ? 60 : 50);
+        OutlineVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 80 : 30);
+        Background = () => surfacePalette.GetWithTone(IsDark ? 6 : 98);
+        OnBackground = () => surfacePalette.GetWithTone(IsDark ? 90 : 10);
+        SurfaceVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 30 : 90);
+        OnSurfaceVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 80 : 30);
+        SurfaceInverse = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
+        OnSurfaceInverse = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
+        SurfaceBright = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
+        SurfaceDim = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
+        SurfaceContainer = () => surfacePalette.GetWithTone(IsDark ? 12 : 94);
+        SurfaceContainerLow = () => surfacePalette.GetWithTone(IsDark ? 10 : 96);
+        SurfaceContainerLowest = () => surfacePalette.GetWithTone(IsDark ? 4 : 100);
+        SurfaceContainerHigh = () => surfacePalette.GetWithTone(IsDark ? 17 : 92);
+        SurfaceContainerHighest = () => surfacePalette.GetWithTone(IsDark ? 22 : 90);
 
         return;
 

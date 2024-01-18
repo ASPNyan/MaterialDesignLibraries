@@ -25,7 +25,21 @@ public readonly struct Scheme(
     private int OnCore => Core + SignViaDark(60);
     private int CoreContainer => Core + SignViaDark(50);
     private int OnCoreContainer => IsDark ? 90 : 10;
-    
+
+    bool IScheme.IsDarkScheme => IsDark;
+
+    void IScheme.SetDark() => 
+        throw new InvalidOperationException("Swapping between dark and light mode is not supported on Theming.Scheme");
+
+    void IScheme.SetLight() => 
+        throw new InvalidOperationException("Swapping between dark and light mode is not supported on Theming.Scheme");
+
+    event Action? IScheme.OnUpdate
+    {
+        add { }
+        remove { }
+    }
+
     public HCTA Primary => primary.GetWithTone(Core);
     public HCTA OnPrimary => primary.GetWithTone(OnCore);
     public HCTA PrimaryContainer => primary.GetWithTone(CoreContainer);

@@ -11,6 +11,7 @@
         <PackageProjectUrl>https://github.com/ASPNyan/MaterialDesignLibraries</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
+        <Version>1.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,6 +2,12 @@
 
 public interface IScheme
 {
+    public bool IsDarkScheme { get; }
+    public void SetDark();
+    public void SetLight();
+
+    public event Action OnUpdate;
+    
     public HCTA Primary { get; }
     public HCTA OnPrimary { get; }
     public HCTA PrimaryContainer { get; }

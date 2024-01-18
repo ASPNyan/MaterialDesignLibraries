@@ -1,34 +1,32 @@
 ﻿namespace MaterialDesign.Theming.Injection;
 
 /// <summary>
-/// A container class used to wrap a <see cref="Theming.Theme"/>, used in dependency injection. Supports <see cref="IThemeSource"/>s
+/// A container class used to wrap a <see cref="IScheme"/>, used in dependency injection. Supports <see cref="IThemeSource"/>s.
 /// </summary>
-public class ThemeContainer
+public class ThemeContainer // Update to SchemeContainer in next major.
 {
-    private Theme _theme;
-
-    public Theme Theme
-    {
-        get => _theme;
-        private set => _theme = value;
-    }
-
-    private static void CheckCreation()
-    {
-        if (ServiceCollectionExtensions.CheckSetFail)
-            throw new Exception("ThemeContainer cannot be used when SetMaterialThemeService was not called.");
-    }
+    [Obsolete("Please use Scheme instead of Theme, as Theme will be removed in the next major update.")]
+    public Theme Theme => Scheme as Theme ?? throw new InvalidOperationException(
+        "Current scheme is not a theme, but an alternative IScheme-implementing class.");
+    public IScheme Scheme { get; private set; }
     
-    private ThemeContainer(Theme theme)
+    private ThemeContainer(IScheme theme)
     {
-        _theme = theme;
+        Scheme = theme;
         SubscribeToEvent();
     }
+
 
     /// <summary>
     /// Creates a new ThemeContainer from a <see cref="Theming.Theme"/>
     /// </summary>
+    [Obsolete("Please switch to CreateFromScheme instead of CreateFromTheme")]
     public static ThemeContainer CreateFromTheme(Theme theme) => new(theme);
+    
+    /// <summary>
+    /// Creates a new ThemeContainer from a <see cref="Theming.IScheme"/>
+    /// </summary>
+    public static ThemeContainer CreateFromScheme(IScheme scheme) => new(scheme);
     
     /// <summary>
     /// Creates a new ThemeContainer from a <see cref="IThemeSource"/> after converting it to a <see cref="Theming.Theme"/>.
@@ -42,17 +40,35 @@ public class ThemeContainer
     /// Updates the ThemeContainer's <see cref="Theme"/>, calling <see cref="OnThemeUpdate"/> after.
     /// </summary>
     /// <param name="newTheme">The new, latest and greatest, theme.</param>
+    [Obsolete("Please switch to UpdateScheme instead of UpdateTheme")]
     public void UpdateTheme(Theme newTheme)
     {
         UnsubscribeFromEvent();
         
-        bool wasDark = Theme?.IsDarkScheme ?? false;
-        Theme = newTheme;
-        if (wasDark) Theme.SetDark();
-        else Theme.SetLight();
+        bool wasDark = Scheme?.IsDarkScheme ?? false;
+        Scheme = newTheme;
+        if (wasDark) Scheme.SetDark();
+        else Scheme.SetLight();
         
         SubscribeToEvent();
-        OnThemeUpdate?.Invoke();
+        OnSchemeUpdate?.Invoke();
+    }
+    
+    /// <summary>
+    /// Updates the ThemeContainer's <see cref="Scheme"/>, calling <see cref="OnThemeUpdate"/> after.
+    /// </summary>
+    /// <param name="newScheme">The new, latest and greatest, theme.</param>
+    public void UpdateScheme(IScheme newScheme)
+    {
+        UnsubscribeFromEvent();
+        
+        bool wasDark = Scheme?.IsDarkScheme ?? false;
+        Scheme = newScheme;
+        if (wasDark) Scheme.SetDark();
+        else Scheme.SetLight();
+        
+        SubscribeToEvent();
+        OnSchemeUpdate?.Invoke();
     }
     
     /// <summary>
@@ -64,36 +80,48 @@ public class ThemeContainer
     {
         UnsubscribeFromEvent();
         
-        bool wasDark = Theme?.IsDarkScheme ?? false;
-        Theme = await themeSource.GetTheme();
-        if (wasDark) Theme.SetDark();
-        else Theme.SetLight();
+        bool wasDark = Scheme?.IsDarkScheme ?? false;
+        Scheme = await themeSource.GetTheme();
+        if (wasDark) Scheme.SetDark();
+        else Scheme.SetLight();
         
         SubscribeToEvent();
-        OnThemeUpdate?.Invoke();
+        OnSchemeUpdate?.Invoke();
     }
 
-    private void ThemeUpdate() => OnThemeUpdate?.Invoke();
+    
+    private void SchemeUpdate() => OnSchemeUpdate?.Invoke();
 
     // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
     private void SubscribeToEvent()
     {
-        if (Theme is not null) Theme.OnUpdate += ThemeUpdate;
+        if (Scheme is not null) Scheme.OnUpdate += SchemeUpdate;
     }
 
     private void UnsubscribeFromEvent()
     {
-        if (Theme is not null) Theme.OnUpdate -= ThemeUpdate;
+        if (Scheme is not null) Scheme.OnUpdate -= SchemeUpdate;
     }
     // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
     
-    // ReSharper disable InvalidXmlDocComment
     /// <summary>
     /// An event invoked when the current Theme is updated. This can occur either through <see cref="UpdateTheme"/> or
-    /// Theme's <see cref="Theme.Update"/> methods, changing color modes (dark/light), etc. It is not recommended to
+    /// Theme's Update methods, changing color modes (dark/light), etc. It is not recommended to
     /// subscribe to Theme's <see cref="Theme.OnUpdate"/> event because <see cref="UpdateTheme"/> replaces the actual
-    /// class itself, not just using <see cref="Theme.Update"/>
+    /// class itself, not just by calling Update.
     /// </summary>
-    // ReSharper restore InvalidXmlDocComment
-    public event Action? OnThemeUpdate;
+    [Obsolete("Please use OnSchemeUpdate instead of OnThemeUpdate")]
+    public event Action? OnThemeUpdate
+    {
+        add => OnSchemeUpdate += value;
+        remove => OnSchemeUpdate -= value;
+    }
+
+    /// <summary>
+    /// An event invoked when the current Theme is updated. This can occur either through <see cref="UpdateTheme"/>,
+    /// changing color modes (dark/light), etc. It is not recommended to subscribe to Scheme's
+    /// <see cref="IScheme.OnUpdate"/> event because <see cref="UpdateTheme"/> replaces the actual class itself,
+    /// not just by calling Update.
+    /// </summary>
+    public event Action? OnSchemeUpdate;
 }
