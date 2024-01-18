@@ -5,7 +5,7 @@
 
 <link rel="stylesheet" href="@Path.Combine(ContentPathRoot, "css/colors.module.css")">
 
-@if (Theme!.IsDarkScheme)
+@if (Scheme.IsDarkScheme)
 {
     <link rel="stylesheet" href="@Path.Combine(ContentPathRoot, "css/theme.dark.css")">
 }
@@ -14,21 +14,21 @@ else
     <link rel="stylesheet" href="@Path.Combine(ContentPathRoot, "css/theme.light.css")">
 }
 
-<ThemeCSSTokens Theme="@Theme"/>
+<ThemeCSSTokens Scheme="@Scheme"/>
 
 @code {
-    private Theme Theme => ThemeContainer.Theme;
+    private IScheme Scheme => ThemeContainer.Scheme;
 
     private async void OnChange() => await InvokeAsync(StateHasChanged);
     
     protected override void OnInitialized()
     {
-        ThemeContainer.OnThemeUpdate += OnChange;
+        ThemeContainer.OnSchemeUpdate += OnChange;
     }
 
     public void Dispose()
     {
-        ThemeContainer.OnThemeUpdate -= OnChange;
+        ThemeContainer.OnSchemeUpdate -= OnChange;
     }
 
 }

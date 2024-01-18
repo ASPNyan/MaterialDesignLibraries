@@ -19,8 +19,6 @@ public readonly struct Scheme(
 
     public (TonalPalette Primary, TonalPalette Secondary, TonalPalette Tertiary, TonalPalette Neutral,
         TonalPalette NeutralVariant) Sources { get; } = (primary, secondary, tertiary, neutral, neutralVariant);
-
-    private static HCTA FromPalette(TonalPalette palette) => new(palette.Hue, palette.Chroma, 50);
     
     private int Core => IsDark ? 80 : 40;
     private int OnCore => Core + SignViaDark(60);

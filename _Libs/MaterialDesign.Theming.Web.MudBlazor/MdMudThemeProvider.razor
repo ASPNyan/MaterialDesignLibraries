@@ -2,13 +2,12 @@
 @using global::MudBlazor.Utilities
 @using MaterialDesign.Color.Colorspaces
 @using MaterialDesign.Theming.Injection
-@using MudBlazor
 @inject ThemeContainer ThemeContainer
 
 <MudThemeProvider Theme="@GetMudTheme()"/>
 
 @code {
-    private Theme MdTheme => ThemeContainer.Theme;
+    private IScheme MdTheme => ThemeContainer.Scheme;
 
     private MudColor MudColor(HCTA hcta)
     {
@@ -40,6 +39,6 @@
 
     protected override void OnInitialized()
     {
-        ThemeContainer.OnThemeUpdate += OnThemeUpdate;
+        ThemeContainer.OnSchemeUpdate += OnThemeUpdate;
     }
 }

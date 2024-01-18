@@ -1,7 +1,4 @@
-﻿using System.Runtime.Versioning;
-using MaterialDesign.Theming.Injection.ThemeSources;
-
-namespace MaterialDesign.Theming.Injection;
+﻿namespace MaterialDesign.Theming.Injection;
 
 /// <summary>
 /// Provides ways to asynchronously create <see cref="Theme"/>s when required in methods and classes like <see cref="ThemeContainer"/>.

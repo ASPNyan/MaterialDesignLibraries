@@ -14,7 +14,7 @@
 </DynamicHeadContent>
 
 <div class="ThemeSettings surface tertiary-text">
-    <MudTooltip Text="@("Switch to " + (ThemeContainer.Theme.IsDarkScheme ? "Light" : "Dark") + " Mode")" 
+    <MudTooltip Text="@("Switch to " + (ThemeContainer.Scheme.IsDarkScheme ? "Light" : "Dark") + " Mode")" 
                 RootClass="ThemeTooltip" Class="ThemeSettingsTooltip">
         <MdIcon Icon="@GetThemeIconString()" id="ThemeSwitch" class="on-tertiary" @onclick="@SwitchTheme"/>
     </MudTooltip>
@@ -41,13 +41,13 @@
     private HCTA Hcta { get; set; } = new(0, 0, 0);
     private Func<Task>? OnHCTUpdate { get; set; }
     
-    private string GetThemeIconString() => (ThemeContainer.Theme.IsDarkScheme ? "Dark" : "Light") + " Mode";
+    private string GetThemeIconString() => (ThemeContainer.Scheme.IsDarkScheme ? "Dark" : "Light") + " Mode";
     private string GetDynamicIconString() => "Invert Colors " + (ScopedSettings.DynamicTheme ? "Off" : string.Empty);
 
     private void SwitchTheme()
     {
-        if (ThemeContainer.Theme.IsDarkScheme) ThemeContainer.Theme.SetLight();
-        else ThemeContainer.Theme.SetDark();
+        if (ThemeContainer.Scheme.IsDarkScheme) ThemeContainer.Scheme.SetLight();
+        else ThemeContainer.Scheme.SetDark();
 
         StateHasChanged();
     }
@@ -55,7 +55,7 @@
     private async Task UpdateHCTA()
     {
         if (OnHCTUpdate is not null) await OnHCTUpdate();
-        ThemeContainer.UpdateTheme(new Theme(Hcta));
+        ThemeContainer.UpdateScheme(new Theme(Hcta));
     }
 
     private async Task OnHueUpdate(double tone)
@@ -80,7 +80,7 @@
     {
         if (ScopedSettings.DynamicTheme)
         {
-            Hcta = ThemeContainer.Theme.Origin ?? ThemeContainer.Theme.Primary;
+            Hcta = ThemeContainer.Scheme.Origin ?? ThemeContainer.Scheme.Primary;
             if (OnHCTUpdate is not null) await OnHCTUpdate();
         }
         StateHasChanged();
@@ -88,12 +88,12 @@
     
     protected override void OnInitialized()
     {
-        ThemeContainer.OnThemeUpdate += OnThemeUpdate;
-        Hcta = ThemeContainer.Theme.Origin ?? ThemeContainer.Theme.Primary;
+        ThemeContainer.OnSchemeUpdate += OnThemeUpdate;
+        Hcta = ThemeContainer.Scheme.Origin ?? ThemeContainer.Scheme.Primary;
     }
 
     public void Dispose()
     {
-        ThemeContainer.OnThemeUpdate -= OnThemeUpdate;
+        ThemeContainer.OnSchemeUpdate -= OnThemeUpdate;
     }
 }

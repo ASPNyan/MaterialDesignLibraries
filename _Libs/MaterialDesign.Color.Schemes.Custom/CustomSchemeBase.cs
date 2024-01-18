@@ -9,6 +9,9 @@ namespace MaterialDesign.Color.Schemes.Custom;
 
 public abstract record CustomSchemeBase : IScheme
 {
+    public HCTA? Origin { get; private set; }
+    
+
     public void SetDark()
     {
         IsDarkScheme = true;
@@ -246,8 +249,13 @@ public abstract record CustomSchemeBase : IScheme
         return diff;
     }
 
-    protected CustomSchemeBase(HCTA source) => Construct(source);
-    
+    // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
+    protected CustomSchemeBase(HCTA source)
+    {
+        Origin = source;
+        Construct(source);
+    }
+
     private void Construct(HCTA source)
     {
         HCTA modSource = new(source.H, GenerateSourceChroma(source), source.T);

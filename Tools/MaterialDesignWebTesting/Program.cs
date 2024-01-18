@@ -1,4 +1,3 @@
-using MaterialDesign.Web.Fonts;
 using MaterialDesign.Web.Services;
 using MaterialDesignWebTesting.Components;
 
