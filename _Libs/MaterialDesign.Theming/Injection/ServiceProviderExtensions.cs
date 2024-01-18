@@ -15,7 +15,7 @@ public static class ServiceProviderExtensions
         await using var scope = serviceProvider.CreateAsyncScope();
         var container = scope.ServiceProvider.GetRequiredService<ThemeContainer>();
         
-        if (defaultIsDark) container.Theme.SetDark();
-        else container.Theme.SetLight();
+        if (defaultIsDark) container.Scheme.SetDark();
+        else container.Scheme.SetLight();
     }
 }
