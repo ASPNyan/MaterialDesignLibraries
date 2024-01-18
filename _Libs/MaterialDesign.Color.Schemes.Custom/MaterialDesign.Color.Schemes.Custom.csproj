@@ -12,9 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Nyan.MaterialDesign.Color" Version="1.0.0" />
-      <PackageReference Include="Nyan.MaterialDesign.Color.Extensions" Version="1.0.0" />
-      <PackageReference Include="Nyan.MaterialDesign.Theming" Version="1.0.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Color" Version="1.1.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Color.Extensions" Version="1.0.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Theming" Version="1.1.0" />
     </ItemGroup>
 
 </Project>

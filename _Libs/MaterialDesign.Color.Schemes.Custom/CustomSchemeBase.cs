@@ -1,21 +1,23 @@
 ﻿using MaterialDesign.Color.Extensions;
+using MaterialDesign.Theming;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global | Remove IDE highlighting for unused get accessors
 
 #pragma warning disable CA2208 // Disable in file for all uses. Prevents ArgumentOutOfRange warnings from appearing
 
 namespace MaterialDesign.Color.Schemes.Custom;
 
-public abstract record CustomSchemeBase
+public abstract record CustomSchemeBase : IScheme
 {
     public void SetDark()
     {
-        IsDark = true;
+        IsDarkScheme = true;
         OnUpdate?.Invoke();
     }
     
     public void SetLight()
     {
-        IsDark = false;
+        IsDarkScheme = false;
         OnUpdate?.Invoke();
     }
 
@@ -27,17 +29,15 @@ public abstract record CustomSchemeBase
 
     public event Action? OnUpdate;
     
-    public bool IsDark { get; private set; }
+    public bool IsDarkScheme { get; private set; }
 
     #nullable disable
     #region Colors
 
     private bool BlackAndWhiteText { get; set; }
 
-    public HCTA GetText(Func<HCTA> colorMethod)
+    public HCTA GetText(HCTA color)
     {
-        HCTA color = colorMethod();
-        
         if (BlackAndWhiteText)
         {
             if (color.T <= 50) return new HCTA(0, 0, 0);
@@ -47,39 +47,41 @@ public abstract record CustomSchemeBase
         return color;
     }
     
-    public Func<HCTA> Primary { get; private set; }
-    public Func<HCTA> OnPrimary { get; private set; }
-    public Func<HCTA> PrimaryContainer { get; private set; }
-    public Func<HCTA> OnPrimaryContainer { get; private set; }
+    public HCTA Primary { get; private set; }
+    public HCTA OnPrimary { get; private set; }
+    public HCTA PrimaryContainer { get; private set; }
+    public HCTA OnPrimaryContainer { get; private set; }
     
-    public Func<HCTA> Secondary { get; private set; }
-    public Func<HCTA> OnSecondary { get; private set; }
-    public Func<HCTA> SecondaryContainer { get; private set; }
-    public Func<HCTA> OnSecondaryContainer { get; private set; }
+    public HCTA Secondary { get; private set; }
+    public HCTA OnSecondary { get; private set; }
+    public HCTA SecondaryContainer { get; private set; }
+    public HCTA OnSecondaryContainer { get; private set; }
     
-    public Func<HCTA> Tertiary { get; private set; }
-    public Func<HCTA> OnTertiary { get; private set; }
-    public Func<HCTA> TertiaryContainer { get; private set; }
-    public Func<HCTA> OnTertiaryContainer { get; private set; }
+    public HCTA Tertiary { get; private set; }
+    public HCTA OnTertiary { get; private set; }
+    public HCTA TertiaryContainer { get; private set; }
+    public HCTA OnTertiaryContainer { get; private set; }
 
-    public Func<HCTA> Outline { get; private set; }
-    public Func<HCTA> OutlineVariant { get; private set; }
+    public HCTA Outline { get; private set; }
+    public HCTA OutlineVariant { get; private set; }
     
-    public Func<HCTA> Background { get; private set; }
-    public Func<HCTA> OnBackground { get; private set; }
-    public Func<HCTA> SurfaceVariant { get; private set; }
-    public Func<HCTA> OnSurfaceVariant { get; private set; }
+    public HCTA Background { get; private set; }
+    public HCTA OnBackground { get; private set; }
+    public HCTA Surface => Background;
+    public HCTA OnSurface => OnBackground;
+    public HCTA SurfaceVariant { get; private set; }
+    public HCTA OnSurfaceVariant { get; private set; }
     
-    public Func<HCTA> SurfaceInverse { get; private set; }
-    public Func<HCTA> OnSurfaceInverse { get; private set; }
-    public Func<HCTA> SurfaceBright { get; private set; }
-    public Func<HCTA> SurfaceDim { get; private set; }
+    public HCTA SurfaceInverse { get; private set; }
+    public HCTA OnSurfaceInverse { get; private set; }
+    public HCTA SurfaceBright { get; private set; }
+    public HCTA SurfaceDim { get; private set; }
     
-    public Func<HCTA> SurfaceContainer { get; private set; }
-    public Func<HCTA> SurfaceContainerLow { get; private set; }
-    public Func<HCTA> SurfaceContainerLowest { get; private set; }
-    public Func<HCTA> SurfaceContainerHigh { get; private set; }
-    public Func<HCTA> SurfaceContainerHighest { get; private set; }
+    public HCTA SurfaceContainer { get; private set; }
+    public HCTA SurfaceContainerLow { get; private set; }
+    public HCTA SurfaceContainerLowest { get; private set; }
+    public HCTA SurfaceContainerHigh { get; private set; }
+    public HCTA SurfaceContainerHighest { get; private set; }
 
     private const int FixedTone = 90;
     private const int FixedDimTone = 80;
@@ -88,20 +90,20 @@ public abstract record CustomSchemeBase
 
     private static HCTA FixedColor(HCTA color, int tone) => new(color.H, color.C, tone);
     
-    public HCTA PrimaryFixed() => FixedColor(Primary(), FixedTone);
-    public HCTA PrimaryFixedDim() => FixedColor(Primary(), FixedDimTone);
-    public HCTA OnPrimaryFixed() => FixedColor(Primary(), OnFixedTone);
-    public HCTA OnPrimaryFixedBright() => FixedColor(Primary(), OnFixedBrightTone);
+    public HCTA PrimaryFixed => FixedColor(Primary, FixedTone);
+    public HCTA PrimaryFixedDim => FixedColor(Primary, FixedDimTone);
+    public HCTA OnPrimaryFixed => FixedColor(Primary, OnFixedTone);
+    public HCTA OnPrimaryFixedVariant => FixedColor(Primary, OnFixedBrightTone);
     
-    public HCTA SecondaryFixed() => FixedColor(Secondary(), FixedTone);
-    public HCTA SecondaryFixedDim() => FixedColor(Secondary(), FixedDimTone);
-    public HCTA OnSecondaryFixed() => FixedColor(Secondary(), OnFixedTone);
-    public HCTA OnSecondaryFixedBright() => FixedColor(Secondary(), OnFixedBrightTone);
+    public HCTA SecondaryFixed => FixedColor(Secondary, FixedTone);
+    public HCTA SecondaryFixedDim => FixedColor(Secondary, FixedDimTone);
+    public HCTA OnSecondaryFixed => FixedColor(Secondary, OnFixedTone);
+    public HCTA OnSecondaryFixedVariant => FixedColor(Secondary, OnFixedBrightTone);
     
-    public HCTA TertiaryFixed() => FixedColor(Tertiary(), FixedTone);
-    public HCTA TertiaryFixedDim() => FixedColor(Tertiary(), FixedDimTone);
-    public HCTA OnTertiaryFixed() => FixedColor(Tertiary(), OnFixedTone);
-    public HCTA OnTertiaryFixedBright() => FixedColor(Tertiary(), OnFixedBrightTone);
+    public HCTA TertiaryFixed => FixedColor(Tertiary, FixedTone);
+    public HCTA TertiaryFixedDim => FixedColor(Tertiary, FixedDimTone);
+    public HCTA OnTertiaryFixed => FixedColor(Tertiary, OnFixedTone);
+    public HCTA OnTertiaryFixedVariant => FixedColor(Tertiary, OnFixedBrightTone);
 
     #endregion
     #nullable restore
@@ -279,21 +281,21 @@ public abstract record CustomSchemeBase
         OnTertiary = CustomSourcePaletteMethod(tertiaryPalette.OnCore);
         TertiaryContainer = CustomSourcePaletteMethod(tertiaryPalette.Container);
         OnTertiaryContainer = CustomSourcePaletteMethod(tertiaryPalette.OnContainer);
-        Outline = () => surfaceVariantPalette.GetWithTone(IsDark ? 60 : 50);
-        OutlineVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 80 : 30);
-        Background = () => surfacePalette.GetWithTone(IsDark ? 6 : 98);
-        OnBackground = () => surfacePalette.GetWithTone(IsDark ? 90 : 10);
-        SurfaceVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 30 : 90);
-        OnSurfaceVariant = () => surfaceVariantPalette.GetWithTone(IsDark ? 80 : 30);
-        SurfaceInverse = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
-        OnSurfaceInverse = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
-        SurfaceBright = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
-        SurfaceDim = () => surfacePalette.GetWithTone(IsDark ? 90 : 20);
-        SurfaceContainer = () => surfacePalette.GetWithTone(IsDark ? 12 : 94);
-        SurfaceContainerLow = () => surfacePalette.GetWithTone(IsDark ? 10 : 96);
-        SurfaceContainerLowest = () => surfacePalette.GetWithTone(IsDark ? 4 : 100);
-        SurfaceContainerHigh = () => surfacePalette.GetWithTone(IsDark ? 17 : 92);
-        SurfaceContainerHighest = () => surfacePalette.GetWithTone(IsDark ? 22 : 90);
+        Outline = surfaceVariantPalette.GetWithTone(IsDarkScheme ? 60 : 50);
+        OutlineVariant = surfaceVariantPalette.GetWithTone(IsDarkScheme ? 80 : 30);
+        Background = surfacePalette.GetWithTone(IsDarkScheme ? 6 : 98);
+        OnBackground = surfacePalette.GetWithTone(IsDarkScheme ? 90 : 10);
+        SurfaceVariant = surfaceVariantPalette.GetWithTone(IsDarkScheme ? 30 : 90);
+        OnSurfaceVariant = surfaceVariantPalette.GetWithTone(IsDarkScheme ? 80 : 30);
+        SurfaceInverse = surfacePalette.GetWithTone(IsDarkScheme ? 90 : 20);
+        OnSurfaceInverse = surfacePalette.GetWithTone(IsDarkScheme ? 90 : 20);
+        SurfaceBright = surfacePalette.GetWithTone(IsDarkScheme ? 90 : 20);
+        SurfaceDim = surfacePalette.GetWithTone(IsDarkScheme ? 90 : 20);
+        SurfaceContainer = surfacePalette.GetWithTone(IsDarkScheme ? 12 : 94);
+        SurfaceContainerLow = surfacePalette.GetWithTone(IsDarkScheme ? 10 : 96);
+        SurfaceContainerLowest = surfacePalette.GetWithTone(IsDarkScheme ? 4 : 100);
+        SurfaceContainerHigh = surfacePalette.GetWithTone(IsDarkScheme ? 17 : 92);
+        SurfaceContainerHighest = surfacePalette.GetWithTone(IsDarkScheme ? 22 : 90);
 
         return;
 
@@ -313,7 +315,7 @@ public abstract record CustomSchemeBase
         CustomSourcePalette CoreContainerGenerator(HCTA sourceColor) => new(new TonalPalette(sourceColor),
             darkTone, lightTone, onColorContrastLevel, coreContainerContrastLevel);
 
-        Func<HCTA> CustomSourcePaletteMethod(Func<bool, HCTA> method) => () => method(IsDark);
+        HCTA CustomSourcePaletteMethod(Func<bool, HCTA> method) => method(IsDarkScheme);
 
         double GetSurfaceVariantChroma()
         {
