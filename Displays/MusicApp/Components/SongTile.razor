@@ -1,9 +1,12 @@
 ﻿@using MusicApp.Enums
 @using MaterialDesign.Icons
+@using MaterialDesign.Theming.Injection
 @using MusicApp.Services
+@implements IDisposable
 @inject SongInfoContainer SongInfoContainer
+@inject ThemeContainer ThemeContainer
 
-<div class="Song @TileStyle.ToString() @GetBackgroundClass() primary-text">
+<div class="Song @TileStyle.ToString() @GetBackgroundClass() @(GetOnStringClass())primary-text">
     @if (TileStyle is SongTileStyle.Comfy)
     {
         <img src="@Info.AlbumCoverUrl" alt="" class="SongBackground">
@@ -20,10 +23,10 @@
         else
         {
             @Info.Name <br/>
-            <span class="SongTitleSubtext secondary-text">@Info.Author</span>
+            <span class="SongTitleSubtext @(GetOnStringClass())secondary-text">@Info.Author</span>
         }
     </b>
-    <p class="SongAlbum tertiary-text">@Info.Album</p>
+    <p class="SongAlbum @(GetOnStringClass())tertiary-text">@Info.Album</p>
     @if (TileStyle is SongTileStyle.Comfy)
     {
         <p class="SongArtist">
@@ -44,9 +47,25 @@
         if (TileStyle is SongTileStyle.Compact) return "on-primary";
         return string.Empty;
     }
-    
+
+    private string GetOnStringClass() => !ThemeContainer.Scheme.IsDarkScheme && TileStyle is SongTileStyle.Comfy 
+        ? "on-"
+        : string.Empty;
+
     private void Select()
     {
         SongInfoContainer.Update(Info);
+    }
+
+    private async void OnUpdate() => await InvokeAsync(StateHasChanged);
+    
+    protected override void OnInitialized()
+    {
+        ThemeContainer.OnSchemeUpdate += OnUpdate;
+    }
+
+    public void Dispose()
+    {
+        ThemeContainer.OnSchemeUpdate -= OnUpdate;
     }
 }
