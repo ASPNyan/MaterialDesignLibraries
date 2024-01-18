@@ -2,6 +2,10 @@
 
 public interface IScheme
 {
+    /// <summary>
+    /// Null when unavailable
+    /// </summary>
+    public HCTA? Origin { get; }
     public bool IsDarkScheme { get; }
     public void SetDark();
     public void SetLight();

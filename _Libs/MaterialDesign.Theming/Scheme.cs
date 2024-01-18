@@ -14,6 +14,7 @@ public readonly struct Scheme(
     TonalPalette neutralVariant,
     bool isDark) : IScheme
 {
+    public HCTA? Origin => null;
     public bool IsDark { get; init; } = isDark;
 
     public (TonalPalette Primary, TonalPalette Secondary, TonalPalette Tertiary, TonalPalette Neutral,
