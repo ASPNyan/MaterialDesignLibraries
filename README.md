@@ -7,6 +7,8 @@ and some surprisingly helpful generic web components, this group of Material Des
 ** Except for everything else it doesn't have, which is most things. Other than that (which isn't much), 
 it's got it all.
 
+Before you go looking through all the libraries, they can all be found on NuGet as well, however they are all prefixed with `Nyan.`, so `Nyan.MaterialDesign.Color` for example.
+
 ---
 
 ## MaterialDesign.Color
