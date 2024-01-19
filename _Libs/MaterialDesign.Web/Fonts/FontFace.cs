@@ -21,6 +21,7 @@ public readonly struct FontFace
                                  font-weight: {{Weight}};
                                  {{SourceString}}
                                }
+                               
                                """;
     }
 

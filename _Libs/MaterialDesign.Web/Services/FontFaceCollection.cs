@@ -78,7 +78,7 @@ internal class FontFaceCollection
                 childBuilder.OpenElement(i++, "style");
                     
                 foreach (FontFace fontFace in FontsByClassName.Values.SelectMany(fontFaces => fontFaces)) 
-                    childBuilder.AddContent(i++, (MarkupString)$"{fontFace}\n");
+                    childBuilder.AddContent(i++, (MarkupString)$"{fontFace}");
             
                 foreach ((string className, List<FontFace> fontFaces) in FontsByClassName)
                 {
