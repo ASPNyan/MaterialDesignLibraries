@@ -1,0 +1,120 @@
+﻿@using MaterialDesign.Theming
+
+<div class="SchemeWrapper">
+    @{
+        for (int i = 0; i < 2; i++)
+        {
+            IScheme scheme = Scheme;
+            if (i is 0) scheme.SetLight();
+            else scheme.SetDark();
+            
+            <div class="Scheme">
+                <span>@(i is 0 ? "Light" : "Dark") Scheme</span>
+                <div class="SchemeGrid">
+                    <div class="PrimaryPalette Core" style="background: @scheme.Primary.ToRGBA().ToString();
+color: @scheme.OnPrimary.ToRGBA().ToString()">
+                        Primary
+                    </div>
+                    <div class="PrimaryPalette OnCore" style="background: @scheme.OnPrimary.ToRGBA().ToString();
+color: @scheme.Primary.ToRGBA().ToString()">
+                        On Primary
+                    </div>
+                    <div class="PrimaryPalette Container" style="background: @scheme.PrimaryContainer.ToRGBA().ToString();
+color: @scheme.OnPrimaryContainer.ToRGBA().ToString()">
+                        Primary Container
+                    </div>
+                    <div class="PrimaryPalette OnContainer" style="background: @scheme.OnPrimaryContainer.ToRGBA().ToString();
+color: @scheme.PrimaryContainer.ToRGBA().ToString()">
+                        On Primary Container
+                    </div>
+
+                    <div class="SecondaryPalette Core" style="background: @scheme.Secondary.ToRGBA().ToString();
+color: @scheme.OnSecondary.ToRGBA().ToString()">
+                        Secondary
+                    </div>
+                    <div class="SecondaryPalette OnCore" style="background: @scheme.OnSecondary.ToRGBA().ToString();
+color: @scheme.Secondary.ToRGBA().ToString()">
+                        On Secondary
+                    </div>
+                    <div class="SecondaryPalette Container" style="background: @scheme.SecondaryContainer.ToRGBA().ToString();
+color: @scheme.OnSecondaryContainer.ToRGBA().ToString()">
+                        Secondary Container
+                    </div>
+                    <div class="SecondaryPalette OnContainer" style="background: @scheme.OnSecondaryContainer.ToRGBA().ToString();
+color: @scheme.SecondaryContainer.ToRGBA().ToString()">
+                        On Secondary Container
+                    </div>
+
+                    <div class="TertiaryPalette Core" style="background: @scheme.Tertiary.ToRGBA().ToString();
+color: @scheme.OnTertiary.ToRGBA().ToString()">
+                        Tertiary
+                    </div>
+                    <div class="TertiaryPalette OnCore" style="background: @scheme.OnTertiary.ToRGBA().ToString();
+color: @scheme.Tertiary.ToRGBA().ToString()">
+                        On Tertiary
+                    </div>
+                    <div class="TertiaryPalette Container" style="background: @scheme.TertiaryContainer.ToRGBA().ToString();
+color: @scheme.OnTertiaryContainer.ToRGBA().ToString()">
+                        Tertiary Container
+                    </div>
+                    <div class="TertiaryPalette OnContainer" style="background: @scheme.OnTertiaryContainer.ToRGBA().ToString();
+color: @scheme.TertiaryContainer.ToRGBA().ToString()">
+                        On Tertiary Container
+                    </div>
+
+                    <div class="ErrorPalette Core" style="background: @scheme.Error.ToRGBA().ToString();
+color: @scheme.OnError.ToRGBA().ToString()">
+                        Error
+                    </div>
+                    <div class="ErrorPalette OnCore" style="background: @scheme.OnError.ToRGBA().ToString();
+color: @scheme.Error.ToRGBA().ToString()">
+                        On Error
+                    </div>
+                    <div class="ErrorPalette Container" style="background: @scheme.ErrorContainer.ToRGBA().ToString();
+color: @scheme.OnErrorContainer.ToRGBA().ToString()">
+                        Error Container
+                    </div>
+                    <div class="ErrorPalette OnContainer" style="background: @scheme.OnErrorContainer.ToRGBA().ToString();
+color: @scheme.ErrorContainer.ToRGBA().ToString()">
+                        On Error Container
+                    </div>
+
+                    <div class="NeutralPalette Core" style="background: @scheme.Background.ToRGBA().ToString();
+color: @scheme.OnBackground.ToRGBA().ToString()">
+                        Background
+                    </div>
+                    <div class="NeutralPalette OnCore" style="background: @scheme.OnBackground.ToRGBA().ToString();
+color: @scheme.Background.ToRGBA().ToString()">
+                        On Background
+                    </div>
+                    <div class="NeutralPalette Container" style="background: @scheme.Surface.ToRGBA().ToString();
+color: @scheme.OnSurface.ToRGBA().ToString()">
+                        Surface
+                    </div>
+                    <div class="NeutralPalette OnContainer" style="background: @scheme.OnSurface.ToRGBA().ToString();
+color: @scheme.Surface.ToRGBA().ToString()">
+                        On Surface
+                    </div>
+
+                    <div class="NeutralVariantPalette Outline" style="background: @scheme.Outline.ToRGBA().ToString();
+color: white">
+                        Outline
+                    </div>
+                    <div class="NeutralVariantPalette Container" style="background: @scheme.SurfaceVariant.ToRGBA().ToString();
+color: @scheme.OnSurfaceVariant.ToRGBA().ToString()">
+                        Surface Variant
+                    </div>
+                    <div class="NeutralVariantPalette OnContainer" style="background: @scheme.OnSurfaceVariant.ToRGBA().ToString();
+color: @scheme.SurfaceVariant.ToRGBA().ToString()">
+                        On Surface Variant
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public IScheme Scheme { get; set; } = null!;
+}

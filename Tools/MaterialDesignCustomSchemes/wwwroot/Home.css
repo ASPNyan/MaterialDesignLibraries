@@ -1,0 +1,88 @@
+﻿#ColorSelector {
+    width: 14.4em;
+    height: 13em;
+    padding: 1vw;
+    display: grid;
+    font-size: 24px;
+    grid-template-areas: "HueDisplay    HueDisplay"
+                         "HueSlider     HueSlider"
+                         "ChromaDisplay ChromaDisplay"
+                         "ChromaSlider  ChromaSlider"
+                         "ToneDisplay   ToneDisplay"
+                         "ToneSlider    ToneSlider";
+    grid-row-gap: 0.5em;
+    border-radius: 1em;
+    z-index: 100;
+}
+
+.DisplayWindow {
+    height: 1em;
+    border-radius: 0.5em;
+}
+
+.mud-slider-container,
+.mud-slider-container input {
+    height: 1.5rem;
+}
+
+.mud-slider-container input::-moz-range-track
+{
+    background-color: var(--md-sys-color-primary) !important;
+    opacity: 0.3;
+}
+
+.mud-slider-container input::-ms-track
+{
+    background-color: var(--md-sys-color-primary) !important;
+    opacity: 0.3;
+}
+
+.mud-slider-container input::-webkit-slider-runnable-track
+{
+    background-color: var(--md-sys-color-primary) !important;
+}
+
+.mud-slider-container input::-moz-range-thumb
+{
+    background-color: var(--md-sys-color-primary) !important;
+}
+
+.mud-slider-container input::-ms-thumb
+{
+    background-color: var(--md-sys-color-primary) !important;
+}
+
+.mud-slider-container input::-webkit-slider-thumb
+{
+    background-color: var(--md-sys-color-primary) !important;
+}
+
+.HueSlider {
+    grid-column: HueSlider;
+    grid-row: HueSlider;
+}
+
+.DisplayWindowHue {
+    grid-column: HueDisplay;
+    grid-row: HueDisplay;
+}
+
+.ChromaSlider {
+    grid-column: ChromaSlider;
+    grid-row: ChromaSlider;
+}
+
+.DisplayWindowChroma {
+    grid-column: ChromaDisplay;
+    grid-row: ChromaDisplay;
+}
+
+.ToneSlider {
+    grid-column: ToneSlider;
+    grid-row: ToneSlider;
+}
+
+.DisplayWindowTone {
+    grid-column: ToneDisplay;
+    grid-row: ToneDisplay;
+}

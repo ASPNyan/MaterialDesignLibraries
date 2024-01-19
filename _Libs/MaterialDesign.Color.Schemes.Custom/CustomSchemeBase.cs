@@ -1,8 +1,6 @@
 ﻿using MaterialDesign.Color.Extensions;
 using MaterialDesign.Theming;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global | Remove IDE highlighting for unused get accessors
-
 #pragma warning disable CA2208 // Disable in file for all uses. Prevents ArgumentOutOfRange warnings from appearing
 
 namespace MaterialDesign.Color.Schemes.Custom;
@@ -15,12 +13,14 @@ public abstract record CustomSchemeBase : IScheme
     public void SetDark()
     {
         IsDarkScheme = true;
+        Construct(Origin!);
         OnUpdate?.Invoke();
     }
     
     public void SetLight()
     {
         IsDarkScheme = false;
+        Construct(Origin!);
         OnUpdate?.Invoke();
     }
 
@@ -166,23 +166,25 @@ public abstract record CustomSchemeBase : IScheme
             SaturationType.LowSaturation => double.Min(source.C * 0.7, 18),
             SaturationType.MediumSaturation => source.C,
             SaturationType.HighSaturation => double.Max(source.C * 1.5, 54),
-            SaturationType.Saturated => double.Max(source.C, source.MaxChroma()),
+            SaturationType.Saturated => source.MaxChroma(),
             _ => throw new ArgumentOutOfRangeException(nameof(Saturation), "Saturation must be one of 5 valid enum values.")
         };
     }
 
     private HCTA CreateDifferentColor(HCTA source, DifferenceFromSource difference)
     {
-        HCTA diff = new(source.H, source.C, source.T);
+        HCTA diff = new(source.H, double.Min(source.C, source.MaxChroma()), source.T);
 
-        if (difference is 0 or DifferenceFromSource.NegativeHueShift) return diff;
+        if (difference is 0 or DifferenceFromSource.NegativeHueShift or DifferenceFromSource.None) return diff;
 
         bool negativeHueShift = false;
         foreach (DifferenceFromSource diffType in Enum.GetValues<DifferenceFromSource>())
         {
-            const int saturateSmall = 5;
-            const int saturate = 8;
-            const int saturateLarge = 12;
+            const double saturateSmall = 1.2;
+            const double saturate = 1.5;
+            const double saturateLarge = 1.7;
+
+            if ((difference & diffType) == 0) continue;
             
             switch (diffType)
             {
@@ -214,22 +216,22 @@ public abstract record CustomSchemeBase : IScheme
                     diff.H = SurfaceHue;
                     break; 
                 case DifferenceFromSource.RelativeDesaturateSmall:
-                    diff.C -= saturateSmall;
+                    diff.C /= saturateSmall;
                     break;
                 case DifferenceFromSource.RelativeDesaturate:
-                    diff.C -= saturate;
+                    diff.C /= saturate;
                     break;
                 case DifferenceFromSource.RelativeDesaturateLarge:
-                    diff.C -= saturateLarge;
+                    diff.C /= saturateLarge;
                     break;
                 case DifferenceFromSource.RelativeSaturateSmall:
-                    diff.C += saturateSmall;
+                    diff.C *= saturateSmall;
                     break;
                 case DifferenceFromSource.RelativeSaturate:
-                    diff.C += saturate;
+                    diff.C *= saturate;
                     break;
                 case DifferenceFromSource.RelativeSaturateLarge:
-                    diff.C += saturateLarge;
+                    diff.C *= saturateLarge;
                     break;
                 case DifferenceFromSource.UsePrimaryChromaOverride:
                     diff.C = PrimaryChroma;
@@ -259,22 +261,19 @@ public abstract record CustomSchemeBase : IScheme
     private void Construct(HCTA source)
     {
         HCTA modSource = new(source.H, GenerateSourceChroma(source), source.T);
-
-        HCTA primarySource = CreateDifferentColor(modSource, PrimaryDifference);
-        HCTA secondarySource = CreateDifferentColor(modSource, SecondaryDifference);
-        HCTA tertiarySource = CreateDifferentColor(modSource, TertiaryDifference);
-        HCTA surfaceSource = CreateDifferentColor(modSource, SurfaceDifference);
-
+        
         double onColorContrastLevel = ToneGapValues(OnColorGap, nameof(OnColorGap));
         double coreContainerContrastLevel = ToneGapValues(CoreContainerGap, nameof(CoreContainerGap));
         double darkTone = (100 - new HCTA(0, 0, 0).ContrastTo(ToneGapValues(DarkLightGap, nameof(DarkLightGap))).T) / 2;
         double lightTone = 100 - darkTone;
 
-        CustomSourcePalette primaryPalette = CoreContainerGenerator(primarySource);
-        CustomSourcePalette secondaryPalette = CoreContainerGenerator(secondarySource);
-        CustomSourcePalette tertiaryPalette = CoreContainerGenerator(tertiarySource);
+        CustomSourcePalette primaryPalette = CoreContainerGenerator(PrimaryDifference);
+        CustomSourcePalette secondaryPalette = CoreContainerGenerator(SecondaryDifference);
+        CustomSourcePalette tertiaryPalette = CoreContainerGenerator(TertiaryDifference);
+        
+        HCTA surfaceSource = CreateDifferentColor(modSource, SurfaceDifference);
         TonalPalette surfacePalette = new(surfaceSource);
-        TonalPalette surfaceVariantPalette = new(new HCTA(surfacePalette.Hue, GetSurfaceVariantChroma(), 50));
+        TonalPalette surfaceVariantPalette = new(surfacePalette.Hue, GetSurfaceVariantChroma());
 
         BlackAndWhiteText = TextStyle is TextStyleType.BlackAndWhite;
         Primary = CustomSourcePaletteMethod(primaryPalette.Core);
@@ -320,8 +319,8 @@ public abstract record CustomSchemeBase : IScheme
             };
         }
         
-        CustomSourcePalette CoreContainerGenerator(HCTA sourceColor) => new(new TonalPalette(sourceColor),
-            darkTone, lightTone, onColorContrastLevel, coreContainerContrastLevel);
+        CustomSourcePalette CoreContainerGenerator(DifferenceFromSource diff) => new(new TonalPalette(modSource),
+            darkTone, lightTone, onColorContrastLevel, coreContainerContrastLevel, hcta => CreateDifferentColor(hcta, diff));
 
         HCTA CustomSourcePaletteMethod(Func<bool, HCTA> method) => method(IsDarkScheme);
 
@@ -366,6 +365,8 @@ public abstract record CustomSchemeBase : IScheme
     [Flags]
     protected enum DifferenceFromSource
     {
+        None = 0,
+        
         NegativeHueShift = 1<<0,
         
         HueShiftSmall = 1<<1, // 15deg

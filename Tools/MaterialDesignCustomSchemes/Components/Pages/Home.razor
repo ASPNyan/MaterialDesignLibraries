@@ -1,0 +1,49 @@
+﻿@using MaterialDesign.Theming.Web
+@using MudBlazor
+@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="Home.css">
+</DynamicHeadContent>
+
+<HCTSelector Hue="@Color.H" Chroma="@Color.C" Tone="@Color.T" SelectorId="ColorSelector">
+    <HSlider>
+        <MudSlider T="double" Min="0" Max="359" Value="@Color.H" ValueChanged="@OnHueUpdate" Class="HueSlider Slider"
+                   ValueLabel="true" Size="@Size.Medium"/>
+    </HSlider>
+    <CSlider>
+        <MudSlider T="double" Min="0" Max="150" Value="@Color.C" ValueChanged="@OnChromaUpdate" Class="ChromaSlider Slider"
+                   ValueLabel="true" Size="@Size.Medium" Variant="@Variant.Filled"/>
+    </CSlider>
+    <TSlider>
+        <MudSlider T="double" Min="0" Max="100" Value="@Color.T" ValueChanged="@OnToneUpdate" Class="ToneSlider Slider"
+                   ValueLabel="true" Size="@Size.Medium" Variant="@Variant.Filled"/>
+    </TSlider>
+</HCTSelector>
+
+<SchemeDisplay Scheme="@(new CustomScheme(Color))"/>
+
+@code {
+    private HCTA Color { get; } = new(343, 100, 50);
+
+    private void OnHueUpdate(double hue)
+    {
+        Color.H = hue;
+        StateHasChanged();
+    }
+    
+    private void OnChromaUpdate(double chroma)
+    {
+        Color.C = chroma;
+        StateHasChanged();
+    }
+    
+    private void OnToneUpdate(double tone)
+    {
+        Color.T = tone;
+        StateHasChanged();
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using MaterialDesign.Color.Colorspaces;
 using MaterialDesign.Color.Common;
 using MaterialDesign.Color.Contrast;
+using MaterialDesign.Color.Quantize;
 using MaterialDesign.Color.Schemes;
 using MaterialDesignCLI;
 
@@ -14,6 +15,7 @@ const string createContrast = "createcontrast";
 const string contrast = nameof(contrast);
 const string scheme = nameof(scheme);
 const string variants = nameof(variants);
+const string distance = nameof(distance);
 const char hex = '#';
 
 while (true)
@@ -37,9 +39,39 @@ while (true)
             continue;
     }
 
-    if (input is scheme)
+    switch (input)
     {
-        Console.WriteLine("Scheme function syntax: scheme(HCTA source, Variant variant, Boolean isDark)");
+        case distance:
+            Console.WriteLine("Distance function syntax: distance(RGBA first, RGBA second)");
+            continue;
+        case scheme:
+            Console.WriteLine("Scheme function syntax: scheme(HCTA source, Variant variant, Boolean isDark)");
+            continue;
+    }
+
+    if (input.StartsWith(distance))
+    {
+        Function distanceFunc = new(distance, [GetRGBAFunc, GetRGBAFunc]);
+
+        List<object> objects;
+        
+        try
+        {
+            objects = distanceFunc.GetParameters(input);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Invalid syntax, could not match parameters to (RGBA, RGBA). Error: {e}");
+            continue;
+        }
+
+        RGBA first = (RGBA)objects[0];
+        RGBA second = (RGBA)objects[1];
+        
+        LAB labFirst = LAB.FromRGBA(first);
+        LAB labSecond = LAB.FromRGBA(second);
+
+        Console.WriteLine($"Euclidean distance: {LABPointProvider.Distance(labFirst, labSecond)}");
         continue;
     }
 
@@ -184,6 +216,22 @@ while (true)
      }
 }
 
+bool GetRGBAFunc(string value, out object? output)
+{
+    string parameterString = value[(value.IndexOf('(') + 1)..value.IndexOf(')')];
+    string[] parameters = parameterString.Split(',', StringSplitOptions.TrimEntries);
+    
+    (bool rPass, bool gPass, bool bPass) = (byte.TryParse(parameters[0], out byte rVal),
+                                            byte.TryParse(parameters[1], out byte gVal),
+                                            byte.TryParse(parameters[2], out byte bVal));
+    
+    output = null;
+    if (!(rPass && gPass && bPass)) return false;
+
+    output = new RGBA(rVal, gVal, bVal);
+    return true;
+}
+
 bool GetHCTAFunc(string value, out object? output)
 {
     if (!value.StartsWith(hct)) throw new Exception("Invalid syntax. Expected HCT color.");
@@ -196,7 +244,7 @@ bool GetHCTAFunc(string value, out object? output)
                                             double.TryParse(hctValues[1], out double cVal), 
                                             double.TryParse(hctValues[2], out double tVal));
     output = null;
-    if (!hPass || !cPass || !tPass) return false;
+    if (!(hPass && cPass && tPass)) return false;
     output = new HCTA(hVal, cVal, tVal);
     return true;
 }
