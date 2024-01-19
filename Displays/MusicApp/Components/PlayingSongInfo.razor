@@ -15,9 +15,9 @@
 
 @if (SongInfo != SongInfo.Empty)
 {
-    <h4 class="primary-fixed-text">@SongInfo.Name</h4>
-    <h5>@SongInfo.Album</h5>
-    <h5>@SongInfo.Author</h5>
+    <p id="PlayingSongTitle" class="primary-fixed-text">@SongInfo.Name</p>
+    <p class="PlayingSongInfo">@SongInfo.Album</p>
+    <p class="PlayingSongInfo">@SongInfo.Author</p>
 }
 
 @code {
@@ -28,7 +28,7 @@
         if (!firstRender) return;
         await OnInfoUpdate();
         SongInfoContainer.OnInfoUpdate += OnInfoUpdateVoid;
-        ScopedSettings.OnUpdate += OnInfoUpdateVoid;
+        ScopedSettings.OnThemeUpdate += OnInfoUpdateVoid;
     }
     
     private async Task OnInfoUpdate()

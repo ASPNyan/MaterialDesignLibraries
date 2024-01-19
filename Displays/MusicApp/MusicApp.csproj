@@ -14,11 +14,7 @@
         <PackageReference Include="Nyan.MaterialDesign.Theming" Version="1.1.2" />
         <PackageReference Include="Nyan.MaterialDesign.Theming.Web" Version="1.0.1" />
         <PackageReference Include="Nyan.MaterialDesign.Theming.Web.MudBlazor" Version="1.0.0" />
-        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.2" />
         <PackageReference Include="MudBlazor" Version="6.12.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="wwwroot\fonts\" />
     </ItemGroup>
 </Project>

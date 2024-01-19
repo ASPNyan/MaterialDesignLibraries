@@ -15,7 +15,7 @@
     <p class="SongCover SongPlayButtonContainer" @onclick="Select">
         <MdIcon Icon="Play Arrow" class="SongPlayButton" Fill="true" LineStyle="@MdIconLineStyle.Rounded"/>
     </p>
-    <b class="SongTitle">
+    <p class="SongTitle">
         @if (TileStyle is SongTileStyle.Comfy)
         {
             @Info.Name
@@ -25,7 +25,7 @@
             @Info.Name <br/>
             <span class="SongTitleSubtext @(GetOnStringClass())secondary-text">@Info.Author</span>
         }
-    </b>
+    </p>
     <p class="SongAlbum @(GetOnStringClass())tertiary-text">@Info.Album</p>
     @if (TileStyle is SongTileStyle.Comfy)
     {

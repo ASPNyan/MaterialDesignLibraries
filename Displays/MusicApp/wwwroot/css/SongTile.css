@@ -149,7 +149,6 @@
     position: absolute;
     bottom: 0;
     font-size: 0.9em;
-    font-weight: normal;
 }
 
 .Song.Comfy .SongTitle ~ p {
@@ -160,18 +159,10 @@
     grid-area: Album;
 }
 
-.Song.Comfy .SongAlbum {
-    font-weight: 250;
-}
-
 .Song.Compact .SongAlbum {
     top: calc(50% - 0.7em);
 }
 
 .Song .SongArtist {
     grid-area: Artist;
-}
-
-.Song.Comfy .SongArtist {
-    font-weight: 500;
 }

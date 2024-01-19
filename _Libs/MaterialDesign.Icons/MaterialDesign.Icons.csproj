@@ -28,6 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.1" />
     </ItemGroup>
 </Project>

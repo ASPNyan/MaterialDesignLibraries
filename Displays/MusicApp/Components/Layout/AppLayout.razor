@@ -2,6 +2,7 @@
 @using MaterialDesign.Theming.Web.MudBlazor
 @using MusicApp.Services
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject ScopedSettings Settings
 
 <DynamicHeadContent>
@@ -11,7 +12,7 @@
 <MdMudThemeProvider/>
 
 <MdIconConfig Fill="false" Weight="300" Grade="0" OpticalSize="40" LineStyle="@MdIconLineStyle.Sharp">
-    <div id="GridLayout" class="surface-variant secondary-text @Settings.CurrentFontClass">
+    <div id="GridLayout" class="surface-variant secondary-text @Settings.CurrentFontClass" style="font-weight: @Settings.FontWeight">
         <div id="Top" class="surface-variant on-surface-variant-text"><DynamicComponentOutlet Id="@TopId"/></div>
         <div id="Left" class="surface-variant on-surface-variant-text"><DynamicComponentOutlet Id="@LeftId"/></div>
         <main class="surface-container">@Body</main>
@@ -25,4 +26,16 @@
     public const string TopId = "TopComponentId";
     public const string LeftId = "LeftComponentId";
     public const string BottomId = "BottomComponentId";
+
+    private async void OnUpdate() => await InvokeAsync(StateHasChanged);
+    
+    protected override void OnInitialized()
+    {
+        Settings.OnFontUpdate += OnUpdate;
+    }
+
+    public void Dispose()
+    {
+        Settings.OnFontUpdate -= OnUpdate;
+    }
 }

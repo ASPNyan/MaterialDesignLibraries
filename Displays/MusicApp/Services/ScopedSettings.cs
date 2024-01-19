@@ -2,15 +2,30 @@
 
 public class ScopedSettings
 {
-    public string CurrentFontClass { get; set; } = "Roboto";
+    public int FontWeight { get; private set; } = 400;
+
+    public string CurrentFontClass { get; private set; } = "Roboto";
     public bool DynamicTheme { get; private set; } = true;
 
     public void ToggleDynamicTheme()
     {
         DynamicTheme = !DynamicTheme;
         
-        OnUpdate?.Invoke();
+        OnThemeUpdate?.Invoke();
     }
 
-    public event Action? OnUpdate;
+    public void SwitchFontClass(string className)
+    {
+        CurrentFontClass = className;
+        OnFontUpdate?.Invoke();
+    }
+
+    public void UpdateFontWeight(int value)
+    {
+        FontWeight = value;
+        OnFontUpdate?.Invoke();
+    }
+
+    public event Action? OnThemeUpdate;
+    public event Action? OnFontUpdate;
 }

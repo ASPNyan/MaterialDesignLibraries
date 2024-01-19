@@ -1,11 +1,53 @@
-﻿<DynamicHeadContent>
+﻿@using MudBlazor
+@using MaterialDesign.Web.Exceptions
+@using MaterialDesign.Web.Fonts.Enums
+@using MusicApp.Services
+@inject ScopedSettings Settings
+
+<DynamicHeadContent>
     <link rel="stylesheet" href="css/FontOptionsMenu.css">
 </DynamicHeadContent>
 
 <div class="FontSettings surface tertiary-text">
-        
+    @{
+        KeyValuePair<string, Range?>[] fonts = Fonts!.ToArray();
+        for (int i = 3; i - 3 < fonts.Length; i += 3)
+        {
+            int startPos = i - 3;
+            int endPos = int.Min(i, fonts.Length);
+            <MudButtonGroup OverrideStyles="true" Color="@Color.Surface">
+                @foreach ((string className, Range? weightRange) in fonts[startPos..endPos])
+                {
+                    <MudButton OnClick="@(() => ChangeFont(className, weightRange))" Class="Button">
+                        @className
+                    </MudButton>
+                }
+            </MudButtonGroup>
+        }
+    }
+    @if (CurrentRange is not null)
+    {
+        <MudSlider T="int" Value="@Settings.FontWeight" Min="@CurrentRange.Value.Start.Value" Color="@Color.Primary"
+                   Max="@CurrentRange.Value.End.Value" ValueChanged="@Settings.UpdateFontWeight" ValueLabel="true"/>
+    }
+    else Settings.UpdateFontWeight(400);
 </div>
 
 @code {
+    [Parameter, EditorRequired]
+    public Dictionary<string, Range?>? Fonts { get; set; }
+
+    private Range? CurrentRange { get; set; }
     
+    protected override void OnInitialized()
+    {
+        if (Fonts is null) 
+            throw new ParameterException("Fonts is a required element on FontOptionsMenu", nameof(Fonts));
+    }
+
+    private void ChangeFont(string className, Range? range)
+    {
+        Settings.SwitchFontClass(className);
+        CurrentRange = range;
+    }
 }

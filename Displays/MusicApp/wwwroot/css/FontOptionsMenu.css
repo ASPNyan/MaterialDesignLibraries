@@ -1,0 +1,28 @@
+.FontSettings {
+    position: absolute;
+    top: 7.5vh;
+    right: 5vh;
+    width: 14.4em;
+    height: 16em;
+    font-size: 24px;
+    z-index: 100;
+    padding: 1vw;
+    border-radius: 1em;
+}
+
+.FontSettings .mud-button-group-root {
+    display: flex;
+    width: 100%;
+}
+
+.FontSettings .Button {
+    background-color: var(--md-sys-color-tertiary) !important;
+    color: var(--md-sys-color-on-tertiary) !important;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.FontSettings .mud-slider-value-label {
+    top: 100% !important;
+    transform: translateX(-50%) translateY(25%) !important;
+}

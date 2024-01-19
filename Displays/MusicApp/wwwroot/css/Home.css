@@ -18,6 +18,17 @@
     cursor: pointer;
 }
 
+.FontMenu {
+    position: absolute;
+    width: 6vh;
+    height: 6vh;
+    font-size: 6vh !important;
+    top: 1vh;
+    right: 7vh;
+    user-select: none;
+    cursor: pointer;
+}
+
 main {
     position: relative;
 }
@@ -30,4 +41,6 @@ main {
     width: 5vh;
     height: 5vh;
     z-index: 5;
+    user-select: none;
+    cursor: pointer;
 }

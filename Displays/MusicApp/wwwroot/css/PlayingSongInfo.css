@@ -1,9 +1,9 @@
-﻿h4 {
+﻿#PlayingSongTitle {
     font-size: 1.6vh;
     margin: 1vh 0 1.2vh 0.25vw;
 }
 
-h5 {
+.PlayingSongInfo {
     font-size: 1.3vh;
     margin: 0 0 0.8vh 0.5vw;
 }

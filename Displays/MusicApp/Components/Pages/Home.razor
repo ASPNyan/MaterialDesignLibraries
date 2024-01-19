@@ -3,6 +3,8 @@
 @using MusicApp.Enums
 @using MusicApp.Services
 @using MaterialDesign.Icons
+@using MaterialDesign.Web.Fonts
+@using MaterialDesign.Web.Fonts.Enums
 @page "/"
 @inject SongInfoContainer SongInfoContainer
 @inject ThemeContainer ThemeContainer
@@ -10,6 +12,10 @@
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Home.css">
 </DynamicHeadContent>
+
+<DynamicFont ClassName="Roboto" FontFaceBuilder="@Roboto"/>
+<DynamicFont ClassName="OpenSans" FontFaceBuilder="@OpenSans"/>
+<DynamicFont ClassName="Oswald" FontFaceBuilder="@Oswald"/>
 
 <PageTitle>Home</PageTitle>
 
@@ -20,6 +26,10 @@
         <ThemeOptionsMenu/>
     }
     <MdIcon Icon="Format Size" class="FontMenu" @onclick="@ToggleFontMenu"/>
+    @if (FontMenuOpen)
+    {
+        <FontOptionsMenu Fonts="@Fonts"/>
+    }
 </DynamicComponentContent>
 <DynamicComponentContent OutletId="@AppLayout.LeftId">
     @if (SongPlaying)
@@ -67,4 +77,29 @@
     }
 
     private string GetListViewIcon() => ListTileStyle is SongTileStyle.Comfy ? "Grid View" : "List";
+
+    private static Dictionary<string, Range?> Fonts { get; } = new()
+    {
+        { "Roboto", null },
+        { "OpenSans", (int)FontWeightValue.Light..(int)FontWeightValue.ExtraBold },
+        { "Oswald", (int)FontWeightValue.ExtraLight..(int)FontWeightValue.Bold }
+    };
+
+    private static void Roboto(FontFaceBuilder builder)
+    {
+        builder.FontFamily("Roboto").FontWeight(new FontWeight(FontWeightValue.Regular))
+            .FontSource(sourceBuilder => sourceBuilder.AddLocalSource("Roboto").AddUrlSource("fonts/Roboto.ttf"));
+    }
+    
+    private static void OpenSans(FontFaceBuilder builder)
+    {
+        builder.FontFamily("Open Sans").FontWeight(new FontWeight(FontWeightValue.Light, FontWeightValue.ExtraBold))
+            .FontSource(sourceBuilder => sourceBuilder.AddLocalSource("Open Sans").AddUrlSource("fonts/OpenSans.ttf"));
+    }
+
+    private static void Oswald(FontFaceBuilder builder)
+    {
+        builder.FontFamily("Oswald").FontWeight(new FontWeight(FontWeightValue.ExtraLight, FontWeightValue.Bold))
+            .FontSource(sourceBuilder => sourceBuilder.AddLocalSource("Oswald").AddUrlSource("fonts/Oswald.ttf"));
+    }
 }
