@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <PackageId>Nyan.MaterialDesign.Web</PackageId>
-        <Version>1.1.0</Version>
+        <Version>1.1.1</Version>
         <Authors>ASPNyan</Authors>
         <Description>Provides Generic Web-related Classes and Components, used in the Nyan.MaterialDesign.Theming.Web library.</Description>
         <Copyright>Sebastian Ricketts</Copyright>
