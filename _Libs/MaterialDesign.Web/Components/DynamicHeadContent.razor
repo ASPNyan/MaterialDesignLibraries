@@ -1,5 +1,6 @@
 ﻿@using MaterialDesign.Web.Exceptions
 @using MaterialDesign.Web.Services
+@implements IDisposable
 @inject DynamicHeadStorage Storage
 
 @code {
@@ -16,4 +17,8 @@
 
     protected override void OnAfterRender(bool firstRender) => Storage.InvokeUpdate();
 
+    public void Dispose()
+    {
+        if (ChildContent is not null) Storage.Remove(ChildContent);
+    }
 }

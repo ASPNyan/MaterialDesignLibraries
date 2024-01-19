@@ -32,7 +32,20 @@
     <span class="black">900 (black)</span>
 </p>
 
+<p @onclick="() => AddHeadContent = !AddHeadContent">
+    Click me to toggle head content. Currently: @AddHeadContent
+</p>
+
+@if (AddHeadContent)
+{
+    <DynamicHeadContent>
+        <div>This is the head content that is being toggled. It should only appear when true in the body.</div>
+    </DynamicHeadContent>
+}
+
 @code {
+    private bool AddHeadContent { get; set; }
+    
     private static void Roboto(FontFaceBuilder builder)
     {
         builder
