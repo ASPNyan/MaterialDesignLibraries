@@ -86,3 +86,29 @@
     grid-column: ToneDisplay;
     grid-row: ToneDisplay;
 }
+
+#Example {
+    position: relative;
+    font-size: 24px;
+    margin-top: 10vh;
+    width: 100%;
+    border-radius: 3vw;
+    padding: 3vw;
+}
+
+#Example span {
+    width: 30%;
+    float: right;
+    border-radius: 1vw;
+    padding: 1vw;
+    margin: 0 0 1.5vw 1.5vw;
+}
+
+#Example div {
+    margin-top: 3vh;
+    margin-left: 5%;
+    width: 90%;
+    border-radius: 2vw;
+    padding: 2vw;
+    clear: both;
+}

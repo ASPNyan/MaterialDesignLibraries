@@ -112,7 +112,7 @@ public abstract record CustomSchemeBase : IScheme
     #nullable restore
     
     /// <summary>
-    /// Whether the text should be colored or black & white.
+    /// Whether the text should be colored or black &amp; white.
     /// </summary>
     protected abstract TextStyleType TextStyle { get; }
     /// <summary>

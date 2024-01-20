@@ -1,5 +1,6 @@
 ﻿@using MaterialDesign.Theming.Web
 @using MudBlazor
+@using System.Diagnostics.CodeAnalysis
 @page "/"
 @rendermode InteractiveServer
 
@@ -24,26 +25,61 @@
     </TSlider>
 </HCTSelector>
 
-<SchemeDisplay Scheme="@(new CustomScheme(Color))"/>
+<SchemeDisplay Scheme="@Scheme"/>
+
+<article id="Example" style="background: @HCTAString(Scheme.Background); color: @HCTAString(Scheme.GetText(Scheme.OnPrimary))">
+    <span style="background: @HCTAString(Scheme.TertiaryContainer); color: @HCTAString(Scheme.GetText(Scheme.OnTertiaryContainer)); border: 3px solid @HCTAString(Scheme.Outline)">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+        A dolorum eligendi eveniet inventore itaque nobis quidem repellat sequi sit voluptatibus!
+    </span>
+    
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+    Culpa, dolore eligendi ipsum iusto mollitia natus numquam odio officiis optio 
+    perferendis perspiciatis quaerat quos repellendus repudiandae sint tempora tempore voluptatem voluptates.
+    
+    <div style="background: @HCTAString(Scheme.OnPrimary); color: @HCTAString(Scheme.GetText(Scheme.Primary)); border: 3px solid @HCTAString(Scheme.Outline)">
+        <span style="background: @HCTAString(Scheme.Secondary); color: @HCTAString(Scheme.GetText(Scheme.OnSecondary));">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid, praesentium!
+        </span>
+        
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        Explicabo, laboriosam necessitatibus nemo odit qui tenetur vero voluptatibus.
+        A accusamus, assumenda distinctio dolore eos eveniet fuga maiores nemo nihil,
+        non pariatur placeat quibusdam sunt tempore vel, veniam vitae.
+        Adolores eos excepturi id maxime neque, voluptate! Aliquid deserunt dolorem dolorum unde.
+        <br/><br/>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        Alias consectetur, ducimus enim in iure maiores nam necessitatibus omnis perferendis quae.
+    </div>
+</article>
 
 @code {
     private HCTA Color { get; } = new(343, 100, 50);
+    [NotNull] private CustomScheme? Scheme { get; set; }
+
+    private static string HCTAString(HCTA hcta) => hcta.ToRGBA().ToString();
+    
+    private void UpdateScheme() => Scheme = new CustomScheme(Color);
+    protected override void OnInitialized() => UpdateScheme();
 
     private void OnHueUpdate(double hue)
     {
         Color.H = hue;
+        UpdateScheme();
         StateHasChanged();
     }
     
     private void OnChromaUpdate(double chroma)
     {
         Color.C = chroma;
+        UpdateScheme();
         StateHasChanged();
     }
     
     private void OnToneUpdate(double tone)
     {
         Color.T = tone;
+        UpdateScheme();
         StateHasChanged();
     }
 }
