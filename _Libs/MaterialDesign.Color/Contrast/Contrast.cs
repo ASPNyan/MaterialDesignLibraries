@@ -49,9 +49,9 @@ public static class Contrast
 
         double returnValue = HCTA.ToneFromY(lightY) + 0.4;
 
-        if (returnValue is < 0 or > 100) return -1;
+        if (returnValue is < -1 or > 101) return -1; // after some testing, some error can occur, so a +- 1 will fix this
 
-        return returnValue;
+        return double.Clamp(returnValue, 0, 100); // the prior comment does mean that a clamp is required
     }
 
     /// <summary>
@@ -76,9 +76,9 @@ public static class Contrast
 
         double returnValue = HCTA.ToneFromY(darkY) - 0.4;
 
-        if (returnValue is < 0 or > 100) return -1;
+        if (returnValue is < -1 or > 101) return -1; // see LighterViaRatio() comments for more info on the extra +- 1. 
 
-        return returnValue;
+        return double.Clamp(returnValue, 0, 100);
     }
 
     /// <summary>
