@@ -4,6 +4,7 @@ using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
 using MaterialDesign.Theming.Web.Setup;
 using MaterialDesign.Web.Services;
+using MaterialDesignCustomSchemes;
 using MudBlazor.Services;
 using MaterialDesignCustomSchemes.Components;
 
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
+    .AddScoped<CustomScheme>(_ => new CustomScheme(defaultThemeSource))
     .AddDynamicMaterialIconsToWebApplication()
     .AddMaterialThemeService(new Theme(defaultThemeSource))
     .AddDynamicHeadStorage()

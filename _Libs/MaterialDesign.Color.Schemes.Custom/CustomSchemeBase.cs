@@ -8,8 +8,8 @@ namespace MaterialDesign.Color.Schemes.Custom;
 public abstract record CustomSchemeBase : IScheme
 {
     public HCTA? Origin { get; private set; }
+    private bool CodeAnalysis { get; }
     
-
     public void SetDark()
     {
         IsDarkScheme = true;
@@ -41,13 +41,8 @@ public abstract record CustomSchemeBase : IScheme
 
     public HCTA GetText(HCTA color)
     {
-        if (BlackAndWhiteText)
-        {
-            if (color.T <= 50) return new HCTA(0, 0, 0);
-            return new HCTA(0, 0, 100);
-        }
-
-        return color;
+        if (!BlackAndWhiteText) return color;
+        return color.T <= 50 ? new HCTA(0, 0, 0) : new HCTA(0, 0, 100);
     }
     
     public HCTA Primary { get; private set; }
@@ -162,10 +157,10 @@ public abstract record CustomSchemeBase : IScheme
     {
         return Saturation switch
         {
-            SaturationType.Desaturated => double.Min(source.C, 6),
-            SaturationType.LowSaturation => double.Min(source.C * 0.7, 18),
+            SaturationType.Desaturated => double.Min(source.C, source.MaxChroma() * 0.1),
+            SaturationType.LowSaturation => double.Min(source.C, source.MaxChroma() * 0.25),
             SaturationType.MediumSaturation => source.C,
-            SaturationType.HighSaturation => double.Max(source.C * 1.5, 54),
+            SaturationType.HighSaturation => double.Max(source.C, source.MaxChroma() * 0.7),
             SaturationType.Saturated => source.MaxChroma(),
             _ => throw new ArgumentOutOfRangeException(nameof(Saturation), "Saturation must be one of 5 valid enum values.")
         };
@@ -252,14 +247,16 @@ public abstract record CustomSchemeBase : IScheme
     }
 
     // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
-    protected CustomSchemeBase(HCTA source)
+    protected CustomSchemeBase(HCTA source, bool enableCodeAnalysis = true)
     {
         Origin = source;
+        CodeAnalysis = enableCodeAnalysis;
         Construct(source);
     }
 
     private void Construct(HCTA source)
     {
+        Origin = source;
         HCTA modSource = new(source.H, GenerateSourceChroma(source), source.T);
         
         double onColorContrastLevel = ToneGapValues(OnColorGap, nameof(OnColorGap));
@@ -339,13 +336,13 @@ public abstract record CustomSchemeBase : IScheme
         }
     }
 
-    protected enum TextStyleType
+    public enum TextStyleType
     {
         Colored,
         BlackAndWhite
     }
 
-    protected enum SaturationType
+    public enum SaturationType
     {
         Desaturated,
         LowSaturation,
@@ -354,7 +351,7 @@ public abstract record CustomSchemeBase : IScheme
         Saturated
     }
 
-    protected enum ToneGap
+    public enum ToneGap
     {
         Minimal, // 4.5 contrast
         Narrow, // 6.6 contrast
@@ -363,7 +360,7 @@ public abstract record CustomSchemeBase : IScheme
     }
 
     [Flags]
-    protected enum DifferenceFromSource
+    public enum DifferenceFromSource
     {
         None = 0,
         
@@ -378,13 +375,13 @@ public abstract record CustomSchemeBase : IScheme
         UseTertiaryHueOverride = 1<<6,
         UseSurfaceHueOverride = 1<<7,
 
-        RelativeDesaturateSmall = 1<<8, // -5 chroma
-        RelativeDesaturate = 1<<9, // -8 chroma
-        RelativeDesaturateLarge = 1<<10, // -12 chroma
+        RelativeDesaturateSmall = 1<<8,
+        RelativeDesaturate = 1<<9,
+        RelativeDesaturateLarge = 1<<10,
 
-        RelativeSaturateSmall = 1<<11, // +5 chroma
-        RelativeSaturate = 1<<12, // +8 chroma
-        RelativeSaturateLarge = 1<<13, // +12 chroma
+        RelativeSaturateSmall = 1<<11,
+        RelativeSaturate = 1<<12,
+        RelativeSaturateLarge = 1<<13,
 
         UsePrimaryChromaOverride = 1<<14,
         UseSecondaryChromaOverride = 1<<15,

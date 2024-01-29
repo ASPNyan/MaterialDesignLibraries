@@ -1,7 +1,6 @@
 ﻿#ColorSelector {
     width: 14.4em;
     height: 13em;
-    padding: 1vw;
     display: grid;
     font-size: 24px;
     grid-template-areas: "HueDisplay    HueDisplay"
@@ -13,6 +12,16 @@
     grid-row-gap: 0.5em;
     border-radius: 1em;
     z-index: 100;
+}
+
+#DarkLightSwitch {
+    position: absolute;
+    right: 1vw;
+    top: 1vw;
+    width: 3vw;
+    height: 3vw;
+    font-size: 3vw;
+    border-radius: 0.5vw;
 }
 
 .DisplayWindow {
@@ -87,6 +96,32 @@
     grid-row: ToneDisplay;
 }
 
+body, main {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#Settings {
+    position: absolute;
+    left: 0;
+    width: 50vw;
+    height: 100vh;
+    border-right: 1px var(--md-sys-color-on-background) solid;
+    padding: 1vw 0.5vw 1vw 1vh;
+    overflow: auto;
+}
+
+#Content {
+    position: absolute;
+    left: 50vw;
+    width: 50vw;
+    height: 100vh;
+    border-left: 1px var(--md-sys-color-on-background) solid;
+    padding: 1vw 1vw 1vw 0.5vw;
+    overflow: auto;
+}
+
 #Example {
     position: relative;
     font-size: 24px;
@@ -111,4 +146,20 @@
     border-radius: 2vw;
     padding: 2vw;
     clear: both;
+}
+
+.SettingPopover * {
+    background: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-on-secondary);
+}
+
+.SettingPopover .mud-selected-item,
+.SettingPopover .mud-selected-item *
+{
+    background: var(--md-sys-color-secondary-container) !important;
+    color: var(--md-sys-color-on-secondary-container) !important;
+}
+
+.SettingSelector * {
+    color: var(--md-sys-color-on-background) !important;
 }
