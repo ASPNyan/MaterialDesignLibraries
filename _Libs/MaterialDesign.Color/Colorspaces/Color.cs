@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace MaterialDesign.Color.Colorspaces;
 
@@ -571,6 +572,7 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
         public required HSLAJson HSLA { get; init; }
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Local")] // Used in JSON serialization
     private readonly struct RGBAJson(byte r, byte g, byte b, byte a)
     {
         public byte R { get; } = r;

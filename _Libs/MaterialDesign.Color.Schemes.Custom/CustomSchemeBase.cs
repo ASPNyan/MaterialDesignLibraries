@@ -8,7 +8,6 @@ namespace MaterialDesign.Color.Schemes.Custom;
 public abstract record CustomSchemeBase : IScheme
 {
     public HCTA? Origin { get; private set; }
-    private bool CodeAnalysis { get; }
     
     public void SetDark()
     {
@@ -247,10 +246,9 @@ public abstract record CustomSchemeBase : IScheme
     }
 
     // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
-    protected CustomSchemeBase(HCTA source, bool enableCodeAnalysis = true)
+    protected CustomSchemeBase(HCTA source)
     {
         Origin = source;
-        CodeAnalysis = enableCodeAnalysis;
         Construct(source);
     }
 

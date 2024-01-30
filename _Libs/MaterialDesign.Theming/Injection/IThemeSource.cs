@@ -13,7 +13,7 @@ public interface IThemeSource
     protected Theme? UseActualTheme => null;
     
     /// <summary>
-    /// Gets a color synchronously from the source. Unsupported in WASM as <see cref="Monitor.Wait"/> calls will crash the app.
+    /// Gets a color synchronously from the source. Unsupported in WASM as <see cref="Monitor.Wait(object)"/> calls will crash the app.
     /// </summary>
     protected HCTA GetSourceSynchronous() => GetSource().Result;
 

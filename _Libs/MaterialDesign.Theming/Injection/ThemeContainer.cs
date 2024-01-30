@@ -36,6 +36,8 @@ public class ThemeContainer // Update to SchemeContainer in next major.
     public static async Task<ThemeContainer> CreateFromThemeSource(IThemeSource themeSource) => 
         new(await themeSource.GetTheme()); 
     
+    // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+    
     /// <summary>
     /// Updates the ThemeContainer's <see cref="Theme"/>, calling <see cref="OnThemeUpdate"/> after.
     /// </summary>
@@ -88,6 +90,8 @@ public class ThemeContainer // Update to SchemeContainer in next major.
         SubscribeToEvent();
         OnSchemeUpdate?.Invoke();
     }
+    
+    // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
     
     private void SchemeUpdate() => OnSchemeUpdate?.Invoke();
