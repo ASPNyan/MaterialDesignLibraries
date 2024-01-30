@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesign.Color.Scheme
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialDesignCustomSchemes", "Tools\MaterialDesignCustomSchemes\MaterialDesignCustomSchemes.csproj", "{922BDB94-3549-4384-BF15-4C48333B78CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromaDistanceGenerator", "Tools\ChromaDistanceGenerator\ChromaDistanceGenerator.csproj", "{5CC3AA21-7A79-4A71-8C78-84F7C34F80AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,10 @@ Global
 		{922BDB94-3549-4384-BF15-4C48333B78CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{922BDB94-3549-4384-BF15-4C48333B78CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{922BDB94-3549-4384-BF15-4C48333B78CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC3AA21-7A79-4A71-8C78-84F7C34F80AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC3AA21-7A79-4A71-8C78-84F7C34F80AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC3AA21-7A79-4A71-8C78-84F7C34F80AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC3AA21-7A79-4A71-8C78-84F7C34F80AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DBD3EAD2-94CC-4D60-9241-2C85B436DE19} = {278B91CB-008A-457F-BE60-615884410B7B}
@@ -118,5 +124,6 @@ Global
 		{3781EACE-6915-42C5-9832-E742D0B1B3C9} = {08DD0B4F-96FD-46D1-AD8D-51D55E4C99FE}
 		{BBB96EBF-C109-4B89-AD95-0D2511F849BC} = {278B91CB-008A-457F-BE60-615884410B7B}
 		{922BDB94-3549-4384-BF15-4C48333B78CF} = {08DD0B4F-96FD-46D1-AD8D-51D55E4C99FE}
+		{5CC3AA21-7A79-4A71-8C78-84F7C34F80AB} = {08DD0B4F-96FD-46D1-AD8D-51D55E4C99FE}
 	EndGlobalSection
 EndGlobal

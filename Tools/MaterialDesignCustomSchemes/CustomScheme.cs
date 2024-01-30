@@ -16,6 +16,7 @@ public sealed record CustomScheme(HCTA Source) : CustomSchemeBase(Source)
     public DifferenceFromSource SchemeSecondaryDifference = DifferenceFromSource.RelativeDesaturateLarge;
     public DifferenceFromSource SchemeTertiaryDifference = DifferenceFromSource.HueShiftWide | DifferenceFromSource.NegativeHueShift;
     public DifferenceFromSource SchemeSurfaceDifference = DifferenceFromSource.UseSurfaceChromaOverride;
+    public SaturationType SchemeVariantDifferenceFromSurface = SaturationType.HighSaturation;
     
     public double SchemePrimaryHue;
     public double SchemeSecondaryHue;
@@ -35,6 +36,7 @@ public sealed record CustomScheme(HCTA Source) : CustomSchemeBase(Source)
     protected override DifferenceFromSource SecondaryDifference => SchemeSecondaryDifference;
     protected override DifferenceFromSource TertiaryDifference => SchemeTertiaryDifference;
     protected override DifferenceFromSource SurfaceDifference => SchemeSurfaceDifference;
+    protected override SaturationType VariantDifferenceFromSurface => SchemeVariantDifferenceFromSurface;
 
     protected override double PrimaryHue => SchemePrimaryHue;
     protected override double SecondaryHue => SchemeSecondaryHue;

@@ -158,6 +158,15 @@
         <MudInput T="double" Value="Scheme.SchemeSurfaceChroma" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemeSurfaceChroma, x))"
                   Placeholder="Surface Chroma" Class="SettingSelector"/>
     }
+    <br/><br/>
+    
+    <p>Scheme Variant Difference From Surface</p>
+    <MudSelect T="SaturationType" Value="Scheme.SchemeVariantDifferenceFromSurface" Class="SettingSelector" PopoverClass="SettingPopover"
+               ValueChanged="type => SetAndUpdate(out Scheme.SchemeVariantDifferenceFromSurface, type)">
+            @foreach (var value in Enum.GetValues<SaturationType>()) {
+                <MudSelectItem T="SaturationType" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
+            }
+        </MudSelect>
 </article>
 
 <article id="Content">
