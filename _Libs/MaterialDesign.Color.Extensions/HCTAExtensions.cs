@@ -54,10 +54,9 @@ public static class HCTAExtensions
 
         if (tone is -1)
         {
-            double minTone = darker is true ? 100 - tone : tone;
             string minOrMax = darker is true ? "maximum" : "minimum";
             throw new InvalidOperationException($"Cannot create a color with a contrast of {ratio} from {current} " +
-                                                $"as it would allow a {minOrMax} source tone of {minTone}.");
+                                                $"as it would exceed the {minOrMax} source tone.");
         }
 
         return new HCTA(current.H, current.C, tone);
