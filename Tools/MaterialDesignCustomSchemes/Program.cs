@@ -1,4 +1,5 @@
 using MaterialDesign.Color.Colorspaces;
+using MaterialDesign.Color.Schemes.Custom;
 using MaterialDesign.Icons;
 using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
@@ -7,6 +8,7 @@ using MaterialDesign.Web.Services;
 using MaterialDesignCustomSchemes;
 using MudBlazor.Services;
 using MaterialDesignCustomSchemes.Components;
+using static MaterialDesign.Color.Schemes.Custom.CustomSchemeBase;
 
 HCTA defaultThemeSource = new(308.35, 53.78, 28.95);
 
@@ -14,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
-    .AddScoped<CustomScheme>(_ => new CustomScheme(defaultThemeSource))
+    .AddScoped<GeometricScheme>(_ => new GeometricScheme(defaultThemeSource, ColorGeometry.Tetradic, 
+        TextStyleType.Colored, SaturationType.MediumSaturation, ToneGap.Broad, ToneGap.Narrow, ToneGap.Wide))
     .AddDynamicMaterialIconsToWebApplication()
     .AddMaterialThemeService(new Theme(defaultThemeSource))
     .AddDynamicHeadStorage()

@@ -110,7 +110,7 @@ color: @Scheme.SurfaceVariant.ToRGBA().ToString()">
 
 @code {
     [Parameter, EditorRequired]
-    public CustomScheme Scheme { get; set; } = null!;
+    public CustomSchemeBase Scheme { get; set; } = null!;
 
     protected override void OnInitialized()
     {

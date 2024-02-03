@@ -1,11 +1,12 @@
 ﻿using MaterialDesign.Color.Extensions;
 using MaterialDesign.Theming;
+using MaterialDesign.Theming.Injection;
 
 #pragma warning disable CA2208 // Disable in file for all uses. Prevents ArgumentOutOfRange warnings from appearing
 
 namespace MaterialDesign.Color.Schemes.Custom;
 
-public abstract record CustomSchemeBase : IScheme
+public abstract record CustomSchemeBase : IThemeSource, IScheme
 {
     public HCTA? Origin { get; private set; }
     
@@ -142,15 +143,23 @@ public abstract record CustomSchemeBase : IScheme
     /// </summary>
     protected virtual SaturationType VariantDifferenceFromSurface => SaturationType.HighSaturation;
 
-    protected virtual double PrimaryHue => 0;
-    protected virtual double SecondaryHue => 0;
-    protected virtual double TertiaryHue => 0;
-    protected virtual double SurfaceHue => 0;
+    protected virtual double PrimaryHue { get; set; } = 0;
+    protected virtual double SecondaryHue { get; set; } = 0;
+    protected virtual double TertiaryHue { get; set; } = 0;
+    protected virtual double SurfaceHue { get; set; } = 0;
     
-    protected virtual double PrimaryChroma => 0;
-    protected virtual double SecondaryChroma => 0;
-    protected virtual double TertiaryChroma => 0;
-    protected virtual double SurfaceChroma => 0;
+    protected virtual double PrimaryChroma { get; set; } = 0;
+    protected virtual double SecondaryChroma { get; set; } = 0;
+    protected virtual double TertiaryChroma { get; set; } = 0;
+    protected virtual double SurfaceChroma { get; set; } = 0;
+
+    protected virtual void PreConstruct()
+    {
+    }
+
+    protected virtual void PostConstruct()
+    {
+    }
 
     private double GenerateSourceChroma(HCTA source)
     {
@@ -255,6 +264,7 @@ public abstract record CustomSchemeBase : IScheme
     private void Construct(HCTA source)
     {
         Origin = source;
+        PreConstruct();
         HCTA modSource = new(source.H, GenerateSourceChroma(source), source.T);
         
         double onColorContrastLevel = ToneGapValues(OnColorGap, nameof(OnColorGap));
@@ -299,6 +309,8 @@ public abstract record CustomSchemeBase : IScheme
         SurfaceContainerHigh = surfacePalette.GetWithTone(IsDarkScheme ? 17 : 92);
         SurfaceContainerHighest = surfacePalette.GetWithTone(IsDarkScheme ? 22 : 90);
 
+        PostConstruct();
+        
         return;
 
         double ToneGapValues(ToneGap toneGap, string paramName)
@@ -364,9 +376,18 @@ public abstract record CustomSchemeBase : IScheme
         
         NegativeHueShift = 1<<0,
         
-        HueShiftSmall = 1<<1, // 15deg
-        HueShift = 1<<2, // 30deg
-        HueShiftWide = 1<<3, // 50deg
+        /// <summary>
+        /// 15deg
+        /// </summary>
+        HueShiftSmall = 1<<1, 
+        /// <summary>
+        /// 30deg
+        /// </summary>
+        HueShift = 1<<2, 
+        /// <summary>
+        /// 50deg
+        /// </summary>
+        HueShiftWide = 1<<3,
         
         UsePrimaryHueOverride = 1<<4,
         UseSecondaryHueOverride = 1<<5,

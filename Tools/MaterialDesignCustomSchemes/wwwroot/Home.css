@@ -1,5 +1,5 @@
 ﻿#ColorSelector {
-    width: 14.4em;
+    width: 22vw;
     height: 13em;
     display: grid;
     font-size: 24px;
@@ -105,7 +105,7 @@ body, main {
 #Settings {
     position: absolute;
     left: 0;
-    width: 50vw;
+    width: 30vw;
     height: 100vh;
     border-right: 1px var(--md-sys-color-on-background) solid;
     padding: 1vw 0.5vw 1vw 1vh;
@@ -114,8 +114,8 @@ body, main {
 
 #Content {
     position: absolute;
-    left: 50vw;
-    width: 50vw;
+    right: 0;
+    width: 70vw;
     height: 100vh;
     border-left: 1px var(--md-sys-color-on-background) solid;
     padding: 1vw 1vw 1vw 0.5vw;

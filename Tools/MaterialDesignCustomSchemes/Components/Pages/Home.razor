@@ -1,9 +1,10 @@
 ﻿@using MaterialDesign.Theming.Web
 @using MudBlazor
 @using static MaterialDesign.Color.Schemes.Custom.CustomSchemeBase
+@using MaterialDesign.Color.Schemes.Custom
 @page "/"
 @rendermode InteractiveServer
-@inject CustomScheme Scheme
+@inject GeometricScheme Scheme
 
 <PageTitle>Home</PageTitle>
 
@@ -29,7 +30,7 @@
     
     <MdIcon Icon="@GetThemeIconString()" id="DarkLightSwitch" class="on-tertiary tertiary-text" @onclick="@SwitchTheme"/>
 
-    <h2>Scheme Options</h2>
+    @*<h2>Scheme Options</h2>
     <p>Scheme Text Style</p>
     <MudSelect T="TextStyleType" Value="Scheme.SchemeTextStyle" ValueChanged="type => SetAndUpdate(out Scheme.SchemeTextStyle, type)"
                Class="SettingSelector" PopoverClass="SettingPopover">
@@ -166,7 +167,7 @@
             @foreach (var value in Enum.GetValues<SaturationType>()) {
                 <MudSelectItem T="SaturationType" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
             }
-        </MudSelect>
+        </MudSelect>*@
 </article>
 
 <article id="Content">
@@ -217,7 +218,7 @@
     private void SetAndUpdate<T>(out T variable, in T value)
     {
         variable = value;
-        Scheme.AfterSettingsUpdate();
+        // Scheme.AfterSettingsUpdate();
         StateHasChanged();
     }
     
@@ -258,7 +259,7 @@
             variable = (DifferenceFromSource)flagInt;
         }
         
-        Scheme.AfterSettingsUpdate();
+        // Scheme.AfterSettingsUpdate();
         StateHasChanged();
     }
 
@@ -288,7 +289,7 @@
     private void OverrideInputChanged(out double variable, double input)
     {
         variable = input;
-        Scheme.AfterSettingsUpdate();
+        // Scheme.AfterSettingsUpdate();
         StateHasChanged();
     }
 }
