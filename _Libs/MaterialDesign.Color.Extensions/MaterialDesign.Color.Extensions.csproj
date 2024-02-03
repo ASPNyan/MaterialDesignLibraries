@@ -12,6 +12,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ASPNyan/MaterialDesignLibraries</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Nyan.MaterialDesign.Color" Version="1.1.0" />
+        <PackageReference Include="Nyan.MaterialDesign.Color" Version="1.1.1" />
     </ItemGroup>
 
 </Project>
