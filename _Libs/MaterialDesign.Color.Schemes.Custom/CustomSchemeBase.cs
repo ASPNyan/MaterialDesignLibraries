@@ -183,9 +183,9 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         bool negativeHueShift = false;
         foreach (DifferenceFromSource diffType in Enum.GetValues<DifferenceFromSource>())
         {
-            const double saturateSmall = 1.2;
-            const double saturate = 1.5;
-            const double saturateLarge = 1.7;
+            const double saturateSmall = 8;
+            const double saturate = 12;
+            const double saturateLarge = 18;
 
             if ((difference & diffType) == 0) continue;
             
