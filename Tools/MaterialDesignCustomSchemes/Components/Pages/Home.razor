@@ -4,7 +4,7 @@
 @using MaterialDesign.Color.Schemes.Custom
 @page "/"
 @rendermode InteractiveServer
-@inject CustomScheme Scheme
+@inject ModifiableCustomScheme Scheme
 
 <PageTitle>Home</PageTitle>
 
@@ -13,17 +13,17 @@
 </DynamicHeadContent>
 
 <article id="Settings">
-    <HCTSelector Hue="@Color.H" Chroma="@Color.C" Tone="@Color.T" SelectorId="ColorSelector">
+    <HCTSelector Hue="@Scheme.Hue" Chroma="@Scheme.Chroma" Tone="@Scheme.Tone" SelectorId="ColorSelector">
         <HSlider>
-            <MudSlider T="double" Min="0" Max="359" Value="@Color.H" ValueChanged="@OnHueUpdate" Class="HueSlider Slider"
+            <MudSlider T="double" Min="0" Max="359" Value="@Scheme.Hue" ValueChanged="@OnHueUpdate" Class="HueSlider Slider"
                        ValueLabel="true" Size="@Size.Medium"/>
         </HSlider>
         <CSlider>
-            <MudSlider T="double" Min="0" Max="150" Value="@Color.C" ValueChanged="@OnChromaUpdate" Class="ChromaSlider Slider"
+            <MudSlider T="double" Min="0" Max="150" Value="@Scheme.Chroma" ValueChanged="@OnChromaUpdate" Class="ChromaSlider Slider"
                        ValueLabel="true" Size="@Size.Medium" Variant="@Variant.Filled"/>
         </CSlider>
         <TSlider>
-            <MudSlider T="double" Min="0" Max="100" Value="@Color.T" ValueChanged="@OnToneUpdate" Class="ToneSlider Slider"
+            <MudSlider T="double" Min="0" Max="100" Value="@Scheme.Tone" ValueChanged="@OnToneUpdate" Class="ToneSlider Slider"
                        ValueLabel="true" Size="@Size.Medium" Variant="@Variant.Filled"/>
         </TSlider>
     </HCTSelector>
@@ -32,7 +32,7 @@
 
     <h2>Scheme Options</h2>
     <p>Scheme Text Style</p>
-    <MudSelect T="TextStyleType" Value="Scheme.SchemeTextStyle" ValueChanged="type => SetAndUpdate(out Scheme.SchemeTextStyle, type)"
+    <MudSelect T="TextStyleType" Value="Scheme.SchemeTextStyle" ValueChanged="type => SetAndUpdate(() => Scheme.SchemeTextStyle = type)"
                Class="SettingSelector" PopoverClass="SettingPopover">
         @foreach (var value in Enum.GetValues<TextStyleType>())
         {
@@ -42,7 +42,7 @@
     <br/><br/>
 
     <p>Scheme Saturation</p>
-    <MudSelect T="SaturationType" Value="Scheme.SchemeSaturation" ValueChanged="type => SetAndUpdate(out Scheme.SchemeSaturation, type)"
+    <MudSelect T="SaturationType" Value="Scheme.SchemeSaturation" ValueChanged="type => SetAndUpdate(() => Scheme.SchemeSaturation = type)"
                Class="SettingSelector" PopoverClass="SettingPopover">
         @foreach (var value in Enum.GetValues<SaturationType>()) {
             <MudSelectItem T="SaturationType" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
@@ -51,7 +51,7 @@
     <br/><br/>
 
     <p>Scheme Dark/Light Gap</p>
-    <MudSelect T="ToneGap" Value="Scheme.SchemeDarkLightGap" ValueChanged="type => SetAndUpdate(out Scheme.SchemeDarkLightGap, type)"
+    <MudSelect T="ToneGap" Value="Scheme.SchemeDarkLightGap" ValueChanged="type => SetAndUpdate(() => Scheme.SchemeDarkLightGap = type)"
                Class="SettingSelector" PopoverClass="SettingPopover">
         @foreach (var value in Enum.GetValues<ToneGap>()) {
             <MudSelectItem T="ToneGap" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
@@ -60,7 +60,7 @@
     <br/><br/>
 
     <p>Scheme On Color Gap</p>
-    <MudSelect T="ToneGap" Value="Scheme.SchemeOnColorGap" ValueChanged="type => SetAndUpdate(out Scheme.SchemeOnColorGap, type)"
+    <MudSelect T="ToneGap" Value="Scheme.SchemeOnColorGap" ValueChanged="type => SetAndUpdate(() => Scheme.SchemeOnColorGap = type)"
                Class="SettingSelector" PopoverClass="SettingPopover">
         @foreach (var value in Enum.GetValues<ToneGap>()) {
             <MudSelectItem T="ToneGap" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
@@ -69,7 +69,7 @@
     <br/><br/>
 
     <p>Scheme Core/Container Gap</p>
-    <MudSelect T="ToneGap" Value="Scheme.SchemeCoreContainerGap" ValueChanged="type => SetAndUpdate(out Scheme.SchemeCoreContainerGap, type)"
+    <MudSelect T="ToneGap" Value="Scheme.SchemeCoreContainerGap" ValueChanged="type => SetAndUpdate(() => Scheme.SchemeCoreContainerGap = type)"
                Class="SettingSelector" PopoverClass="SettingPopover">
         @foreach (var value in Enum.GetValues<ToneGap>()) {
             <MudSelectItem T="ToneGap" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
@@ -79,7 +79,7 @@
 
     <p>Scheme Primary Difference</p>
     <MudSelect T="string" MultiSelection="true" MultiSelectionTextFunc="@GetMultiSelectFlags" PopoverClass="SettingPopover"
-               SelectedValuesChanged="@(flags => UpdateFlags(out Scheme.SchemePrimaryDifference, flags))" Class="SettingSelector"
+               SelectedValuesChanged="@(flags => UpdateFlags(x => Scheme.SchemePrimaryDifference = x, flags))" Class="SettingSelector"
                SelectedValues="@GetSelectedValues(Scheme.SchemePrimaryDifference)">
         @foreach (var flag in Enum.GetValues<DifferenceFromSource>())
         {
@@ -88,19 +88,19 @@
     </MudSelect>
     @if ((Scheme.SchemePrimaryDifference & DifferenceFromSource.UsePrimaryHueOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemePrimaryHue" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemePrimaryHue, x))"
+        <MudInput T="double" Value="Scheme.SchemePrimaryHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemePrimaryHue = x))"
                   Placeholder="Primary Hue" Class="SettingSelector"/>
     }
     @if ((Scheme.SchemePrimaryDifference & DifferenceFromSource.UsePrimaryChromaOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemePrimaryChroma" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemePrimaryChroma, x))"
+        <MudInput T="double" Value="Scheme.SchemePrimaryChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemePrimaryChroma = x))"
                   Placeholder="Primary Hue" Class="SettingSelector"/>
     }
     <br/><br/>
 
     <p>Scheme Secondary Difference</p>
     <MudSelect T="string" MultiSelection="true" MultiSelectionTextFunc="@GetMultiSelectFlags" PopoverClass="SettingPopover"
-               SelectedValuesChanged="@(flags => UpdateFlags(out Scheme.SchemeSecondaryDifference, flags))" Class="SettingSelector" 
+               SelectedValuesChanged="@(flags => UpdateFlags(x => Scheme.SchemeSecondaryDifference = x, flags))" Class="SettingSelector" 
                SelectedValues="@GetSelectedValues(Scheme.SchemeSecondaryDifference)">
         @foreach (var flag in Enum.GetValues<DifferenceFromSource>())
         {
@@ -109,19 +109,19 @@
     </MudSelect>
     @if ((Scheme.SchemeSecondaryDifference & DifferenceFromSource.UseSecondaryHueOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemeSecondaryHue" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemeSecondaryHue, x))"
+        <MudInput T="double" Value="Scheme.SchemeSecondaryHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSecondaryHue = x))"
                   Placeholder="Secondary Hue" Class="SettingSelector"/>
     }
     @if ((Scheme.SchemeSecondaryDifference & DifferenceFromSource.UseSecondaryChromaOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemeSecondaryChroma" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemeSecondaryChroma, x))"
+        <MudInput T="double" Value="Scheme.SchemeSecondaryChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSecondaryChroma = x))"
                   Placeholder="Secondary Chroma" Class="SettingSelector"/>
     }
     <br/><br/>
 
     <p>Scheme Tertiary Difference</p>
     <MudSelect T="string" MultiSelection="true" MultiSelectionTextFunc="@GetMultiSelectFlags" PopoverClass="SettingPopover"
-               SelectedValuesChanged="@(flags => UpdateFlags(out Scheme.SchemeTertiaryDifference, flags))" Class="SettingSelector" 
+               SelectedValuesChanged="@(flags => UpdateFlags(x => Scheme.SchemeTertiaryDifference = x, flags))" Class="SettingSelector" 
                SelectedValues="@GetSelectedValues(Scheme.SchemeTertiaryDifference)">
         @foreach (var flag in Enum.GetValues<DifferenceFromSource>())
         {
@@ -130,19 +130,19 @@
     </MudSelect>
     @if ((Scheme.SchemeTertiaryDifference & DifferenceFromSource.UseTertiaryHueOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemeTertiaryHue" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemeTertiaryHue, x))"
+        <MudInput T="double" Value="Scheme.SchemeTertiaryHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeTertiaryHue = x))"
                   Placeholder="Tertiary Hue" Class="SettingSelector"/>
     }
     @if ((Scheme.SchemeTertiaryDifference & DifferenceFromSource.UseTertiaryChromaOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemeTertiaryChroma" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemeTertiaryChroma, x))"
+        <MudInput T="double" Value="Scheme.SchemeTertiaryChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeTertiaryChroma = x))"
                   Placeholder="Tertiary Chroma" Class="SettingSelector"/>
     }
     <br/><br/>
 
     <p>Scheme Surface Difference</p>
     <MudSelect T="string" MultiSelection="true" MultiSelectionTextFunc="@GetMultiSelectFlags" PopoverClass="SettingPopover"
-               SelectedValuesChanged="@(flags => UpdateFlags(out Scheme.SchemeSurfaceDifference, flags))" Class="SettingSelector" 
+               SelectedValuesChanged="@(flags => UpdateFlags(x => Scheme.SchemeSurfaceDifference = x, flags))" Class="SettingSelector" 
                SelectedValues="@GetSelectedValues(Scheme.SchemeSurfaceDifference)">
         @foreach (var flag in Enum.GetValues<DifferenceFromSource>())
         {
@@ -151,23 +151,23 @@
     </MudSelect>
     @if ((Scheme.SchemeSurfaceDifference & DifferenceFromSource.UseSurfaceHueOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemeSurfaceHue" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemeSurfaceHue, x))"
+        <MudInput T="double" Value="Scheme.SchemeSurfaceHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSurfaceHue = x))"
                   Placeholder="Surface Hue" Class="SettingSelector"/>
     }
     @if ((Scheme.SchemeSurfaceDifference & DifferenceFromSource.UseSurfaceChromaOverride) != 0)
     {
-        <MudInput T="double" Value="Scheme.SchemeSurfaceChroma" ValueChanged="@(x => OverrideInputChanged(out Scheme.SchemeSurfaceChroma, x))"
+        <MudInput T="double" Value="Scheme.SchemeSurfaceChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSurfaceChroma = x))"
                   Placeholder="Surface Chroma" Class="SettingSelector"/>
     }
     <br/><br/>
     
     <p>Scheme Variant Difference From Surface</p>
     <MudSelect T="SaturationType" Value="Scheme.SchemeVariantDifferenceFromSurface" Class="SettingSelector" PopoverClass="SettingPopover"
-               ValueChanged="type => SetAndUpdate(out Scheme.SchemeVariantDifferenceFromSurface, type)">
-            @foreach (var value in Enum.GetValues<SaturationType>()) {
-                <MudSelectItem T="SaturationType" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
-            }
-        </MudSelect>
+               ValueChanged="type => SetAndUpdate(() => Scheme.SchemeVariantDifferenceFromSurface = type)">
+        @foreach (var value in Enum.GetValues<SaturationType>()) {
+            <MudSelectItem T="SaturationType" Value="@value">@GetFormattedEnumValueString(value)</MudSelectItem>
+        }
+    </MudSelect>
 </article>
 
 <article id="Content">
@@ -201,11 +201,7 @@
 </article>
 
 @code {
-    private HCTA Color { get; } = new(343, 100, 50);
-
     private static string HCTAString(HCTA hcta) => hcta.ToRGBA().ToString();
-
-    private void UpdateScheme() => Scheme.Update(Color);
 
     private static string GetFormattedEnumValueString<T>(T value) where T : struct
     {
@@ -214,52 +210,47 @@
 
         return output;
     }
-
-    private void SetAndUpdate<T>(out T variable, in T value)
-    {
-        variable = value;
-        Scheme.AfterSettingsUpdate();
-        StateHasChanged();
-    }
     
     private void OnHueUpdate(double hue)
     {
-        Color.H = hue;
-        UpdateScheme();
+        Scheme.Hue = hue;
         StateHasChanged();
     }
     
     private void OnChromaUpdate(double chroma)
     {
-        Color.C = chroma;
-        UpdateScheme();
+        Scheme.Chroma = chroma;
         StateHasChanged();
     }
     
     private void OnToneUpdate(double tone)
     {
-        Color.T = tone;
-        UpdateScheme();
+        Scheme.Tone = tone;
         StateHasChanged();
     }
-
-    private void UpdateFlags(out DifferenceFromSource variable, IEnumerable<string> flags)
+    
+    private void SetAndUpdate(Action assignment)
+    {
+        assignment();
+        StateHasChanged();
+    }
+    
+    private void UpdateFlags(Action<DifferenceFromSource> assignmentFunc, IEnumerable<string> flags)
     {
         string[] flagsArray = flags.ToArray();
         
         if (flagsArray.Length is 0 || flagsArray.Last() == GetFormattedEnumValueString(DifferenceFromSource.None))
         {
-            variable = DifferenceFromSource.None;
+            assignmentFunc(DifferenceFromSource.None);
         }
         else
         {
             int flagInt = flagsArray.Aggregate(0, 
                 (current, flag) => current | (int)Enum.Parse<DifferenceFromSource>(flag.Replace(" ", "")));
         
-            variable = (DifferenceFromSource)flagInt;
+            assignmentFunc((DifferenceFromSource)flagInt);
         }
         
-        Scheme.AfterSettingsUpdate();
         StateHasChanged();
     }
 
@@ -284,12 +275,5 @@
     {
         if (flags is DifferenceFromSource.None) return [GetFormattedEnumValueString(DifferenceFromSource.None)];
         return Enum.GetValues<DifferenceFromSource>().Where(flag => (flags & flag) != 0).Select(GetFormattedEnumValueString);
-    }
-
-    private void OverrideInputChanged(out double variable, double input)
-    {
-        variable = input;
-        Scheme.AfterSettingsUpdate();
-        StateHasChanged();
     }
 }
