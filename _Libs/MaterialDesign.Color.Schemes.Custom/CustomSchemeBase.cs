@@ -183,9 +183,12 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         bool negativeHueShift = false;
         foreach (DifferenceFromSource diffType in Enum.GetValues<DifferenceFromSource>())
         {
-            const double saturateSmall = 8;
-            const double saturate = 12;
-            const double saturateLarge = 18;
+            double cRatio = diff.GetChromaDistanceRatio();
+            double saturateSmall = cRatio * 0.25;
+            double saturate = cRatio * 0.55;
+            double saturateLarge = cRatio * 0.85;
+
+            double bonus = diff.C > diff.ExactMaxChroma(3) * 0.4 ? 1 : (100 - cRatio) / 100 + 1;
 
             if ((difference & diffType) == 0) continue;
             
@@ -219,22 +222,22 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
                     diff.H = SurfaceHue;
                     break; 
                 case DifferenceFromSource.RelativeDesaturateSmall:
-                    diff.C /= saturateSmall;
+                    diff.C = GetChromaAfterRatioChange(-saturateSmall);
                     break;
                 case DifferenceFromSource.RelativeDesaturate:
-                    diff.C /= saturate;
+                    diff.C = GetChromaAfterRatioChange(-saturate);
                     break;
                 case DifferenceFromSource.RelativeDesaturateLarge:
-                    diff.C /= saturateLarge;
+                    diff.C = GetChromaAfterRatioChange(-saturateLarge);
                     break;
                 case DifferenceFromSource.RelativeSaturateSmall:
-                    diff.C *= saturateSmall;
+                    diff.C = GetChromaAfterRatioChange(saturateSmall * Math.Pow(bonus, 1.3));
                     break;
                 case DifferenceFromSource.RelativeSaturate:
-                    diff.C *= saturate;
+                    diff.C = GetChromaAfterRatioChange(saturate * Math.Pow(bonus, 1.4));
                     break;
                 case DifferenceFromSource.RelativeSaturateLarge:
-                    diff.C *= saturateLarge;
+                    diff.C = GetChromaAfterRatioChange(saturateLarge * Math.Pow(bonus, 1.6));
                     break;
                 case DifferenceFromSource.UsePrimaryChromaOverride:
                     diff.C = PrimaryChroma;
@@ -252,6 +255,52 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         }
 
         return diff;
+        
+        double GetChromaAfterRatioChange(double ratioChange)
+        {
+            double chromaRatio = diff.GetChromaDistanceRatio();
+            
+            return diff.CreateFromChromaDistanceRatio(chromaRatio + ratioChange).C;
+        }
+    }
+
+    private void ConstructSourcePalettes(HCTA modSource, out CustomSourcePalette primaryPalette, 
+        out CustomSourcePalette secondaryPalette, out CustomSourcePalette tertiaryPalette)
+    {
+        double onColorContrastLevel = ToneGapValues(OnColorGap, nameof(OnColorGap));
+        double coreContainerContrastLevel = ToneGapValues(CoreContainerGap, nameof(CoreContainerGap));
+        double darkLightContrastLevel = ToneGapValues(DarkLightGap, nameof(DarkLightGap));
+        
+        if (darkLightContrastLevel < onColorContrastLevel) darkLightContrastLevel = onColorContrastLevel;
+        
+        double darkTone = (100 - new HCTA(0, 0, 0).ContrastTo(darkLightContrastLevel).T) / 2;
+        double lightTone = 100 - darkTone;
+
+        double containerContrastLevel = Contrast.Contrast.RatioOfTones(
+            new HCTA(0, 0, darkTone).ContrastTo(coreContainerContrastLevel, false).T, 0);
+        if (containerContrastLevel < onColorContrastLevel) coreContainerContrastLevel = onColorContrastLevel;
+        
+        primaryPalette = CoreContainerGenerator(PrimaryDifference);
+        secondaryPalette = CoreContainerGenerator(SecondaryDifference);
+        tertiaryPalette = CoreContainerGenerator(TertiaryDifference);
+
+        return;
+        
+        static double ToneGapValues(ToneGap toneGap, string paramName)
+        {
+            return toneGap switch
+            {
+                ToneGap.Minimal => 4.5,
+                ToneGap.Narrow => 6.6,
+                ToneGap.Broad => 9.0,
+                ToneGap.Wide => 12.3,
+                _ => throw new ArgumentOutOfRangeException(paramName, 
+                    $"{paramName} must be one of four valid values.")
+            };
+        }
+        
+        CustomSourcePalette CoreContainerGenerator(DifferenceFromSource diff) => new(new TonalPalette(modSource),
+            darkTone, lightTone, onColorContrastLevel, coreContainerContrastLevel, hcta => CreateDifferentColor(hcta, diff));
     }
 
     // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
@@ -267,14 +316,8 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         PreConstruct();
         HCTA modSource = new(source.H, GenerateSourceChroma(source), source.T);
         
-        double onColorContrastLevel = ToneGapValues(OnColorGap, nameof(OnColorGap));
-        double coreContainerContrastLevel = ToneGapValues(CoreContainerGap, nameof(CoreContainerGap));
-        double darkTone = (100 - new HCTA(0, 0, 0).ContrastTo(ToneGapValues(DarkLightGap, nameof(DarkLightGap))).T) / 2;
-        double lightTone = 100 - darkTone;
-
-        CustomSourcePalette primaryPalette = CoreContainerGenerator(PrimaryDifference);
-        CustomSourcePalette secondaryPalette = CoreContainerGenerator(SecondaryDifference);
-        CustomSourcePalette tertiaryPalette = CoreContainerGenerator(TertiaryDifference);
+        ConstructSourcePalettes(modSource, out CustomSourcePalette primaryPalette, 
+            out CustomSourcePalette secondaryPalette, out CustomSourcePalette tertiaryPalette);
         
         HCTA surfaceSource = CreateDifferentColor(modSource, SurfaceDifference);
         TonalPalette surfacePalette = new(surfaceSource);
@@ -312,22 +355,6 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         PostConstruct();
         
         return;
-
-        double ToneGapValues(ToneGap toneGap, string paramName)
-        {
-            return toneGap switch
-            {
-                ToneGap.Minimal => 4.5,
-                ToneGap.Narrow => 6.6,
-                ToneGap.Broad => 9.0,
-                ToneGap.Wide => 12.3,
-                _ => throw new ArgumentOutOfRangeException(paramName, 
-                    $"{paramName} must be one of four valid values.")
-            };
-        }
-        
-        CustomSourcePalette CoreContainerGenerator(DifferenceFromSource diff) => new(new TonalPalette(modSource),
-            darkTone, lightTone, onColorContrastLevel, coreContainerContrastLevel, hcta => CreateDifferentColor(hcta, diff));
 
         HCTA CustomSourcePaletteMethod(Func<bool, HCTA> method) => method(IsDarkScheme);
 

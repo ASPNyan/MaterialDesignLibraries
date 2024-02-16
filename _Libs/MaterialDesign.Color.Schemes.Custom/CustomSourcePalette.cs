@@ -16,7 +16,7 @@ public readonly struct CustomSourcePalette(TonalPalette source, double coreDarkT
         if (core.T > lowerMax && core.T < upperMin)
             throw new Exception($"A core tone of {core.T:N2} is not valid with an onColorContrast " +
                                 $"of {onColorContrast:N2}. Please modify your values accordingly");
-        return colorDiffMethod(core.ContrastTo(onColorContrast, !isDark));
+        return colorDiffMethod(core.ContrastTo(onColorContrast));
     }
 
     public HCTA Container(bool isDark)
