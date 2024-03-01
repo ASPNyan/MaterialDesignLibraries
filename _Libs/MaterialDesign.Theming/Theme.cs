@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using MaterialDesign.Color.Blend;
 using MaterialDesign.Color.Palettes;
 using MaterialDesign.Theming.Injection;
+using MaterialDesign.Theming.Serialization;
 
 namespace MaterialDesign.Theming;
 
@@ -9,7 +11,7 @@ namespace MaterialDesign.Theming;
 /// A Material Theme, containing getters for all colors in the active <see cref="Scheme"/> as well as methods to update
 /// the scheme, and support for custom color roles (see https://m3.material.io/styles/color/advanced/define-new-colors)
 /// </summary>
-public class Theme : IThemeSource, IScheme
+public class Theme : IThemeSource, IScheme, ISchemeSerializable<Theme>, IEquatable<Theme>
 {
     /// <summary>
     /// The color that created the theme, null when theme is created with multiple colours.
@@ -216,6 +218,51 @@ public class Theme : IThemeSource, IScheme
     #region IThemeSource
 
     Theme IThemeSource.UseActualTheme => this;
+
+    #endregion
+
+    #region ISchemeSerializable
+
+    public string SerializeScheme() => 
+        JsonSerializer.Serialize(new SerializableTheme(Origin, Scheme, IsDarkScheme, CustomColorRoles));
+
+    public static Theme DeserializeScheme(string serialized)
+    {
+        SerializableTheme? temp = JsonSerializer.Deserialize<SerializableTheme>(serialized);
+        
+        if (temp is null) throw new JsonException("Unable to deserialize provided Theme.");
+
+        Theme theme;
+        if (temp.Origin is null)
+        {
+            var (primary, secondary, tertiary, neutral, _) = temp.Scheme.Sources;
+            theme = new Theme(primary.KeyColor, secondary.KeyColor, tertiary.KeyColor, neutral.KeyColor);
+        }
+        else theme = new Theme(temp.Origin);
+
+        foreach (KeyValuePair<string, ColorRole> colorRole in temp.CustomColorRoles)
+            theme.TryAddCustomColorRole(colorRole.Key, colorRole.Value.Source, colorRole.Value.Harmonize);
+
+        return theme;
+    }
+
+    private record SerializableTheme(HCTA? Origin, Scheme Scheme, bool IsDark, 
+        Dictionary<string, ColorRole> CustomColorRoles);
+
+    #endregion
+
+    #region Equals
+
+    public bool Equals(Theme? other) => other is not null && Origin == other.Origin && Scheme == other.Scheme;
+    public override bool Equals(object? other) => other is Theme theme && Equals(theme);
+
+    private readonly Guid _hash = Guid.NewGuid();
+    
+    public override int GetHashCode() => _hash.GetHashCode();
+
+    public static bool operator ==(Theme? left, Theme? right) => Equals(left, right);
+
+    public static bool operator !=(Theme? left, Theme? right) => !Equals(left, right);
 
     #endregion
 }

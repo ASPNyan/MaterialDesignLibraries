@@ -1,4 +1,5 @@
-﻿using static MaterialDesign.Color.Schemes.Custom.CustomSchemeBase.DifferenceFromSource;
+﻿using System.Diagnostics.CodeAnalysis;
+using static MaterialDesign.Color.Schemes.Custom.CustomSchemeBase.DifferenceFromSource;
 
 namespace MaterialDesign.Color.Schemes.Custom;
 
@@ -151,25 +152,25 @@ public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
         set => UpdateSettings(out _schemeSurfaceChroma, value);
     }
 
-    protected override TextStyleType TextStyle => SchemeTextStyle;
-    protected override SaturationType Saturation => SchemeSaturation;
-    protected override ToneGap DarkLightGap => SchemeDarkLightGap;
-    protected override ToneGap OnColorGap => SchemeOnColorGap;
-    protected override ToneGap CoreContainerGap => SchemeCoreContainerGap;
-    protected override DifferenceFromSource PrimaryDifference => SchemePrimaryDifference;
-    protected override DifferenceFromSource SecondaryDifference => SchemeSecondaryDifference;
-    protected override DifferenceFromSource TertiaryDifference => SchemeTertiaryDifference;
-    protected override DifferenceFromSource SurfaceDifference => SchemeSurfaceDifference;
-    protected override SaturationType VariantDifferenceFromSurface => SchemeVariantDifferenceFromSurface;
+    protected internal override TextStyleType TextStyle => SchemeTextStyle;
+    protected internal override SaturationType Saturation => SchemeSaturation;
+    protected internal override ToneGap DarkLightGap => SchemeDarkLightGap;
+    protected internal override ToneGap OnColorGap => SchemeOnColorGap;
+    protected internal override ToneGap CoreContainerGap => SchemeCoreContainerGap;
+    protected internal override DifferenceFromSource PrimaryDifference => SchemePrimaryDifference;
+    protected internal override DifferenceFromSource SecondaryDifference => SchemeSecondaryDifference;
+    protected internal override DifferenceFromSource TertiaryDifference => SchemeTertiaryDifference;
+    protected internal override DifferenceFromSource SurfaceDifference => SchemeSurfaceDifference;
+    protected internal override SaturationType VariantDifferenceFromSurface => SchemeVariantDifferenceFromSurface;
 
-    protected override double PrimaryHue => SchemePrimaryHue;
-    protected override double SecondaryHue => SchemeSecondaryHue;
-    protected override double TertiaryHue => SchemeTertiaryHue;
-    protected override double SurfaceHue => SchemeSurfaceHue;
-    protected override double PrimaryChroma => SchemePrimaryChroma;
-    protected override double SecondaryChroma => SchemeSecondaryChroma;
-    protected override double TertiaryChroma => SchemeTertiaryChroma;
-    protected override double SurfaceChroma => SchemeSurfaceChroma;
+    protected internal override double PrimaryHue => SchemePrimaryHue;
+    protected internal override double SecondaryHue => SchemeSecondaryHue;
+    protected internal override double TertiaryHue => SchemeTertiaryHue;
+    protected internal override double SurfaceHue => SchemeSurfaceHue;
+    protected internal override double PrimaryChroma => SchemePrimaryChroma;
+    protected internal override double SecondaryChroma => SchemeSecondaryChroma;
+    protected internal override double TertiaryChroma => SchemeTertiaryChroma;
+    protected internal override double SurfaceChroma => SchemeSurfaceChroma;
 
     private void UpdateSettings<T>(out T var, T val)
     {
@@ -180,4 +181,29 @@ public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
     private void UpdateSettings<T>(T _) => Update(Origin);
 
     public override int GetHashCode() => Origin.GetHashCode();
+
+    [DoesNotReturn]
+    private static HCTA NullOriginError() => throw new InvalidOperationException(
+        "Cannot create ModifiableCustomScheme from a CustomSchemeBase derivative that has a null Origin color.");
+    public ModifiableCustomScheme(CustomSchemeBase baseScheme) : this(baseScheme.Origin ?? NullOriginError())
+    {
+        _schemeTextStyle = baseScheme.TextStyle;
+        _schemeSaturation = baseScheme.Saturation;
+        _schemeDarkLightGap = baseScheme.DarkLightGap;
+        _schemeOnColorGap = baseScheme.OnColorGap;
+        _schemeCoreContainerGap = baseScheme.CoreContainerGap;
+        _schemePrimaryDifference = baseScheme.PrimaryDifference;
+        _schemeSecondaryDifference = baseScheme.SecondaryDifference;
+        _schemeTertiaryDifference = baseScheme.TertiaryDifference;
+        _schemeSurfaceDifference = baseScheme.SurfaceDifference;
+        _schemeVariantDifferenceFromSurface = baseScheme.VariantDifferenceFromSurface;
+        _schemePrimaryHue = baseScheme.PrimaryHue;
+        _schemeSecondaryHue = baseScheme.SecondaryHue;
+        _schemeTertiaryHue = baseScheme.TertiaryHue;
+        _schemeSurfaceHue = baseScheme.SurfaceHue;
+        _schemePrimaryChroma = baseScheme.PrimaryChroma;
+        _schemeSecondaryChroma = baseScheme.SecondaryChroma;
+        _schemeTertiaryChroma = baseScheme.TertiaryChroma;
+        _schemeSurfaceChroma = baseScheme.SurfaceChroma;
+    }
 }

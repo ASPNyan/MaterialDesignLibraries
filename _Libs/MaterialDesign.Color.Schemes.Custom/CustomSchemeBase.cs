@@ -109,49 +109,49 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
     /// <summary>
     /// Whether the text should be colored or black &amp; white.
     /// </summary>
-    protected abstract TextStyleType TextStyle { get; }
+    protected internal abstract TextStyleType TextStyle { get; }
     /// <summary>
     /// How the chroma of the source color will be modified. <see cref="SaturationType.MediumSaturation"/> means
     /// the saturation is equal to the source.
     /// </summary>
-    protected abstract SaturationType Saturation { get; }
+    protected internal abstract SaturationType Saturation { get; }
     /// <summary>
     /// The visual distance between dark and light themes. All options still insure at least a minimal contrast of
     /// 4.5 for accessibility.
     /// </summary>
-    protected abstract ToneGap DarkLightGap { get; }
+    protected internal abstract ToneGap DarkLightGap { get; }
     /// <summary>
     /// The visual distance between a color role and its "on" variant (e.g. <see cref="Primary"/> and
     /// <see cref="OnPrimary"/>). All options still insure at least a minimal contrast of 4.5 for
     /// accessibility.
     /// </summary>
-    protected abstract ToneGap OnColorGap { get; }
+    protected internal abstract ToneGap OnColorGap { get; }
     /// <summary>
     /// The visual distance between a color role its container variant (e.g. <see cref="Primary"/> and
     /// <see cref="PrimaryContainer"/>). All options still insure at least a minimal contrast of 4.5
     /// for accessibility.
     /// </summary>
-    protected abstract ToneGap CoreContainerGap { get; }
+    protected internal abstract ToneGap CoreContainerGap { get; }
     
-    protected abstract DifferenceFromSource PrimaryDifference { get; }
-    protected abstract DifferenceFromSource SecondaryDifference { get; }
-    protected abstract DifferenceFromSource TertiaryDifference { get; }
-    protected abstract DifferenceFromSource SurfaceDifference { get; }
+    protected internal abstract DifferenceFromSource PrimaryDifference { get; }
+    protected internal abstract DifferenceFromSource SecondaryDifference { get; }
+    protected internal abstract DifferenceFromSource TertiaryDifference { get; }
+    protected internal abstract DifferenceFromSource SurfaceDifference { get; }
     /// <summary>
     /// <see cref="SaturationType.MediumSaturation"/> means an equal chroma value. Default is
     /// <see cref="SaturationType.HighSaturation"/>.
     /// </summary>
-    protected virtual SaturationType VariantDifferenceFromSurface => SaturationType.HighSaturation;
+    protected internal virtual SaturationType VariantDifferenceFromSurface => SaturationType.HighSaturation;
 
-    protected virtual double PrimaryHue { get; set; } = 0;
-    protected virtual double SecondaryHue { get; set; } = 0;
-    protected virtual double TertiaryHue { get; set; } = 0;
-    protected virtual double SurfaceHue { get; set; } = 0;
+    protected internal virtual double PrimaryHue { get; set; } = 0;
+    protected internal virtual double SecondaryHue { get; set; } = 0;
+    protected internal virtual double TertiaryHue { get; set; } = 0;
+    protected internal virtual double SurfaceHue { get; set; } = 0;
     
-    protected virtual double PrimaryChroma { get; set; } = 0;
-    protected virtual double SecondaryChroma { get; set; } = 0;
-    protected virtual double TertiaryChroma { get; set; } = 0;
-    protected virtual double SurfaceChroma { get; set; } = 0;
+    protected internal virtual double PrimaryChroma { get; set; } = 0;
+    protected internal virtual double SecondaryChroma { get; set; } = 0;
+    protected internal virtual double TertiaryChroma { get; set; } = 0;
+    protected internal virtual double SurfaceChroma { get; set; } = 0;
 
     protected virtual void PreConstruct()
     {

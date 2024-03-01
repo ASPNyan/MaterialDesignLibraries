@@ -1,4 +1,6 @@
-﻿namespace MaterialDesign.Theming.Injection;
+﻿using MaterialDesign.Theming.Serialization;
+
+namespace MaterialDesign.Theming.Injection;
 
 /// <summary>
 /// A container class used to wrap a <see cref="IScheme"/>, used in dependency injection. Supports <see cref="IThemeSource"/>s.
@@ -71,6 +73,11 @@ public class ThemeContainer // Update to SchemeContainer in next major.
         
         SubscribeToEvent();
         OnSchemeUpdate?.Invoke();
+    }
+
+    public void UpdateScheme<TScheme>(string serialized) where TScheme : IScheme, ISchemeSerializable<TScheme>
+    {
+        
     }
     
     /// <summary>

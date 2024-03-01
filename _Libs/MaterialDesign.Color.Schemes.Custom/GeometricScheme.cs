@@ -4,20 +4,20 @@ public sealed record GeometricScheme : CustomSchemeBase
 {
     public ColorGeometry ColorGeometry { get; }
 
-    protected override TextStyleType TextStyle { get; }
-    protected override SaturationType Saturation { get; }
-    protected override ToneGap DarkLightGap { get; }
-    protected override ToneGap OnColorGap { get; }
-    protected override ToneGap CoreContainerGap { get; }
-    protected override DifferenceFromSource PrimaryDifference => DifferenceFromSource.None;
-    protected override DifferenceFromSource SecondaryDifference { get; }
-    protected override DifferenceFromSource TertiaryDifference { get; }
-    protected override DifferenceFromSource SurfaceDifference { get; }
+    protected internal override TextStyleType TextStyle { get; }
+    protected internal override SaturationType Saturation { get; }
+    protected internal override ToneGap DarkLightGap { get; }
+    protected internal override ToneGap OnColorGap { get; }
+    protected internal override ToneGap CoreContainerGap { get; }
+    protected internal override DifferenceFromSource PrimaryDifference => DifferenceFromSource.None;
+    protected internal override DifferenceFromSource SecondaryDifference { get; }
+    protected internal override DifferenceFromSource TertiaryDifference { get; }
+    protected internal override DifferenceFromSource SurfaceDifference { get; }
 
-    protected override double SecondaryHue { get; set; }
-    protected override double TertiaryHue { get; set; }
-    protected override double SurfaceHue { get; set; }
-    protected override double SurfaceChroma { get; set; }
+    protected internal override double SecondaryHue { get; set; }
+    protected internal override double TertiaryHue { get; set; }
+    protected internal override double SurfaceHue { get; set; }
+    protected internal override double SurfaceChroma { get; set; }
 
     public GeometricScheme(HCTA origin, ColorGeometry colorGeometry, TextStyleType textStyle, 
         SaturationType saturation, ToneGap darkLightGap, ToneGap onColorGap, ToneGap coreContainerGap,

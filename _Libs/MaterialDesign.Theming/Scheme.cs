@@ -1,4 +1,6 @@
-﻿using MaterialDesign.Color.Palettes;
+﻿using System.Text.Json;
+using MaterialDesign.Color.Palettes;
+using MaterialDesign.Theming.Serialization;
 
 namespace MaterialDesign.Theming;
 
@@ -12,7 +14,7 @@ public readonly struct Scheme(
     TonalPalette tertiary,
     TonalPalette neutral,
     TonalPalette neutralVariant,
-    bool isDark) : IScheme
+    bool isDark) : IScheme, IEquatable<Scheme>, ISchemeSerializable<Scheme>
 {
     public HCTA? Origin => null;
     public bool IsDark { get; init; } = isDark;
@@ -32,7 +34,7 @@ public readonly struct Scheme(
 
     void IScheme.SetLight() => 
         throw new InvalidOperationException("Swapping between dark and light mode is not supported on Theming.Scheme");
-
+    
     event Action? IScheme.OnUpdate
     {
         add { }
@@ -91,4 +93,39 @@ public readonly struct Scheme(
     public HCTA OnTertiaryFixedVariant => tertiary.GetWithTone(30);
     
     private int SignViaDark(int tone) => IsDark ? -tone : tone;
+
+    public bool Equals(Scheme other) => 
+        IsDark == other.IsDark && Sources.Equals(other.Sources);
+
+    public override int GetHashCode() => HashCode.Combine(IsDark, Sources);
+
+    public override bool Equals(object? obj) => obj is Scheme other && Equals(other);
+
+    public static bool operator ==(Scheme left, Scheme right) => left.Equals(right);
+
+    public static bool operator !=(Scheme left, Scheme right) => !left.Equals(right);
+
+    #region ISchemeSerializable
+
+    public string SerializeScheme() => 
+        JsonSerializer.Serialize(new SerializableScheme(primary, secondary, tertiary, neutral, neutralVariant, IsDark));
+
+    public static Scheme DeserializeScheme(string serialized)
+    {
+        SerializableScheme? scheme = JsonSerializer.Deserialize<SerializableScheme>(serialized);
+        if (scheme is null) throw new JsonException("Unable to deserialize provided Scheme.");
+
+        return new Scheme(scheme.Primary, scheme.Secondary, scheme.Tertiary, scheme.Neutral, scheme.NeutralVariant, 
+            scheme.IsDark);
+    }
+
+    private record SerializableScheme(
+        TonalPalette Primary,
+        TonalPalette Secondary,
+        TonalPalette Tertiary,
+        TonalPalette Neutral,
+        TonalPalette NeutralVariant,
+        bool IsDark);
+
+    #endregion
 }
