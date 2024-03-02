@@ -809,13 +809,19 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
 
     #endregion
 
-    #region Interface Implementations
+    #region Equals
 
     public bool Equals(HCTA? other) => other is not null && (H, C, T, A) == (other.H, other.C, other.T, other.A);
     
     public bool Equals(IRGB? other) => ToRGBA().Equals(other);
 
     public bool Equals(Color? other) => ((IRGB)ToRGBA()).Equals(other);
+
+    public static bool operator ==(HCTA left, HCTA right) => left.Equals(right);
+    public static bool operator !=(HCTA left, HCTA right) => !left.Equals(right);
+    
+    public static bool operator ==(HCTA left, Color right) => left.Equals(right);
+    public static bool operator !=(HCTA left, Color right) => !left.Equals(right);
     
     #endregion
 

@@ -60,11 +60,17 @@ public abstract record DynamicScheme(HCTA Source, Variant Variant, bool IsDark, 
         };
     }
 
-    public static TScheme Create<TScheme>(HCTA source, bool isDark = true) where TScheme : DynamicScheme =>
-        (TScheme)CustomTypes[typeof(TScheme)](source, isDark);
-    
-    public static DynamicScheme Create(HCTA source, Type custom, bool isDark = true) => 
-        CustomTypes[custom](source, isDark);
+    public static TScheme Create<TScheme>(HCTA source, bool isDark = true) where TScheme : DynamicScheme
+        => (TScheme)Create(source, typeof(TScheme), isDark);
+
+    public static DynamicScheme Create(HCTA source, Type custom, bool isDark = true)
+    {
+        if (CustomTypes.TryGetValue(custom, out Func<HCTA, bool, DynamicScheme>? constructor)) 
+            return constructor(source, isDark);
+
+        throw new KeyNotFoundException("Custom types cannot be constructed with Create without calling " +
+                                       "AddSelfAsCustomScheme in the static constructor.");
+    }
 
     private static readonly Dictionary<Type, Func<HCTA, bool, DynamicScheme>> CustomTypes = new();
     
