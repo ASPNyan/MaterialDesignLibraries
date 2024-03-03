@@ -152,25 +152,25 @@ public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
         set => UpdateSettings(out _schemeSurfaceChroma, value);
     }
 
-    protected internal override TextStyleType TextStyle => SchemeTextStyle;
-    protected internal override SaturationType Saturation => SchemeSaturation;
-    protected internal override ToneGap DarkLightGap => SchemeDarkLightGap;
-    protected internal override ToneGap OnColorGap => SchemeOnColorGap;
-    protected internal override ToneGap CoreContainerGap => SchemeCoreContainerGap;
-    protected internal override DifferenceFromSource PrimaryDifference => SchemePrimaryDifference;
-    protected internal override DifferenceFromSource SecondaryDifference => SchemeSecondaryDifference;
-    protected internal override DifferenceFromSource TertiaryDifference => SchemeTertiaryDifference;
-    protected internal override DifferenceFromSource SurfaceDifference => SchemeSurfaceDifference;
-    protected internal override SaturationType VariantDifferenceFromSurface => SchemeVariantDifferenceFromSurface;
+    protected internal sealed override TextStyleType TextStyle => SchemeTextStyle;
+    protected internal sealed override SaturationType Saturation => SchemeSaturation;
+    protected internal sealed override ToneGap DarkLightGap => SchemeDarkLightGap;
+    protected internal sealed override ToneGap OnColorGap => SchemeOnColorGap;
+    protected internal sealed override ToneGap CoreContainerGap => SchemeCoreContainerGap;
+    protected internal sealed override DifferenceFromSource PrimaryDifference => SchemePrimaryDifference;
+    protected internal sealed override DifferenceFromSource SecondaryDifference => SchemeSecondaryDifference;
+    protected internal sealed override DifferenceFromSource TertiaryDifference => SchemeTertiaryDifference;
+    protected internal sealed override DifferenceFromSource SurfaceDifference => SchemeSurfaceDifference;
+    protected internal sealed override SaturationType VariantDifferenceFromSurface => SchemeVariantDifferenceFromSurface;
 
-    protected internal override double PrimaryHue => SchemePrimaryHue;
-    protected internal override double SecondaryHue => SchemeSecondaryHue;
-    protected internal override double TertiaryHue => SchemeTertiaryHue;
-    protected internal override double SurfaceHue => SchemeSurfaceHue;
-    protected internal override double PrimaryChroma => SchemePrimaryChroma;
-    protected internal override double SecondaryChroma => SchemeSecondaryChroma;
-    protected internal override double TertiaryChroma => SchemeTertiaryChroma;
-    protected internal override double SurfaceChroma => SchemeSurfaceChroma;
+    protected internal sealed override double PrimaryHue => SchemePrimaryHue;
+    protected internal sealed override double SecondaryHue => SchemeSecondaryHue;
+    protected internal sealed override double TertiaryHue => SchemeTertiaryHue;
+    protected internal sealed override double SurfaceHue => SchemeSurfaceHue;
+    protected internal sealed override double PrimaryChroma => SchemePrimaryChroma;
+    protected internal sealed override double SecondaryChroma => SchemeSecondaryChroma;
+    protected internal sealed override double TertiaryChroma => SchemeTertiaryChroma;
+    protected internal sealed override double SurfaceChroma => SchemeSurfaceChroma;
 
     private void UpdateSettings<T>(out T var, T val)
     {
@@ -180,11 +180,18 @@ public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
     
     private void UpdateSettings<T>(T _) => Update(Origin);
 
+    public override void Update(HCTA newColor)
+    {
+        base.Update(newColor);
+        UpdateSettings(null as object);
+    }
+
     public override int GetHashCode() => Origin.GetHashCode();
 
     [DoesNotReturn]
     private static HCTA NullOriginError() => throw new InvalidOperationException(
         "Cannot create ModifiableCustomScheme from a CustomSchemeBase derivative that has a null Origin color.");
+    
     public ModifiableCustomScheme(CustomSchemeBase baseScheme) : this(baseScheme.Origin ?? NullOriginError())
     {
         _schemeTextStyle = baseScheme.TextStyle;

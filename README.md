@@ -68,6 +68,12 @@ to another. If you're using this in WASM, the Material Library you're using it w
 but if you're on server then just put the `DynamicHeadOutlet` in your `App.razor` with `@rendermode="InteractiveServer"`
 and it should work right.
 
+## MaterialDesign.Color.Schemes.Custom
+`MaterialDesign.Color.Schemes.Custom` adds support for creating custom color schemes and themes with customized rules.
+These custom schemes aren't just custom colors, but custom rules, like the gap between core and on-core colors,
+the gap between light and dark mode schemes, custom handling of secondary, tertiary, and surface color generation,
+and more.
+
 ## MaterialDesign.Theming.Web CSS Classes
 `.primary`, `.primary-text`, `.on-primary`, `.on-primary-text`, `.primary-container`, `.primary-container-text`,
 `.on-primary-container`, `.on-primary-container-text`, `.secondary`, `.secondary-text`, `.on-secondary`,

@@ -817,11 +817,11 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
 
     public bool Equals(Color? other) => ((IRGB)ToRGBA()).Equals(other);
 
-    public static bool operator ==(HCTA left, HCTA right) => left.Equals(right);
-    public static bool operator !=(HCTA left, HCTA right) => !left.Equals(right);
+    public static bool operator ==(HCTA? left, HCTA? right) => left is not null && left.Equals(right);
+    public static bool operator !=(HCTA? left, HCTA? right) => left is not null && !left.Equals(right);
     
-    public static bool operator ==(HCTA left, Color right) => left.Equals(right);
-    public static bool operator !=(HCTA left, Color right) => !left.Equals(right);
+    public static bool operator ==(HCTA? left, Color? right) => left is not null && left.Equals(right);
+    public static bool operator !=(HCTA? left, Color? right) => left is not null && !left.Equals(right);
     
     #endregion
 

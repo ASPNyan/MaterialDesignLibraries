@@ -114,5 +114,14 @@ public static class SchemeSerializer
 
     private record struct DynamicSchemeJson(HCTA Source, Variant Variant, bool IsDarkScheme, string FullyQualifiedCustomType);
     private record struct SchemeGenericTyped(HCTA? Origin, bool IsDarkScheme, string? FullyQualifiedSchemeType);
+    
+    /// <summary>
+    /// A miniature, readonly struct that contains an <see cref="Origin"/> <see cref="HCTA"/> color and
+    /// a <see cref="bool"/> <see cref="IsDarkScheme"/> that can be used together to construct an <see cref="IScheme"/>.
+    /// </summary>
+    /// <param name="Origin">
+    /// The <see cref="IScheme.Origin"/> property of the scheme, null when <see cref="IScheme.Origin"/> is null
+    /// or when it is unavailable to get.
+    /// </param>
     public record struct SchemeGeneric(HCTA? Origin, bool IsDarkScheme);
 }

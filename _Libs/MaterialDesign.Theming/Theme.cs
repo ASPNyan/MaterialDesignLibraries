@@ -246,7 +246,7 @@ public class Theme : IThemeSource, IScheme, ISchemeSerializable<Theme>, IEquatab
         return theme;
     }
 
-    private record SerializableTheme(HCTA? Origin, Scheme Scheme, bool IsDark, 
+    private record SerializableTheme(HCTA? Origin, Scheme Scheme, bool IsDarkScheme, 
         Dictionary<string, ColorRole> CustomColorRoles);
 
     #endregion

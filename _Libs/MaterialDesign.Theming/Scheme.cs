@@ -94,8 +94,13 @@ public readonly struct Scheme(
     
     private int SignViaDark(int tone) => IsDark ? -tone : tone;
 
-    public bool Equals(Scheme other) => 
-        IsDark == other.IsDark && Sources.Equals(other.Sources);
+    public bool Equals(Scheme other) =>
+        IsDark == other.IsDark
+        && Sources.Primary.KeyColor == other.Sources.Primary.KeyColor
+        && Sources.Secondary.KeyColor == other.Sources.Secondary.KeyColor
+        && Sources.Tertiary.KeyColor == other.Sources.Tertiary.KeyColor
+        && Sources.Neutral.KeyColor == other.Sources.Neutral.KeyColor
+        && Sources.NeutralVariant.KeyColor == other.Sources.NeutralVariant.KeyColor;
 
     public override int GetHashCode() => HashCode.Combine(IsDark, Sources);
 

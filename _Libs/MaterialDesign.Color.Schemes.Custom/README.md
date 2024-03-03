@@ -11,7 +11,7 @@ successfully. Using primary constructor syntax, the start of your class could lo
 ```csharp
 using MaterialDesign.Color.Schemes.Custom;
 
-public sealed record CustomScheme(HCTA source) : CustomSchemeBase(source)
+public sealed record CustomScheme(HCTA Source) : CustomSchemeBase(Source)
 {
     // implementations
 }
@@ -20,3 +20,7 @@ public sealed record CustomScheme(HCTA source) : CustomSchemeBase(source)
 Additionally, you can use extensions to `IServiceCollection` and then use the `ThemeCollection` class in DI that 
 supports `IScheme` classes (which CustomSourceBase inherits from), so you can use that instead of a regular `Theme`
 (which is still a great choice for ease-of-use, or if you don't need the extra customization).
+
+For schemes that can be changed at runtime, the `ModifiableCustomScheme` is an option in that case. 
+Additionally, on the `ModifiableCustomScheme`, changing the Hue, Chroma, and Tone properties on the instance
+instead of modifying the Origin is recommended. Otherwise, using the Update() method instead would be the next option.

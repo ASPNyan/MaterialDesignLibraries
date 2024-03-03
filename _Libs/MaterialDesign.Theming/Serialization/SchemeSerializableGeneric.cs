@@ -1,6 +1,12 @@
 namespace MaterialDesign.Theming.Serialization;
 
-public class SchemeSerializableGeneric : ISchemeSerializable<SchemeSerializableGeneric>, IScheme
+/// <summary>
+/// A generic, readonly <see cref="IScheme"/> &amp; <see cref="ISchemeSerializable{TSelf}"/> implementing
+/// Color Scheme, but mostly has explicit implementations for <see cref="IScheme"/>. This class should only be used
+/// in place of methods that only accept <see cref="ISchemeSerializable{TSelf}"/> type parameters, and has the
+/// <see cref="ConvertTo{TScheme}"/> method to convert itself to any existing <see cref="IScheme"/> implementations.
+/// </summary>
+public readonly struct SchemeSerializableGeneric() : ISchemeSerializable<SchemeSerializableGeneric>, IScheme
 {
     public required HCTA? Origin { get; init; }
     public required bool IsDarkScheme { get; init; }
@@ -16,12 +22,14 @@ public class SchemeSerializableGeneric : ISchemeSerializable<SchemeSerializableG
             }, false);
     }
 
+    /// <summary>
+    /// Uses the provided <paramref name="constructor"/> method to convert from a
+    /// <see cref="SchemeSerializer.SchemeGeneric"/> to the provided <typeparamref name="TScheme"/>.
+    /// </summary>
     public TScheme ConvertTo<TScheme>(Func<SchemeSerializer.SchemeGeneric, TScheme> constructor) where TScheme : IScheme
         => constructor(new SchemeSerializer.SchemeGeneric(Origin, IsDarkScheme));
 
-    private SchemeSerializableGeneric() => _scheme = new Scheme();
-
-    private readonly IScheme _scheme;
+    private readonly IScheme _scheme = new Scheme();
     
     void IScheme.SetDark()
     {

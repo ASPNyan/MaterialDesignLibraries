@@ -8,23 +8,23 @@ namespace MaterialDesign.Color.Schemes.Custom;
 
 public abstract record CustomSchemeBase : IThemeSource, IScheme
 {
-    public HCTA? Origin { get; private set; }
+    public HCTA Origin { get; private set; }
     
     public void SetDark()
     {
         IsDarkScheme = true;
-        Construct(Origin!);
+        Construct(Origin);
         OnUpdate?.Invoke();
     }
     
     public void SetLight()
     {
         IsDarkScheme = false;
-        Construct(Origin!);
+        Construct(Origin);
         OnUpdate?.Invoke();
     }
 
-    public void Update(HCTA newColor)
+    public virtual void Update(HCTA newColor)
     {
         Construct(newColor);
         OnUpdate?.Invoke();
