@@ -1,16 +1,18 @@
 ﻿@using MaterialDesign.Web.Exceptions
 @inherits MdIconConfigComponent
 
-<span class="@(@class) material-symbols-@LineStyleString" style="@StyleRuleString @style" @attributes="@UnmatchedParameters">
+<span class="@(@class) material-symbols-@LineStyleString" style="@IconStyleString" @attributes="@UnmatchedParameters">
     @GetIcon
 </span>
 
 @code {
+    /// <summary>
+    /// The name of the material icon, found at https://fonts.google.com/icons. Throws an exception when not supplied.
+    /// </summary>
     [Parameter, EditorRequired]
     public string? Icon { get; set; }
 
-    private string GetIcon 
-        => Icon!.Trim().ToLowerInvariant().Replace(' ', '_'); // "More Horiz" => "more_horiz"
+    protected string GetIcon => Icon!.Trim().ToLowerInvariant().Replace(' ', '_'); // "More Horiz" => "more_horiz"
     
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? UnmatchedParameters { get; set; }
@@ -18,13 +20,28 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// The scale of the Icon, applied as a multiplier.
+    /// </summary>
+    [Parameter] public double Scale { get; set; } = 1;
+    private string FontSize => $"font-size: {24 * Scale}px;";
+
+    /// <summary>
+    /// Modifies the CSS <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/user-select">user-select</a> property
+    /// on the Icon to disable text highlighting when false, and enable it when true. False by default.
+    /// </summary>
+    [Parameter] public bool UserSelect { get; set; }
+    private string UserSelectString => $"user-select: {(UserSelect ? "text" : "none")};";
+
     // ReSharper disable InconsistentNaming | Give parameter catches in order to not override icon settings
     [Parameter] public string? @class { get; set; }
     [Parameter] public string? style { get; set; }
     // ReSharper restore InconsistentNaming
 
-    private string LineStyleString
+    protected string LineStyleString
         => (LineStyle ?? CascadingIconConfig?.LineStyle ?? MdIconLineStyle.Outlined).ToString().ToLowerInvariant();
+    
+    protected string IconStyleString => FontSize + UserSelectString + StyleRuleString + style;
 
     protected override void OnInitialized()
     {

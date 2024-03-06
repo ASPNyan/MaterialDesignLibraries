@@ -1,0 +1,75 @@
+﻿@using MudBlazor
+@using MaterialDesign.Icons
+@using MaterialDesign.Theming
+@using MaterialDesign.Theming.Injection
+@using MaterialDesign.Theming.Web.CSS
+@using MaterialDesign.Theming.Web.MudBlazor
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject ThemeContainer ThemeContainer
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/MainLayout.css">
+</DynamicHeadContent>
+
+<MdMudThemeProvider/>
+
+<MdIconConfig Weight="400" Grade="0" LineStyle="MdIconLineStyle.Rounded" OpticalSize="24" Fill="true">
+<MudLayout>
+    <MudDrawer @bind-Open="DrawerOpen" Variant="DrawerVariant.Responsive" Anchor="Anchor.Start" ClipMode="DrawerClipMode.Always"
+               Class="secondary-container on-secondary-container-text" Elevation="1">
+        <spacer/>
+        <MdIconText Href="/" Icon="Home" Text="Home" Scale="1.3" class="on-secondary-container-text"/>
+        <MudDivider Style="@DividerStyle"/>
+        <DynamicComponentOutlet Id="@DrawerId"/>
+    </MudDrawer>
+    <MudAppBar Elevation="2" Color="Color.Surface" Class="secondary-container on-secondary-container-text">
+        <MdIcon Icon="Menu" @onclick="ToggleDrawer" style="margin-right: 24px"/>
+        <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleLeft"/>
+        <DynamicComponentOutlet Id="@DrawerId"/>
+        <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleRight"/>
+        <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="margin-left: 24px; cursor: pointer;" @onclick="ToggleScheme"/>
+    </MudAppBar>
+    <MudMainContent @onclick="() => DrawerOpen = false">
+        <main class="background on-background-text">
+            @Body
+        </main>
+    </MudMainContent>
+</MudLayout>
+</MdIconConfig>
+
+@code {
+    public const string DividerStyleLeft = $"margin-right: auto; {DividerStyle}";
+    public const string DividerStyle = $"border-color: var({ThemeCSSTokens.OnSecondaryContainerCSSToken});";
+    public const string DividerStyleRight = $"margin-left: auto; {DividerStyle}";
+    
+    public static string DrawerId { get; } = Guid.NewGuid().ToString();
+    
+    private bool DrawerOpen { get; set; }
+
+    private void ToggleDrawer()
+    {
+        DrawerOpen = !DrawerOpen;
+        StateHasChanged();
+    }
+    
+    protected override void OnInitialized()
+    {
+        ThemeContainer.OnSchemeUpdate += StateHasChanged;
+    }
+
+    private IScheme Scheme => ThemeContainer.Scheme;
+
+    private string SchemeIcon => Scheme.IsDarkScheme ? "Light Mode" : "Dark Mode";
+    
+    private void ToggleScheme()
+    {
+        if (Scheme.IsDarkScheme) Scheme.SetLight();
+        else Scheme.SetDark();
+    }
+
+    public void Dispose()
+    {
+        ThemeContainer.OnSchemeUpdate -= StateHasChanged;
+    }
+}

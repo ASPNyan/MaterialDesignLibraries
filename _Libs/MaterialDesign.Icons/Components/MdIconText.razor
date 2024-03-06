@@ -1,0 +1,51 @@
+﻿@using MaterialDesign.Web.Exceptions
+@inherits MdIcon
+
+@if (Href is null)
+{
+    <span class="@(@class)" style="display: flex; align-items: center; @style" @attributes="@UnmatchedParameters">
+        <span class="material-symbols-@LineStyleString" style="@IconStyleString">
+            @GetIcon
+        </span>
+        <span style="font-size: @(Scale)em;">
+            @Text
+        </span>
+    </span>
+}
+else
+{
+    <a href="@Href" class="@(@class)" style="display: flex; align-items: center; @style" @attributes="@UnmatchedParameters">
+        <span class="material-symbols-@LineStyleString" style="@IconStyleString">
+            @GetIcon
+        </span>
+        <span style="font-size: @(Scale)em;">
+            @Text
+        </span>
+    </a>
+}
+
+@code {
+    /// <summary>
+    /// The text that is put after the icon. If not provided, the component will throw an exception.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string? Text { get; set; }
+    
+    /// <summary>
+    /// The href to set the anchor to. Leave empty if this shouldn't be a link
+    /// </summary>
+    [Parameter]
+    public string? Href { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrWhiteSpace(Text)) 
+        {
+            throw new ParameterException(
+                $"Icons with text must have a valid string provided to the `{nameof(Text)}` parameter",
+                nameof(Text));
+        }
+        
+        base.OnInitialized();
+    }
+}
