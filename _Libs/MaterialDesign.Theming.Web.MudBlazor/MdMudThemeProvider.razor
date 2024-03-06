@@ -9,7 +9,7 @@
 @code {
     private IScheme MdTheme => ThemeContainer.Scheme;
 
-    private MudColor MudColor(HCTA hcta)
+    private static MudColor MudColor(HCTA hcta)
     {
         RGBA rgba = hcta.ToRGBA();
         return new MudColor(rgba.R, rgba.G, rgba.B, rgba.A);
@@ -25,7 +25,8 @@
             TextSecondary = MudColor(MdTheme.OnSecondary),
             Tertiary = MudColor(MdTheme.Tertiary),
             Error = MudColor(MdTheme.Error),
-            Background = MudColor(MdTheme.Background)
+            Background = MudColor(MdTheme.Background),
+            Surface = MudColor(MdTheme.Surface),
         };
 
         return new MudTheme
