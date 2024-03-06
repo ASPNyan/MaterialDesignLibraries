@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics.Contracts;
 using MaterialDesign.Color.Quantize;
 using Microsoft.AspNetCore.Components.Forms;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace MaterialDesign.Color.Image;
