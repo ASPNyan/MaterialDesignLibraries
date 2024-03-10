@@ -1,7 +1,13 @@
-﻿@using ExampleSite.Components.Layout
+﻿@using ExampleSite.Components.Account.Components
+@using ExampleSite.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
 
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="@typeof(MainLayout)"/>
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                <LoginRedirect/>
+            </NotAuthorized>
+        </AuthorizeRouteView>
     </Found>
 </Router>

@@ -1,0 +1,112 @@
+@using Microsoft.AspNetCore.Identity
+@using static System.Net.Mime.MediaTypeNames.Image
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+@inherits UpdatableBase
+@inject SignInManager<User> SignIn
+@inject NavigationManager Nav
+@page "/SignUp"
+@rendermode InteractiveServer
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/SignUp.css">
+</DynamicHeadContent>
+
+<article>
+    <h1>Sign Up</h1>
+    <section>
+        <EditForm Model="NewUser" OnValidSubmit="RegisterUser">
+            <div id="Avatar">
+                @if (NewUser.ImageBytes is null)
+                {
+                    <MdIcon Icon="Account Circle" Fill="true" OpticalSize="48" Scale="12" 
+                            style="width: 240px; height: 240px; line-height: 200px; transform: translate(-24px, 20px);"/>
+                }
+                else
+                {
+                    <MudImage Src="@NewUser.GenerateImageDataString()" Width="240"/>
+                }
+                <MudFileUpload T="IBrowserFile" OnFilesChanged="UpdateImage" @bind-Files="Avatar"
+                               Validation="@((object)VerifyFile)">
+                    <ButtonTemplate Context="uploadContext">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" HtmlTag="label"
+                                   for="@uploadContext.Id">
+                            <MdIconText Icon="Image" Text="Upload Avatar (Max 6MB)" Fill="true" style="gap: 5px;"
+                                        LineStyle="MdIconLineStyle.Rounded"/>
+                        </MudButton>
+                    </ButtonTemplate>
+                </MudFileUpload>
+            </div>
+            <MudTextField T="string" @bind-Value="NewUser.UserName" Required="true" Class="Input Username"
+                          Placeholder="Username" RequiredError="A username is required."/>
+            <MudTextField T="string" @bind-Value="NewUser.Email" Required="true" Class="Input Email"
+                          Placeholder="Email" RequiredError="An email is required." InputType="InputType.Email"
+                          Validation="@(new EmailAddressAttribute { ErrorMessage = "Invalid Email Address." })"/>
+            <MudTextField T="string" @bind-Value="NewUser.PhoneNumber" Required="true" InputType="InputType.Telephone"
+                          Placeholder="Phone Number" RequiredError="A username is required." Class="Input Phone"
+                          Validation="@(new PhoneAttribute { ErrorMessage = "Invalid Phone Number." })"/>
+            
+            <MudTextField T="string" @bind-Value="Password" Required="true" Class="Input Password"
+                          Placeholder="Password" RequiredError="A password is required." 
+                          InputType="InputType.Password" Validation="@((object)VerifyPassword)" />
+            <MudTextField T="string" @bind-Value="ConfirmPassword" Required="true" Class="Input ConfirmPassword"
+                                      Placeholder="Confirm" Validation="@((object)VerifyConfirmPassword)"
+                                      InputType="InputType.Password"/>
+        </EditForm>
+    </section>
+</article>
+
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? Return { get; set; }
+    
+    private User NewUser { get; } = new()
+    {
+        Id = Guid.NewGuid().ToString()
+    };
+    
+    private IBrowserFile? Avatar { get; set; }
+
+    private string Password { get; set; } = string.Empty;
+    private string ConfirmPassword { get; set; } = string.Empty;
+
+    private void RegisterUser()
+    {
+        /*if success*/ Nav.NavigateTo(Uri.UnescapeDataString(Return ?? "%2F"));
+    }
+
+    private async Task UpdateImage()
+    {
+        if (Avatar is null) return;
+        
+        if (VerifyFile(Avatar).Any()) return;
+
+        await NewUser.SetImageAsync(Avatar.OpenReadStream(6_000_000));
+    }
+
+    private static IEnumerable<string> VerifyFile(IBrowserFile x)
+    {
+        if (x.Size >= 6_000_000) yield return "Uploaded files may not exceed 6MB.";
+        if (x.ContentType is not Png and not Jpeg and not Avif and not Bmp and not Tiff and not Webp)
+            yield return "Avatar sources must be any of the following image formats: " +
+                         "png, jpeg (includes other extensions like jpg, jfif, etc.), avif, bmp, tiff, webp";
+    }
+
+    private static IEnumerable<string> VerifyPassword(string pw)
+    {
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            yield return "Password Required.";
+            yield break;
+        }
+
+        if (pw.Length < 8) yield return "Password must be at least 8 characters.";
+        if (!Regex.IsMatch(pw, "[A-Z]")) yield return "Password must contain at least 1 uppercase character.";
+        if (!Regex.IsMatch(pw, "[a-z]")) yield return "Password must contain at least 1 lowercase character.";
+        if (!Regex.IsMatch(pw, "[0-9]")) yield return "Password must contain at least 1 numerical character.";
+    }
+    
+    private string? VerifyConfirmPassword(string val) // null when no error
+        => val == Password ? null : "Passwords do not match.";
+}

@@ -24,3 +24,7 @@ main {
 .mud-drawer-content {
     gap: 10px;
 }
+
+.mud-toolbar {
+    gap: 24px;
+}

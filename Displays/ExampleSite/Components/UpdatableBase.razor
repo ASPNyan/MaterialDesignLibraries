@@ -1,0 +1,17 @@
+@implements IDisposable
+@inject ThemeContainer ThemeContainer
+
+@code {
+    private void OnUpdate() => InvokeAsync(StateHasChanged);
+    
+    protected override void OnInitialized()
+    {
+        ThemeContainer.OnSchemeUpdate += OnUpdate;
+    }
+
+    public void Dispose()
+    {
+        ThemeContainer.OnSchemeUpdate += OnUpdate;
+    }
+
+}

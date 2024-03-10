@@ -1,0 +1,40 @@
+main {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+article {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5vh;
+    width: 400px;
+    padding: 2em;
+}
+
+section {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    align-items: center;
+    gap: 60px;
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.Input, .Input input {
+    width: 100% !important;
+    color: var(--md-sys-color-secondary) !important;
+}
+

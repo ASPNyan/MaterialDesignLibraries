@@ -1,9 +1,18 @@
 ﻿@using MaterialDesign.Web.Exceptions
 @inherits MdIconConfigComponent
 
-<span class="@(@class) material-symbols-@LineStyleString" style="@IconStyleString" @attributes="@UnmatchedParameters">
-    @GetIcon
-</span>
+@if (string.IsNullOrWhiteSpace(Href))
+{
+    <span class="@(@class) material-symbols-@LineStyleString" style="@IconStyleString" @attributes="@UnmatchedParameters">
+        @GetIcon
+    </span>
+}
+else
+{
+    <a href="@Href" class="@(@class) material-symbols-@LineStyleString" style="@IconStyleString" @attributes="@UnmatchedParameters">
+        @GetIcon
+    </a>
+}
 
 @code {
     /// <summary>
@@ -32,6 +41,12 @@
     /// </summary>
     [Parameter] public bool UserSelect { get; set; }
     private string UserSelectString => $"user-select: {(UserSelect ? "text" : "none")};";
+    
+    /// <summary>
+    /// The href to set the anchor to. Leave empty if this shouldn't be a link
+    /// </summary>
+    [Parameter]
+    public string? Href { get; set; }
 
     // ReSharper disable InconsistentNaming | Give parameter catches in order to not override icon settings
     [Parameter] public string? @class { get; set; }

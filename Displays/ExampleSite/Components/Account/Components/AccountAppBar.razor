@@ -1,0 +1,69 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using MaterialDesign.Color.Colorspaces
+@implements IDisposable
+@inject ThemeContainer ThemeContainer
+@inject UserManager<User> UserManager
+@inject NavigationManager Nav
+
+@if (Nav.Uri.EndsWith("/Account")) return;
+
+<AuthorizeView>
+    <Authorized>
+        @if (GetCurrentUser is null)
+        {
+            GetCurrentUser ??= UserManager.GetUserAsync(context.User);
+            StateHasChanged();
+        }
+        @if (CurrentUser is { ImageBytes: not null })
+        {
+            <p style="display: flex; justify-content: center; align-items: center; cursor: pointer;" @onclick="RedirectToLogin">
+                <img src="@CurrentUser.GenerateImageDataString()" alt=""
+                     style="height: 48px; width: 48px;" class="on-secondary-container-text"/>
+            </p>
+
+            RenderNoImg = false;
+        }
+    </Authorized>
+</AuthorizeView>
+
+@if (RenderNoImg)
+{
+    <MdIcon Icon="Account Circle" Href="/Account" Scale="2" class="on-secondary-container-text"/>
+}
+
+@code {
+    private Task<User?>? GetCurrentUser { get; set; }
+    private User? CurrentUser { get; set; }
+
+    private bool RenderNoImg { get; set; } = true;
+    
+    private void OnLocationChanged(object? _, LocationChangedEventArgs _1)
+    {
+        StateHasChanged();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+        
+        RenderNoImg = true;
+        
+        if (GetCurrentUser is null) return;
+
+        CurrentUser = await GetCurrentUser;
+        
+        if (CurrentUser is not null) ThemeContainer.UpdateScheme(new Theme(CurrentUser.Color));
+    }
+
+    public void Dispose()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+    }
+
+    private void RedirectToLogin()
+    {
+        throw new NotImplementedException();
+    }
+
+}

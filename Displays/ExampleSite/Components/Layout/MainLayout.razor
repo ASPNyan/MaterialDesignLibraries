@@ -1,12 +1,13 @@
-﻿@using MudBlazor
-@using MaterialDesign.Icons
-@using MaterialDesign.Theming
-@using MaterialDesign.Theming.Injection
-@using MaterialDesign.Theming.Web.CSS
+﻿@using MaterialDesign.Theming.Web.CSS
 @using MaterialDesign.Theming.Web.MudBlazor
+@using ExampleSite.Components.Account.Components
+@using MaterialDesign.Web.Services
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject ThemeContainer ThemeContainer
+@inject NavigationManager Nav
+@inject DynamicHeadStorage HeadStorage
+@rendermode InteractiveServer
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/MainLayout.css">
@@ -24,11 +25,12 @@
         <DynamicComponentOutlet Id="@DrawerId"/>
     </MudDrawer>
     <MudAppBar Elevation="2" Color="Color.Surface" Class="secondary-container on-secondary-container-text">
-        <MdIcon Icon="Menu" @onclick="ToggleDrawer" style="margin-right: 24px"/>
+        <MdIcon Icon="Menu" @onclick="ToggleDrawer" />
         <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleLeft"/>
-        <DynamicComponentOutlet Id="@DrawerId"/>
+        <DynamicComponentOutlet Id="@AppBarId"/>
         <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleRight"/>
-        <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="margin-left: 24px; cursor: pointer;" @onclick="ToggleScheme"/>
+        <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;" @onclick="ToggleScheme"/>
+        <AccountAppBar/>
     </MudAppBar>
     <MudMainContent @onclick="() => DrawerOpen = false">
         <main class="background on-background-text">
@@ -44,6 +46,7 @@
     public const string DividerStyleRight = $"margin-left: auto; {DividerStyle}";
     
     public static string DrawerId { get; } = Guid.NewGuid().ToString();
+    public static string AppBarId { get; } = Guid.NewGuid().ToString();
     
     private bool DrawerOpen { get; set; }
 
@@ -52,10 +55,13 @@
         DrawerOpen = !DrawerOpen;
         StateHasChanged();
     }
+
+    private void OnUpdate() => InvokeAsync(StateHasChanged);
     
     protected override void OnInitialized()
     {
-        ThemeContainer.OnSchemeUpdate += StateHasChanged;
+        ThemeContainer.OnSchemeUpdate += OnUpdate;
+        // Nav.LocationChanged += (_, _) => HeadStorage.InvokeUpdate();
     }
 
     private IScheme Scheme => ThemeContainer.Scheme;
@@ -70,6 +76,6 @@
 
     public void Dispose()
     {
-        ThemeContainer.OnSchemeUpdate -= StateHasChanged;
+        ThemeContainer.OnSchemeUpdate -= OnUpdate;
     }
 }
