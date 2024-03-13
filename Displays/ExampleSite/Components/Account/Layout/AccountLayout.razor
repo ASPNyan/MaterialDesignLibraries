@@ -1,0 +1,24 @@
+@using ExampleSite.Components.Layout
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+
+<MdIconConfig Weight="400" Grade="0" LineStyle="MdIconLineStyle.Rounded" OpticalSize="24" Fill="true">
+<MudLayout>
+    <MudLayoutComponents/>
+    <MudMainContent>
+        <main class="background on-background-text">
+            @Body
+        </main>
+    </MudMainContent>
+</MudLayout>
+</MdIconConfig>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? Context { get; set; }
+    
+    protected override void OnParametersSet()
+    {
+        if (Context is null) Nav.Refresh(true);
+    }
+}

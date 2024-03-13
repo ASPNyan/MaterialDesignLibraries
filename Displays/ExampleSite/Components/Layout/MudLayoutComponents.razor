@@ -1,0 +1,50 @@
+@using ExampleSite.Components.Account.Components
+@using static ExampleSite.Components.Layout.MainLayout
+@inherits LayoutComponentBase
+@inject ThemeContainer ThemeContainer
+@rendermode InteractiveServer
+
+<MudDrawer @bind-Open="DrawerOpen" Variant="DrawerVariant.Responsive" Anchor="Anchor.Start" ClipMode="DrawerClipMode.Always"
+           Class="secondary-container on-secondary-container-text" Elevation="1">
+    <spacer/>
+    <MdIconText Href="/" Icon="Home" Text="Home" Scale="1.3" class="on-secondary-container-text"/>
+    <MudDivider Style="@DividerStyle"/>
+    <DynamicComponentOutlet Id="@DrawerId"/>
+</MudDrawer>
+<MudAppBar Elevation="2" Color="Color.Surface" Class="secondary-container on-secondary-container-text">
+    <MdIcon Icon="Menu" @onclick="ToggleDrawer" />
+    <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleLeft"/>
+    <DynamicComponentOutlet Id="@AppBarId"/>
+    <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleRight"/>
+    <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;" @onclick="ToggleScheme"/>
+    <AccountAppBar/>
+</MudAppBar>
+
+@if (Body is not null) 
+{
+    <MudMainContent @onclick="() => DrawerOpen = false">
+        <main class="background on-background-text">
+            @Body
+        </main>
+    </MudMainContent>
+}
+
+@code {
+    private bool DrawerOpen { get; set; }
+
+    private void ToggleDrawer()
+    {
+        DrawerOpen = !DrawerOpen;
+        StateHasChanged();
+    }
+    
+    private IScheme Scheme => ThemeContainer.Scheme;
+
+    private string SchemeIcon => Scheme.IsDarkScheme ? "Light Mode" : "Dark Mode";
+    
+    private void ToggleScheme()
+    {
+        if (Scheme.IsDarkScheme) Scheme.SetLight();
+        else Scheme.SetDark();
+    }
+}

@@ -1,11 +1,10 @@
-@page "/Login"
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @using Microsoft.AspNetCore.Identity
 @inherits UpdatableBase
 @inject SignInManager<User> SignIn
 @inject NavigationManager Nav
-@rendermode InteractiveServer
+@page "/Account/Login"
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Login.css">

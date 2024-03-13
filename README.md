@@ -74,6 +74,76 @@ These custom schemes aren't just custom colors, but custom rules, like the gap b
 the gap between light and dark mode schemes, custom handling of secondary, tertiary, and surface color generation,
 and more.
 
+# Blazor Setup Instructions
+Since the web components and classes from this project are split into 5 Blazor-related projects (4 web, 1 injection),
+it can be quite the hassle to setup. This section of the README gives some instructions depending on what libraries
+you have installed. It does assume you install `Nyan.MaterialDesign.Theming.Web` (the NuGet package for `.Theming.Web`).
+
+## Program.cs
+Starting from the default empty Blazor Web App template, add the following lines to your Main method 
+(or top level statements):
+```csharp
+// At the top of your file
+using MaterialDesign.Theming;
+using MaterialDesign.Theming.Injection;
+using MaterialDesign.Theming.Web.Setup;
+using MaterialDesign.Web.Services;
+```
+```csharp
+builder.Services
+    .AddMaterialThemeService(/* Source */) // Source can be HCTA, Theme, IScheme, IThemeSource, Func<IServiceProvider, Theme>, 
+                                           // Func<ThemeSourceBuilder, IThemeSource>, or Func<ThemeSourceBuilder, IServiceProvider, IThemeSource>
+    .AddDynamicHeadStorage()
+    .AddDynamicComponentStorage(); // not necessary, but if you use <DynamicComponentOutlet/> or its Content component it is.
+
+ThemeSetup.Setup();
+```
+### Optionals
+If using `Nyan.MaterialDesign.Icons`, add the following lines:
+```csharp
+// At the top of your file
+using MaterialDesign.Icons;
+```
+```csharp
+// Add either of these two, depending on how you want your icons to behave.
+builder.Services.AddDynamicMaterialIconsToWebApplication();
+builder.Services.AddStaticMaterialIconsToWebApplication();
+```
+
+If you want to customise the initial scheme to be explicitly dark or light, change your Main method to `async Task`
+(nothing required for top level statements), and add the following line somewhere after your `builder.Build()` call.
+```csharp
+await app.Services.SetDefaultThemeMode(defaultIsDark: /* bool, true for dark, false for light */);
+```
+Be aware that if this is not set, light mode is the default.
+
+If using `Nyan.MaterialDesign.Theming.Web.MudBlazor`, follow the [MudBlazor Setup](https://github.com/MudBlazor/MudBlazor?tab=readme-ov-file#getting-started).
+No further Material Design methods need to be added to accommodate MudBlazor.
+
+## App.razor
+Replace
+```html
+<HeadOutlet/>
+```
+with
+```html
+<DynamicHeadOutlet @rendermode="@* Some RenderMode, probably InteractiveServer *@"
+```
+
+## MainLayout.razor
+This only applies when using `Nyan.MaterialDesign.Theming.Web.MudBlazor`.
+Add the following component to the top of the file:
+```html
+@using MaterialDesign.Theming.Web.MudBlazor
+```
+And the following component first thing in the HTML
+```html
+<MdMudThemeProvider/>
+```
+
+## Examples
+To see examples of use of all of these libraries, see the projects under the Displays folder
+
 ## MaterialDesign.Theming.Web CSS Classes
 `.primary`, `.primary-text`, `.on-primary`, `.on-primary-text`, `.primary-container`, `.primary-container-text`,
 `.on-primary-container`, `.on-primary-container-text`, `.secondary`, `.secondary-text`, `.on-secondary`,

@@ -1,6 +1,5 @@
 ﻿@using MaterialDesign.Theming.Web.CSS
 @using MaterialDesign.Theming.Web.MudBlazor
-@using ExampleSite.Components.Account.Components
 @using MaterialDesign.Web.Services
 @inherits LayoutComponentBase
 @implements IDisposable
@@ -16,28 +15,9 @@
 <MdMudThemeProvider/>
 
 <MdIconConfig Weight="400" Grade="0" LineStyle="MdIconLineStyle.Rounded" OpticalSize="24" Fill="true">
-<MudLayout>
-    <MudDrawer @bind-Open="DrawerOpen" Variant="DrawerVariant.Responsive" Anchor="Anchor.Start" ClipMode="DrawerClipMode.Always"
-               Class="secondary-container on-secondary-container-text" Elevation="1">
-        <spacer/>
-        <MdIconText Href="/" Icon="Home" Text="Home" Scale="1.3" class="on-secondary-container-text"/>
-        <MudDivider Style="@DividerStyle"/>
-        <DynamicComponentOutlet Id="@DrawerId"/>
-    </MudDrawer>
-    <MudAppBar Elevation="2" Color="Color.Surface" Class="secondary-container on-secondary-container-text">
-        <MdIcon Icon="Menu" @onclick="ToggleDrawer" />
-        <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleLeft"/>
-        <DynamicComponentOutlet Id="@AppBarId"/>
-        <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleRight"/>
-        <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;" @onclick="ToggleScheme"/>
-        <AccountAppBar/>
-    </MudAppBar>
-    <MudMainContent @onclick="() => DrawerOpen = false">
-        <main class="background on-background-text">
-            @Body
-        </main>
-    </MudMainContent>
-</MudLayout>
+    <MudLayout>
+        <MudLayoutComponents Body="Body"/>
+    </MudLayout>
 </MdIconConfig>
 
 @code {
@@ -61,17 +41,6 @@
     protected override void OnInitialized()
     {
         ThemeContainer.OnSchemeUpdate += OnUpdate;
-        // Nav.LocationChanged += (_, _) => HeadStorage.InvokeUpdate();
-    }
-
-    private IScheme Scheme => ThemeContainer.Scheme;
-
-    private string SchemeIcon => Scheme.IsDarkScheme ? "Light Mode" : "Dark Mode";
-    
-    private void ToggleScheme()
-    {
-        if (Scheme.IsDarkScheme) Scheme.SetLight();
-        else Scheme.SetDark();
     }
 
     public void Dispose()
