@@ -1,11 +1,12 @@
 ﻿@using MaterialDesign.Theming.Web.CSS
 @using MaterialDesign.Theming.Web.MudBlazor
-@using MaterialDesign.Web.Services
+@using ExampleSite.Components.Settings.Components
+@using ExampleSite.Services
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject ThemeContainer ThemeContainer
 @inject NavigationManager Nav
-@inject DynamicHeadStorage HeadStorage
+@inject SettingsStorageService Settings
 @rendermode InteractiveServer
 
 <DynamicHeadContent>
@@ -16,13 +17,37 @@
 
 <MdIconConfig Weight="400" Grade="0" LineStyle="MdIconLineStyle.Rounded" OpticalSize="24" Fill="true">
     <MudLayout>
-        <MudLayoutComponents Body="Body"/>
+        <MudDrawer @bind-Open="DrawerOpen" Variant="DrawerVariant.Responsive" Anchor="Anchor.Start" Elevation="1"
+                   Class="secondary-container on-secondary-container-text" ClipMode="DrawerClipMode.Always" id="Drawer">
+            <spacer/>
+            <MdIconText Href="/" Icon="Home" Text="Home" Scale="1.3" class="on-secondary-container-text"/>
+            <MudDivider Style="@DividerStyle"/>
+            <DynamicComponentOutlet Id="@DrawerId"/>
+            <SettingsDrawer/>
+            <spacer/>
+        </MudDrawer>
+        <MudAppBar Elevation="2" Color="Color.Surface" Class="secondary-container on-secondary-container-text">
+            <MdIcon Icon="Menu" @onclick="ToggleDrawer" />
+            <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleLeft"/>
+            <DynamicComponentOutlet Id="@AppBarId"/>
+            <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleRight"/>
+            <MudTooltip Placement="Placement.Bottom" RootStyle="margin: auto 0; height: 36px" Class="SchemeTooltip"
+                        Text="@($"Switch to {(Scheme.IsDarkScheme ? "Light" : "Dark")} Mode")" Delay="200">
+                <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;" 
+                        @onclick="ToggleScheme"/>
+            </MudTooltip>
+        </MudAppBar>
+        <MudMainContent @onclick="() => DrawerOpen = false">
+            <main class="background on-background-text">
+                @Body
+            </main>
+        </MudMainContent>
     </MudLayout>
 </MdIconConfig>
 
 @code {
     public const string DividerStyleLeft = $"margin-right: auto; {DividerStyle}";
-    public const string DividerStyle = $"border-color: var({ThemeCSSTokens.OnSecondaryContainerCSSToken});";
+    public const string DividerStyle = $"border-color: var({ThemeCSSTokens.OnSecondaryContainerCSSToken}); flex-grow: 0;";
     public const string DividerStyleRight = $"margin-left: auto; {DividerStyle}";
     
     public static string DrawerId { get; } = Guid.NewGuid().ToString();
@@ -35,16 +60,42 @@
         DrawerOpen = !DrawerOpen;
         StateHasChanged();
     }
+    
+    private IScheme Scheme => ThemeContainer.Scheme;
+
+    private string SchemeIcon => Scheme.IsDarkScheme ? "Dark Mode" : "Light Mode";
+    
+    private void ToggleScheme()
+    {
+        if (Scheme.IsDarkScheme) Scheme.SetLight();
+        else Scheme.SetDark();
+    }
 
     private void OnUpdate() => InvokeAsync(StateHasChanged);
+    private void OnNavigate(object? _1, LocationChangedEventArgs _2) => InvokeAsync(() =>
+    {
+        if (!DrawerOpen) return;
+        DrawerOpen = false;
+        StateHasChanged();
+    });
     
     protected override void OnInitialized()
     {
         ThemeContainer.OnSchemeUpdate += OnUpdate;
+        Nav.LocationChanged += OnNavigate;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        IScheme? scheme = await Settings.GetSchemeAsync();
+        if (scheme is not null) ThemeContainer.UpdateScheme(scheme);
     }
 
     public void Dispose()
     {
         ThemeContainer.OnSchemeUpdate -= OnUpdate;
+        Nav.LocationChanged -= OnNavigate;
     }
 }

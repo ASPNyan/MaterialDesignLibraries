@@ -4,12 +4,16 @@
 
 @_renderContent
 
-@if (ExtraSources is not null)
+
+@foreach ((Type type, IDictionary<string, object>? attributes) in ExtraSources ?? [])
 {
-    foreach ((Type type, IDictionary<string, object>? attributes) in ExtraSources)
-    {
-        <DynamicComponent Type="@type" Parameters="@attributes"/>
-    }
+    <DynamicComponent Type="@type" Parameters="@attributes"/>
+}
+
+@foreach ((Type type, IDictionary<string, object>? attributes) in 
+          StaticExtraSources.TryGetValue(Id, out List<(Type, IDictionary<string, object>?)>? array) ? array : [])
+{
+    <DynamicComponent Type="type" Parameters="attributes"/>
 }
 
 @code
@@ -17,15 +21,15 @@
     /// <summary>
     /// The id correlated with the content sources that will be used to provide render fragments to this outlet.
     /// </summary>
-    [Parameter, EditorRequired] 
+    [Parameter, EditorRequired]
     public virtual string Id { get; set; } = null!;
-    
+
     /// <summary>
     /// Extra component sources, specific to this outlet, that are used to provide more render fragments.
     /// </summary>
     [Parameter]
     public List<(Type ComponentType, IDictionary<string, object>? Attributes)>? ExtraSources { get; set; }
-    
+
     private static readonly Dictionary<string, List<(Type ComponentType, IDictionary<string, object>? Attributes)>> StaticExtraSources = [];
 
     /// <summary>
@@ -58,7 +62,7 @@
                 if (!gotContent || fragments is null) return;
                 for (int i = 0; i < fragments.Count; i++) builder.AddContent(i, fragments[i]);
             };
-            
+
             StateHasChanged();
         });
     }

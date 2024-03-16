@@ -21,10 +21,20 @@ main {
     padding: 2vh 2vw;
 }
 
+#Drawer *:not(.mud-divider) {
+    padding: 0 1px;
+}
+
 .mud-drawer-content {
     gap: 10px;
 }
 
 .mud-toolbar {
     gap: 24px;
+}
+
+.SchemeTooltip {
+    color: var(--md-sys-color-tertiary) !important;
+    background-color: var(--md-sys-color-on-tertiary) !important;
+    box-shadow: var(--mud-elevation-8);
 }

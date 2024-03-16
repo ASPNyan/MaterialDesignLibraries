@@ -95,12 +95,24 @@ public static class ServiceCollectionExtensions
     /// by creating a <see cref="ThemeContainer"/> when the service is requested through the <see cref="IServiceProvider"/>,
     /// with the <see cref="IServiceProvider"/> as a parameter or using the provided <paramref name="fallback"/> if that fails.
     /// </summary>
+#pragma warning disable CS0618 // Type or member is obsolete
     public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection,
         ThemeFromServiceProvider builderMethod, Theme? fallback = null)
     {
-#pragma warning disable CS0618 // Type or member is obsolete
         SetThemeService(serviceCollection);
 #pragma warning restore CS0618 // Type or member is obsolete
+        return serviceCollection.AddScoped<ThemeContainer>(serviceProvider =>
+            ThemeContainer.CreateFromScheme(TryWithFallback(() => builderMethod(serviceProvider), fallback)));
+    }
+    
+    /// <summary>
+    /// Adds Material Theming services to Dependency Injection through the <see cref="IServiceCollection"/>
+    /// by creating a <see cref="ThemeContainer"/> when the service is requested through the <see cref="IServiceProvider"/>,
+    /// with the <see cref="IServiceProvider"/> as a parameter or using the provided <paramref name="fallback"/> if that fails.
+    /// </summary>
+    public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection,
+        SchemeFromServiceProvider builderMethod, IScheme? fallback = null)
+    {
         return serviceCollection.AddScoped<ThemeContainer>(serviceProvider =>
             ThemeContainer.CreateFromScheme(TryWithFallback(() => builderMethod(serviceProvider), fallback)));
     }
@@ -127,7 +139,7 @@ public static class ServiceCollectionExtensions
     /// it uses singleton instead of scoped because WASM apps have no differences between singleton and scoped, but
     /// scoped services cannot be accessed without a scope.
     /// </summary>
-    public static void AddMaterialThemeService(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddMaterialThemeService(this IServiceCollection serviceCollection)
     {
 #pragma warning disable CS0618 // Type or member is obsolete
         SetThemeService(serviceCollection);
@@ -136,6 +148,8 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<ThemeContainer>(_ => ThemeContainer.CreateFromScheme(null!));
 
         CheckSetFail = true;
+
+        return serviceCollection;   
     }
 
     /// <summary>
