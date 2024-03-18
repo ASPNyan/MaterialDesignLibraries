@@ -1,10 +1,47 @@
-﻿@for (int i = 0; i < 3; i++)
+﻿@using MaterialDesign.Web.Components
+@using MaterialDesign.Web.Fonts
+@using MaterialDesign.Web.Fonts.Enums
+
+@for (int i = 0; i < 3; i++)
 {
-    <link rel="stylesheet" href="@GenerateMaterialIconsUrl((MdIconLineStyle)i)">
+    MdIconLineStyle style = (MdIconLineStyle)i;
+    @if (UrlGenerator is null)
+    {
+        <link rel="stylesheet" href="@GenerateMaterialIconsUrl(style)">
+    }
+    else
+    {
+        string fontFamily = $"Material Symbols {style}".ToLowerInvariant();
+        <DynamicFont FontFaceBuilder="@(builder => builder.FontFamily(fontFamily).FontSource(fsBuilder 
+            => fsBuilder.AddUrlSource(UrlGenerator(style))).FontWeight(new FontWeight(FontWeightValue.Normal)))"/>
+    }
+}
+
+@if (UrlGenerator is not null)
+{
+<style>
+    .material-symbols-outlined, .material-symbols-rounded, .material-symbols-sharp {
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -moz-font-feature-settings: 'liga';
+        -moz-osx-font-smoothing: grayscale;
+    }
+</style>
 }
 
 @code {
     [Inject] public MdIconConfiguration? IconConfig { get; set; }
+
+    [Parameter]
+    public MaterialIconConfigExtensions.UrlGenerator? UrlGenerator { get; set; }
 
     private string GenerateMaterialIconsUrl(MdIconLineStyle style)
         => $"https://fonts.googleapis.com/css2?family=Material+Symbols+{style.ToString()}" +

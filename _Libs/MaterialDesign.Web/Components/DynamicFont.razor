@@ -20,9 +20,7 @@
                 @builder.Build().ToMarkupString()
             }
             
-            .@FormattedClassName {
-                font-family: @FontFamily;
-            }
+            @((MarkupString)CssStyle)
         </style>
     </DynamicHeadContent>
 }
@@ -47,16 +45,26 @@
     [Parameter] 
     public string? ClassName { get; set; }
 
+    // ReSharper disable once UseRawString | Blazor hates raw strings and will not compile them.
+    private string CssStyle =>
+$@".{FormattedClassName} {{
+    font-family: {FontFamily};
+}}";
+    
     private string FormattedClassName
     {
         get
         {
-            if (FontFace is not null) 
-                return (ClassName ?? FontFace.Value.Family).Replace(' ', '-').Replace('"', '\u0000');
+            if (ClassName is not null) return ClassName;
             
+            if (FontFace is not null)
+            {
+                return FontFace.Value.Family.Replace(' ', '-').Replace('"', '\u0000').ToLowerInvariant();
+            }
+
             FontFaceBuilder builder = new();
             FontFaceBuilder!(builder);
-            return (ClassName ?? builder.Build().Family).Replace(' ', '-').Replace('"', '\u0000');
+            return builder.Build().Family.Replace(' ', '-').Replace('"', '\u0000').ToLowerInvariant();
         }
     }
 

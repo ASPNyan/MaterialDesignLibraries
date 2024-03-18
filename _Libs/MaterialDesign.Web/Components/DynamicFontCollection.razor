@@ -87,12 +87,12 @@
         get
         {
             if (MainFontFace is not null) return (ClassName ?? MainFontFace.Value.Family)
-                .Replace(' ', '-').Replace('"', (char)0);
+                .Replace(' ', '-').Replace('"', '\u0000').ToLowerInvariant();
             
             FontFaceBuilder builder = new();
             MainFontFaceBuilder!(builder);
             return (ClassName ?? builder.Build().Family)
-                .Replace(' ', '-').Replace('"', '\u0000');
+                .Replace(' ', '-').Replace('"', '\u0000').ToLowerInvariant();
         }
     }
 

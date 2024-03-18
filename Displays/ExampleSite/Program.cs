@@ -21,7 +21,7 @@ internal class Program
         
         // Add services to the container.
         builder.Services
-            .AddDynamicMaterialIconsToWebApplication()
+            .AddDynamicMaterialIconsToWebApplication(style => $"fonts/MaterialSymbols{style}.woff2")
             .AddTransient<SettingsStorageService>()
             .AddMaterialThemeService(new Oceanic())
             .AddDynamicHeadStorage()
