@@ -5,7 +5,7 @@ namespace MaterialDesign.Color.Schemes.Custom;
 
 public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
 {
-    public new HCTA Origin => base.Origin!;
+    public new HCTA Origin => base.Origin;
 
     private TextStyleType _schemeTextStyle = TextStyleType.BlackAndWhite;
     private SaturationType _schemeSaturation = SaturationType.Saturated;
@@ -180,19 +180,9 @@ public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
     
     private void UpdateSettings<T>(T _) => Update(Origin);
 
-    public override void Update(HCTA newColor)
-    {
-        base.Update(newColor);
-        UpdateSettings(null as object);
-    }
-
     public override int GetHashCode() => Origin.GetHashCode();
-
-    [DoesNotReturn]
-    private static HCTA NullOriginError() => throw new InvalidOperationException(
-        "Cannot create ModifiableCustomScheme from a CustomSchemeBase derivative that has a null Origin color.");
     
-    public ModifiableCustomScheme(CustomSchemeBase baseScheme) : this(baseScheme.Origin ?? NullOriginError())
+    public ModifiableCustomScheme(CustomSchemeBase baseScheme) : this(baseScheme.Origin)
     {
         _schemeTextStyle = baseScheme.TextStyle;
         _schemeSaturation = baseScheme.Saturation;
