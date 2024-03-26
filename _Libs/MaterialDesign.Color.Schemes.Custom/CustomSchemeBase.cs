@@ -174,7 +174,7 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         };
     }
 
-    private HCTA CreateDifferentColor(HCTA source, DifferenceFromSource difference)
+    private HCTA CreateDifferentColor(HCTA source, DifferenceFromSource difference, double hue, double chroma)
     {
         HCTA diff = new(source.H, double.Min(source.C, source.MaxChroma()), source.T);
 
@@ -209,18 +209,15 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
                     const int hueShiftWide = 50;
                     diff.H += negativeHueShift ? -hueShiftWide : hueShiftWide;
                     break;
+                case DifferenceFromSource.UseHueOverride:
+#pragma warning disable CS0618 // Type or member is obsolete
                 case DifferenceFromSource.UsePrimaryHueOverride:
-                    diff.H = PrimaryHue;
-                    break;
                 case DifferenceFromSource.UseSecondaryHueOverride:
-                    diff.H = SecondaryHue;
-                    break;
                 case DifferenceFromSource.UseTertiaryHueOverride:
-                    diff.H = TertiaryHue;
-                    break;
                 case DifferenceFromSource.UseSurfaceHueOverride:
-                    diff.H = SurfaceHue;
-                    break; 
+#pragma warning restore CS0618 // Type or member is obsolete
+                    diff.H = hue;
+                    break;
                 case DifferenceFromSource.RelativeDesaturateSmall:
                     diff.C = GetChromaAfterRatioChange(-saturateSmall);
                     break;
@@ -239,17 +236,14 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
                 case DifferenceFromSource.RelativeSaturateLarge:
                     diff.C = GetChromaAfterRatioChange(saturateLarge * Math.Pow(bonus, 1.6));
                     break;
+                case DifferenceFromSource.UseChromaOverride:
+#pragma warning disable CS0618 // Type or member is obsolete
                 case DifferenceFromSource.UsePrimaryChromaOverride:
-                    diff.C = PrimaryChroma;
-                    break;
                 case DifferenceFromSource.UseSecondaryChromaOverride:
-                    diff.C = SecondaryChroma;
-                    break;
                 case DifferenceFromSource.UseTertiaryChromaOverride:
-                    diff.C = TertiaryChroma;
-                    break;
                 case DifferenceFromSource.UseSurfaceChromaOverride:
-                    diff.C = SurfaceChroma;
+#pragma warning restore CS0618 // Type or member is obsolete
+                    diff.C = chroma;
                     break;
             }
         }
@@ -280,9 +274,9 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
             new HCTA(0, 0, darkTone).ContrastTo(coreContainerContrastLevel, false).T, 0);
         if (containerContrastLevel < onColorContrastLevel) coreContainerContrastLevel = onColorContrastLevel;
         
-        primaryPalette = CoreContainerGenerator(PrimaryDifference);
-        secondaryPalette = CoreContainerGenerator(SecondaryDifference);
-        tertiaryPalette = CoreContainerGenerator(TertiaryDifference);
+        primaryPalette = CoreContainerGenerator(PrimaryDifference, PrimaryHue, PrimaryChroma);
+        secondaryPalette = CoreContainerGenerator(SecondaryDifference, SecondaryHue, SecondaryChroma);
+        tertiaryPalette = CoreContainerGenerator(TertiaryDifference, TertiaryHue, TertiaryChroma);
 
         return;
         
@@ -299,8 +293,12 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
             };
         }
         
-        CustomSourcePalette CoreContainerGenerator(DifferenceFromSource diff) => new(new TonalPalette(modSource),
-            darkTone, lightTone, onColorContrastLevel, coreContainerContrastLevel, hcta => CreateDifferentColor(hcta, diff));
+        CustomSourcePalette CoreContainerGenerator(DifferenceFromSource diff, double hue, double chroma)
+        {
+            return new CustomSourcePalette(new TonalPalette(modSource),
+                darkTone, lightTone, onColorContrastLevel, coreContainerContrastLevel,
+                hcta => CreateDifferentColor(hcta, diff, hue, chroma));
+        }
     }
 
     // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
@@ -319,7 +317,7 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         ConstructSourcePalettes(modSource, out CustomSourcePalette primaryPalette, 
             out CustomSourcePalette secondaryPalette, out CustomSourcePalette tertiaryPalette);
         
-        HCTA surfaceSource = CreateDifferentColor(modSource, SurfaceDifference);
+        HCTA surfaceSource = CreateDifferentColor(modSource, SurfaceDifference, SurfaceHue, SurfaceChroma);
         TonalPalette surfacePalette = new(surfaceSource);
         TonalPalette surfaceVariantPalette = new(surfacePalette.Hue, GetSurfaceVariantChroma());
 
@@ -362,11 +360,11 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         {
             return (VariantDifferenceFromSurface switch
             {
-                SaturationType.Desaturated => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeDesaturate),
-                SaturationType.LowSaturation => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeDesaturateSmall),
+                SaturationType.Desaturated => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeDesaturate, 0 ,0),
+                SaturationType.LowSaturation => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeDesaturateSmall, 0 ,0),
                 SaturationType.MediumSaturation => surfacePalette.KeyColor,
-                SaturationType.HighSaturation => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeSaturate),
-                SaturationType.Saturated => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeSaturateLarge),
+                SaturationType.HighSaturation => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeSaturate, 0 ,0),
+                SaturationType.Saturated => CreateDifferentColor(surfacePalette.KeyColor, DifferenceFromSource.RelativeSaturateLarge, 0 ,0),
                 _ => throw new ArgumentOutOfRangeException(nameof(VariantDifferenceFromSurface),
                     "VariantDifferenceFromSurface must be one of 5 valid enum values.")
             }).C;
@@ -416,9 +414,14 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         /// </summary>
         HueShiftWide = 1<<3,
         
+        UseHueOverride = 1<<18,
+        [Obsolete("Use new generic `UseHueOverride` enum instead of specific versions.")]
         UsePrimaryHueOverride = 1<<4,
+        [Obsolete("Use new generic `UseHueOverride` enum instead of specific versions.")]
         UseSecondaryHueOverride = 1<<5,
+        [Obsolete("Use new generic `UseHueOverride` enum instead of specific versions.")]
         UseTertiaryHueOverride = 1<<6,
+        [Obsolete("Use new generic `UseHueOverride` enum instead of specific versions.")]
         UseSurfaceHueOverride = 1<<7,
 
         RelativeDesaturateSmall = 1<<8,
@@ -429,9 +432,14 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         RelativeSaturate = 1<<12,
         RelativeSaturateLarge = 1<<13,
 
+        UseChromaOverride = 1<<19,
+        [Obsolete("Use new generic `UseChromaOverride` enum instead of specific versions.")]
         UsePrimaryChromaOverride = 1<<14,
+        [Obsolete("Use new generic `UseChromaOverride` enum instead of specific versions.")]
         UseSecondaryChromaOverride = 1<<15,
+        [Obsolete("Use new generic `UseChromaOverride` enum instead of specific versions.")]
         UseTertiaryChromaOverride = 1<<16,
+        [Obsolete("Use new generic `UseChromaOverride` enum instead of specific versions.")]
         UseSurfaceChromaOverride = 1<<17
     }
 }

@@ -1,10 +1,9 @@
 using MaterialDesign.Icons;
-using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
 using MaterialDesign.Theming.Web.Setup;
 using MaterialDesign.Web.Services;
-using MaterialDesign.Color.Colorspaces;
 using ExampleSite.Components;
+using ExampleSite.Components.Settings;
 using ExampleSite.DefaultThemes;
 using ExampleSite.Services;
 using MudBlazor.Services;
@@ -23,6 +22,7 @@ internal class Program
         builder.Services
             .AddDynamicMaterialIconsToWebApplication(style => $"fonts/MaterialSymbols{style}.woff2")
             .AddTransient<SettingsStorageService>()
+            .AddScoped<LayoutSettings>()
             .AddMaterialThemeService(new Oceanic())
             .AddDynamicHeadStorage()
             .AddDynamicComponentStorage()

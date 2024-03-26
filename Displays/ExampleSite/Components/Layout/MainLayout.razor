@@ -2,11 +2,12 @@
 @using MaterialDesign.Theming.Web.MudBlazor
 @using ExampleSite.Components.Settings.Components
 @using ExampleSite.Services
+@using ExampleSite.Components.Settings
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject ThemeContainer ThemeContainer
 @inject NavigationManager Nav
-@inject SettingsStorageService Settings
+@inject LayoutSettings LayoutSettings
 @rendermode InteractiveServer
 
 <DynamicHeadContent>
@@ -37,7 +38,7 @@
                         @onclick="ToggleScheme"/>
             </MudTooltip>
         </MudAppBar>
-        <MudMainContent @onclick="() => DrawerOpen = false">
+        <MudMainContent @onclick="CloseDrawer">
             <main class="background on-background-text">
                 @Body
             </main>
@@ -71,10 +72,15 @@
         else Scheme.SetDark();
     }
 
+    private void CloseDrawer()
+    {
+        if (LayoutSettings.CloseDrawerOnMainFocus) DrawerOpen = false;
+    }
+
     private void OnUpdate() => InvokeAsync(StateHasChanged);
     private void OnNavigate(object? _1, LocationChangedEventArgs _2) => InvokeAsync(() =>
     {
-        if (!DrawerOpen) return;
+        if (!DrawerOpen || !LayoutSettings.CloseDrawerOnNavigate) return;
         DrawerOpen = false;
         StateHasChanged();
     });
@@ -85,17 +91,10 @@
         Nav.LocationChanged += OnNavigate;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender) return;
-
-        IScheme? scheme = await Settings.GetSchemeAsync();
-        if (scheme is not null) ThemeContainer.UpdateScheme(scheme);
-    }
-
     public void Dispose()
     {
         ThemeContainer.OnSchemeUpdate -= OnUpdate;
         Nav.LocationChanged -= OnNavigate;
     }
+
 }

@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using ExampleSite.Services
+@inject ILogger<App> Logger
+@inject SettingsStorageService SettingsStorage
+@inject ThemeContainer ThemeContainer
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -17,3 +22,17 @@
 </body>
 
 </html>
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        StorageRequestResult<IScheme> storedScheme = await SettingsStorage.GetSchemeAsync();
+        
+        if (storedScheme.Success) ThemeContainer.UpdateScheme(storedScheme.Value);
+        if (storedScheme.Error is not null) Logger.LogWarning(storedScheme.Error, "Failed to get stored scheme.");
+    }
+
+}

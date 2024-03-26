@@ -1,0 +1,52 @@
+#SchemeCustomizationGrid {
+    display: grid;
+    grid-template-columns: 40% 2.5% 57.5%;
+}
+
+#SchemeSettings {
+    grid-column: 1;
+}
+
+#SchemeDisplay {
+    grid-column: 3;
+}
+
+.mud-tabs-toolbar {
+    margin-bottom: 5px;
+}
+
+.mud-tab {
+    --margin-top-bottom: calc(6px * 1.5);/*
+    --margin-left-right: calc(12px * 2);
+    padding: 0 !important;
+    min-width: 0 !important;
+    width: calc(160px - var(--margin-left-right) * 2);*/
+    margin: var(--margin-top-bottom) 0;
+    height: calc(48px - var(--margin-top-bottom) * 2);
+    min-height: 0 !important;
+    border-radius: 4px;
+}
+
+.mud-tab-slider {
+    margin-bottom: 2px;
+}
+
+.mud-tab-slider,
+.mud-tab-active {
+    background: var(--md-sys-color-on-tertiary) !important;
+    color: var(--md-sys-color-tertiary) !important;
+}
+
+.primary-text .mud-input,
+.mud-picker .mud-input {
+    color: var(--md-sys-color-primary) !important;
+}
+
+.mud-input-helper-text {
+    color: var(--md-sys-color-on-primary-container) !important;
+}
+
+.mud-button:hover { 
+    background-color: var(--md-sys-color-secondary-container) !important;
+    color: var(--md-sys-color-secondary) !important;
+}

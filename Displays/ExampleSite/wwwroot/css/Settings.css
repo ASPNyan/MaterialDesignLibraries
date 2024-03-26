@@ -1,0 +1,28 @@
+.ExpansionPanel {
+    margin-top: 8px;
+    width: 60%;
+    border-bottom: none !important;
+}
+
+.ExpansionPanel *:not(.mud-grid):not(.mud-grid *):not(.mud-expand-panel-header) {
+    padding: 0 !important;
+}
+
+.DisplayGrid {
+    margin-top: -150px !important;
+    top: 150px;
+    transition: top 0ms ease-in;
+    z-index: 0 !important;
+}
+
+.DisplayGrid.Expanded {
+    top: 0;
+    transition: top 300ms ease-in;
+}
+
+.mud-expand-panel-header {
+    background: var(--md-sys-color-tertiary-container);
+    border-radius: 6px;
+    padding: 4px 8px !important;
+    margin-bottom: 4px;
+}

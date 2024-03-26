@@ -1,0 +1,19 @@
+.SchemeTileContainer {
+    position: relative;
+    margin-top: 6px;
+    left: 12px;
+    gap: 8px;
+    z-index: 1;
+}
+
+.SchemeTiles {
+    width: calc(100% - 24px);
+    display: flex;
+    justify-content: space-between;
+    border-radius: 10px;
+}
+
+.SchemeTiles * {
+    aspect-ratio: 1;
+    width: 9%;
+}

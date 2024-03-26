@@ -1,6 +1,6 @@
 ﻿@using MaterialDesign.Web.Components
 @using MaterialDesign.Web.Fonts
-@using MaterialDesign.Web.Fonts.Enums
+@inject MdIconConfiguration IconConfig
 
 @for (int i = 0; i < 3; i++)
 {
@@ -11,9 +11,7 @@
     }
     else
     {
-        string fontFamily = $"Material Symbols {style}".ToLowerInvariant();
-        <DynamicFont FontFaceBuilder="@(builder => builder.FontFamily(fontFamily).FontSource(fsBuilder 
-            => fsBuilder.AddUrlSource(UrlGenerator(style))).FontWeight(new FontWeight(FontWeightValue.Normal)))"/>
+        <DynamicFont FontFaceBuilder="@(builder => BuildFontFace(builder, style))"/>
     }
 }
 
@@ -38,12 +36,20 @@
 }
 
 @code {
-    [Inject] public MdIconConfiguration? IconConfig { get; set; }
-
     [Parameter]
     public MaterialIconConfigExtensions.UrlGenerator? UrlGenerator { get; set; }
 
     private string GenerateMaterialIconsUrl(MdIconLineStyle style)
         => $"https://fonts.googleapis.com/css2?family=Material+Symbols+{style.ToString()}" +
            $"{IconConfig?.GetFontConfigurationString()}";
+    
+    private void BuildFontFace(FontFaceBuilder builder, MdIconLineStyle style)
+    {
+        string fontFamily = $"Material Symbols {style}".ToLowerInvariant();
+
+        builder.FontFamily(fontFamily)
+            .FontSource(fsBuilder => fsBuilder.AddUrlSource(UrlGenerator!(style)))
+            .FontWeight(IconConfig.IsStatic ? new FontWeight(IconConfig.Weight) : new FontWeight(100, 700));
+    }
+
 }

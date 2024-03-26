@@ -1,0 +1,75 @@
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/Components/SchemeTiles.css">
+</DynamicHeadContent>
+
+<MudGrid Justify="Justify.SpaceBetween" Class="@Class">
+    <MudItem Class="SchemeTiles surface-variant">
+        <MudPaper Class="primary" Elevation= "5"/>
+        <MudPaper Class="on-primary" Elevation= "5"/>
+        <MudPaper Class="primary-container" Elevation= "5"/>
+        <MudPaper Class="on-primary-container" Elevation= "5"/>
+        <MudPaper Class="primary-fixed" Elevation= "5"/>
+        <MudPaper Class="on-primary-fixed" Elevation= "5"/>
+        <MudPaper Class="inverse-primary" Elevation= "5"/>
+        <MudPaper Class="primary-fixed-dim" Elevation= "5"/>
+    </MudItem>
+
+    <MudItem Class="SchemeTiles surface-container-highest">
+        <MudPaper Class="secondary" Elevation= "5"/>
+        <MudPaper Class="on-secondary" Elevation= "5"/>
+        <MudPaper Class="secondary-container" Elevation= "5"/>
+        <MudPaper Class="on-secondary-container" Elevation= "5"/>
+        <MudPaper Class="secondary-fixed" Elevation= "5"/>
+        <MudPaper Class="on-secondary-fixed" Elevation= "5"/>
+        <MudPaper Class="inverse-secondary" Elevation= "5"/>
+        <MudPaper Class="secondary-fixed-dim" Elevation= "5"/>
+    </MudItem>
+
+    <MudItem Class="SchemeTiles surface-container-high">
+        <MudPaper Class="tertiary" Elevation= "5"/>
+        <MudPaper Class="on-tertiary" Elevation= "5"/>
+        <MudPaper Class="tertiary-container" Elevation= "5"/>
+        <MudPaper Class="on-tertiary-container" Elevation= "5"/>
+        <MudPaper Class="tertiary-fixed" Elevation= "5"/>
+        <MudPaper Class="on-tertiary-fixed" Elevation= "5"/>
+        <MudPaper Class="inverse-tertiary" Elevation= "5"/>
+        <MudPaper Class="tertiary-fixed-dim" Elevation= "5"/>
+    </MudItem>
+
+    <MudItem Class="SchemeTiles primary-container">
+        <MudPaper Class="surface" Elevation= "5"/>
+        <MudPaper Class="on-surface" Elevation= "5"/>
+        <MudPaper Class="surface-container" Elevation= "5"/>
+        <MudPaper Class="on-surface-container" Elevation= "5"/>
+        <MudPaper Class="surface-bright" Elevation= "5"/>
+        <MudPaper Class="surface-dim" Elevation= "5"/>
+        <MudPaper Class="surface-variant" Elevation= "5"/>
+        <MudPaper Class="on-surface-variant" Elevation= "5"/>
+    </MudItem>
+
+    <MudItem Class="SchemeTiles secondary-container">
+        <MudPaper Class="surface-variant" Elevation= "5"/>
+        <MudPaper Class="on-surface-variant" Elevation= "5"/>
+        <MudPaper Class="surface-container-lowest" Elevation= "5"/>
+        <MudPaper Class="surface-container-low" Elevation= "5"/>
+        <MudPaper Class="surface-container-high" Elevation= "5"/>
+        <MudPaper Class="surface-container-highest" Elevation= "5"/>
+        <MudPaper Class="surface-tint" Elevation= "5"/>
+        <MudPaper Class="inverse-surface" Elevation= "5"/>
+    </MudItem>
+
+    <MudItem Class="SchemeTiles tertiary-container">
+        <MudPaper Class="background" Elevation= "5"/>
+        <MudPaper Class="on-background" Elevation= "5"/>
+        <MudPaper Class="outline" Elevation= "5"/>
+        <MudPaper Class="outline-variant" Elevation= "5"/>
+        <MudPaper Class="scrim" Elevation= "5"/>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string Class => "SchemeTileContainer " + BackgroundClass;
+    
+    [Parameter]
+    public string BackgroundClass { get; set; } = "background";
+}

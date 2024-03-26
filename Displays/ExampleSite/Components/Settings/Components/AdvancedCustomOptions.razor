@@ -1,0 +1,273 @@
+@using static MaterialDesign.Color.Schemes.Custom.CustomSchemeBase
+@using static MaterialDesign.Color.Schemes.Custom.CustomSchemeBase.DifferenceFromSource
+@using MudBlazor.Utilities
+@using MaterialDesign.Color.Colorspaces
+@using MaterialDesign.Color.Schemes.Custom
+@using System.Numerics
+@implements IDisposable
+@inject ThemeContainer ThemeContainer
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/Components/AdvancedCustomOptions.css">
+</DynamicHeadContent>
+
+<h2>Advanced Options</h2>
+<MudColorPicker @bind-Value="ColorValue" Class="on-primary"/>
+
+<MudTabs>
+    <MudTabPanel Text="Text Style">
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (TextStyleType style in Enum.GetValues<TextStyleType>())
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeTextStyle, style)"
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeTextStyle = style; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(style)
+                </MudPaper>
+            }
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Saturation">
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (SaturationType saturationType in Enum.GetValues<SaturationType>())
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeSaturation, saturationType)" 
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeSaturation = saturationType; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(saturationType)
+                </MudPaper>
+            }
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Dark/Light Gap">
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (ToneGap toneGap in Enum.GetValues<ToneGap>())
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeDarkLightGap, toneGap)" 
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeDarkLightGap = toneGap; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(toneGap)
+                </MudPaper>
+            }
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="On-Color Gap">
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (ToneGap toneGap in Enum.GetValues<ToneGap>())
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeOnColorGap, toneGap)" 
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeOnColorGap = toneGap; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(toneGap)
+                </MudPaper>
+            }
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Core/Container Gap">
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (ToneGap toneGap in Enum.GetValues<ToneGap>())
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeCoreContainerGap, toneGap)" 
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeCoreContainerGap = toneGap; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(toneGap)
+                </MudPaper>
+            }
+        </MudGrid>
+    </MudTabPanel>
+    @{
+        IEnumerable<DifferenceFromSource> sourceDiffs = Enum.GetValues<DifferenceFromSource>()[1..].Where(
+#pragma warning disable CS0618 // Type or member is obsolete
+            x => x is not UsePrimaryHueOverride and not UsePrimaryChromaOverride
+                   and not UseSecondaryHueOverride and not UseSecondaryChromaOverride
+                   and not UseTertiaryHueOverride and not UseTertiaryChromaOverride
+                   and not UseSurfaceHueOverride and not UseSurfaceChromaOverride);
+#pragma warning restore CS0618 // Type or member is obsolete
+    }
+    <MudTabPanel Text="Primary Difference">
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemePrimaryDifference, None)"
+                      Style="margin-top: 8px" @onclick="() => { Scheme.SchemePrimaryDifference = None; StateHasChanged(); }">
+                @nameof(None)
+            </MudPaper>
+            @foreach (DifferenceFromSource difference in sourceDiffs)
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemePrimaryDifference, difference, true)"
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemePrimaryDifference ^= difference; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(difference)
+                </MudPaper>
+            }
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemePrimaryDifference, UseHueOverride, true)">
+                Custom Hue <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemePrimaryHue"
+                          Disabled="Disabled(Scheme.SchemePrimaryDifference, UseHueOverride)"/>
+            </MudPaper>
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemePrimaryDifference, UseChromaOverride, true)">
+                Custom Chroma <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemePrimaryChroma"
+                          Disabled="Disabled(Scheme.SchemePrimaryDifference, UseChromaOverride)"/>
+            </MudPaper>
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Secondary Difference">
+        <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeSecondaryDifference, None)"
+                  Style="margin-top: 8px" @onclick="() => { Scheme.SchemeSecondaryDifference = None; StateHasChanged(); }">
+            @nameof(None)
+        </MudPaper>
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (DifferenceFromSource difference in sourceDiffs)
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeSecondaryDifference, difference, true)"
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeSecondaryDifference ^= difference; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(difference)
+                </MudPaper>
+            }
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemeSecondaryDifference, UseHueOverride, true)">
+                Custom Hue <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemeSecondaryHue"
+                          Disabled="Disabled(Scheme.SchemeSecondaryDifference, UseHueOverride)"/>
+            </MudPaper>
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemeSecondaryDifference, UseChromaOverride, true)">
+                Custom Chroma <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemeSecondaryChroma"
+                          Disabled="Disabled(Scheme.SchemeSecondaryDifference, UseChromaOverride)"/>
+            </MudPaper>
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Tertiary Difference">
+        <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeTertiaryDifference, None)"
+                  Style="margin-top: 8px" @onclick="() => { Scheme.SchemeTertiaryDifference = None; StateHasChanged(); }">
+            @nameof(None)
+        </MudPaper>
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (DifferenceFromSource difference in sourceDiffs)
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeTertiaryDifference, difference, true)"
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeTertiaryDifference ^= difference; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(difference)
+                </MudPaper>
+            }
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemeTertiaryDifference, UseHueOverride, true)">
+                Custom Hue <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemeTertiaryHue"
+                          Disabled="Disabled(Scheme.SchemeTertiaryDifference, UseHueOverride)"/>
+            </MudPaper>
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemeTertiaryDifference, UseChromaOverride, true)">
+                Custom Chroma <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemeTertiaryChroma"
+                          Disabled="Disabled(Scheme.SchemeTertiaryDifference, UseChromaOverride)"/>
+            </MudPaper>
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Surface Difference">
+        <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeSurfaceDifference, None)"
+                  Style="margin-top: 8px" @onclick="() => { Scheme.SchemeSurfaceDifference = None; StateHasChanged(); }">
+            @nameof(None)
+        </MudPaper>
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (DifferenceFromSource difference in sourceDiffs)
+            {
+                <MudPaper Width="@Size" Height="@Size" Class="@GetClasses(Scheme.SchemeSurfaceDifference, difference, true)"
+                          Style="margin-top: 8px" @onclick="() => { Scheme.SchemeSurfaceDifference ^= difference; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(difference)
+                </MudPaper>
+            }
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemeSurfaceDifference, UseHueOverride, true)">
+                Custom Hue <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemeSurfaceHue"
+                          Disabled="Disabled(Scheme.SchemeSurfaceDifference, UseHueOverride)"/>
+            </MudPaper>
+            <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px;"
+                      Class="@GetClasses(Scheme.SchemeSurfaceDifference, UseChromaOverride, true)">
+                Custom Chroma <br/>
+                <MudInput T="double" @bind-Value="Scheme.SchemeSurfaceChroma"
+                          Disabled="Disabled(Scheme.SchemeSurfaceDifference, UseChromaOverride)"/>
+            </MudPaper>
+        </MudGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Surface Variant Saturation">
+        <MudGrid Style="margin-top: 0" Justify="Justify.SpaceBetween" Spacing="12">
+            @foreach (SaturationType saturationType in Enum.GetValues<SaturationType>())
+            {
+                <MudPaper Width="@Size" Height="@Size" Style="margin-top: 8px"
+                          Class="@GetClasses(Scheme.SchemeVariantDifferenceFromSurface, saturationType)"
+                          @onclick="() => { Scheme.SchemeVariantDifferenceFromSurface = saturationType; StateHasChanged(); }">
+                    @GetFormattedEnumValueString(saturationType)
+                </MudPaper>
+            }
+        </MudGrid>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    private const string Size = "100px";
+    
+    private static MudColor ToMudColor(HCTA hcta)
+    {
+        RGBA rgba = hcta.ToRGBA();
+        return new MudColor(rgba.R, rgba.G, rgba.B, rgba.A);
+    }
+
+    private static HCTA ToHCTA(MudColor mudColor)
+    {
+        RGBA rgba = new(mudColor.R, mudColor.G, mudColor.B);
+        return HCTA.FromRGBA(rgba);
+    }
+    
+    private ModifiableCustomScheme Scheme { get; set; } = null!;
+
+    private MudColor _colorValue = null!;
+    private MudColor ColorValue
+    {
+        get => _colorValue;
+        set
+        {
+            _colorValue = value;
+            Scheme.Update(ToHCTA(value));
+        }
+    }
+
+    private static string GetFormattedEnumValueString<T>(T value) where T : struct
+    {
+        string stringVal = value.ToString() ?? throw new ArgumentNullException(nameof(value), "The provided enum value may not be null");
+        string output = stringVal.Aggregate(string.Empty, (current, c) => current + (char.IsUpper(c) ? $" {c}" : c));
+
+        return output;
+    }
+
+    private string GetClasses<TEnum>(TEnum val, TEnum flag, bool useFlagsComparison = false) 
+        where TEnum : Enum
+    {
+        bool enabled = (useFlagsComparison && val.HasFlag(flag)) || val.Equals(flag);
+
+        return enabled ? "secondary on-secondary-text EnabledOption" : "on-secondary secondary-text";
+    }
+
+    private bool Disabled(DifferenceFromSource val, DifferenceFromSource diff)
+    {
+        return diff switch
+        {
+            UseHueOverride or UseChromaOverride => (val & diff) == 0,
+            _ => false
+        };
+    }
+    
+    private async void OnUpdate() => await InvokeAsync(StateHasChanged);
+    
+    protected override void OnInitialized()
+    {
+        HCTA origin = ThemeContainer.Scheme.Origin ?? new HCTA(0, 30, 50);
+        Scheme = new ModifiableCustomScheme(origin);
+        _colorValue = ToMudColor(origin);
+        
+        ThemeContainer.UpdateScheme(Scheme);
+        ThemeContainer.OnSchemeUpdate += OnUpdate;
+    }
+
+    public void Dispose()
+    {
+        ThemeContainer.OnSchemeUpdate -= OnUpdate;
+    }
+}

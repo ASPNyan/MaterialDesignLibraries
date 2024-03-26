@@ -45,7 +45,7 @@ public static class SchemeSerializer
     /// </summary>
     public static string SerializeGeneric<TScheme>(TScheme scheme) where TScheme : IScheme =>
         JsonSerializer.Serialize(new SchemeGenericTyped(scheme.Origin, scheme.IsDarkScheme, 
-            typeof(TScheme) != typeof(IScheme) ? typeof(TScheme).AssemblyQualifiedName : null));
+            scheme.GetType().AssemblyQualifiedName));
 
     /// <summary>
     /// Deserializes a JSON string back into a scheme using the provided construction method. Type checking,
@@ -63,16 +63,17 @@ public static class SchemeSerializer
         
         if (typeChecking && typeof(TScheme) != serializedType)
         {
-            string? storedClassName = serializedType?.Name;
-            string error = storedClassName is not null
-                ? $"{storedClassName} cannot be converted to {typeof(TScheme).Name} with type checking enabled."
-                : $"{typeof(TScheme).Name} cannot be created from generic IScheme with type checking enabled.";
+            string storedClassName = serializedType.Name;
+            string error = $"{storedClassName} cannot be converted to {typeof(TScheme).Name} with type checking enabled.";
             throw new SerializationException(error);
         }
         
         SchemeGeneric noType = new(generic.Origin, generic.IsDarkScheme);
         return constructor(noType);
     }
+
+    public static IScheme DeserializeGeneric(string schemeSerialized, Func<SchemeGenericTyped, IScheme> constructor) => 
+        constructor(JsonSerializer.Deserialize<SchemeGenericTyped>(schemeSerialized));
 
     /// <summary>
     /// Converts the provided <see cref="DynamicScheme"/> into a JSON string.
@@ -113,7 +114,18 @@ public static class SchemeSerializer
     }
 
     private record struct DynamicSchemeJson(HCTA Source, Variant Variant, bool IsDarkScheme, string FullyQualifiedCustomType);
-    private record struct SchemeGenericTyped(HCTA? Origin, bool IsDarkScheme, string? FullyQualifiedSchemeType);
+    
+    /// <summary>
+    /// A miniature, readonly struct that contains an <see cref="Origin"/> <see cref="HCTA"/> color,
+    /// a <see cref="bool"/> <see cref="IsDarkScheme"/>, and the <see cref="Type"/>
+    /// <see cref="Type.AssemblyQualifiedName"/> stored in <see cref="FullyQualifiedSchemeType"/>
+    /// that can all be used to construct an <see cref="IScheme"/>.
+    /// </summary>
+    /// <param name="Origin">
+    /// The <see cref="IScheme.Origin"/> property of the scheme, null when <see cref="IScheme.Origin"/> is null
+    /// or when it is unavailable to get.
+    /// </param>
+    public readonly record struct SchemeGenericTyped(HCTA? Origin, bool IsDarkScheme, string? FullyQualifiedSchemeType);
     
     /// <summary>
     /// A miniature, readonly struct that contains an <see cref="Origin"/> <see cref="HCTA"/> color and
@@ -123,5 +135,5 @@ public static class SchemeSerializer
     /// The <see cref="IScheme.Origin"/> property of the scheme, null when <see cref="IScheme.Origin"/> is null
     /// or when it is unavailable to get.
     /// </param>
-    public record struct SchemeGeneric(HCTA? Origin, bool IsDarkScheme);
+    public readonly record struct SchemeGeneric(HCTA? Origin, bool IsDarkScheme);
 }

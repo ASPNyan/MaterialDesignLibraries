@@ -33,7 +33,8 @@ else
     /// The scale of the Icon, applied as a multiplier.
     /// </summary>
     [Parameter] public double Scale { get; set; } = 1;
-    private string FontSize => $"font-size: {24 * Scale}px;";
+    // ReSharper disable once SimplifyStringInterpolation | this dies in blazor (like raw strings)
+    private string FontSize => $"font-size: {(24 * Scale).ToString("N3")}px;";
 
     /// <summary>
     /// Modifies the CSS <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/user-select">user-select</a> property

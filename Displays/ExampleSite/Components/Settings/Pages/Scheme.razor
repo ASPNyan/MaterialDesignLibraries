@@ -1,0 +1,102 @@
+@using ExampleSite.DefaultThemes
+@using ExampleSite.Services
+@using MaterialDesign.Color.Colorspaces
+@using MudBlazor.Utilities
+@implements IDisposable
+@inject ThemeContainer ThemeContainer
+@inject SettingsStorageService SettingsStorage
+@inject ILogger<Scheme> Logger
+@page "/Settings/Scheme"
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/Scheme.css">
+</DynamicHeadContent>
+
+<article id="SchemeCustomizationGrid">
+    <div id="SchemeSettings">
+        <h2>Scheme Customization</h2>
+        <MudTabs Rounded="true" AlwaysShowScrollButtons="true" Color="MudBlazor.Color.Tertiary" 
+                 TabHeaderClass="on-tertiary-text">
+            <MudTabPanel Text="@ThemeSelectionOptions.Oceanic.ToString()"> @* Center buttons in default schemes *@
+                <MudButton Class="on-secondary secondary-text" OnClick="@SetToOceanic">Set to Oceanic Theme</MudButton>
+            </MudTabPanel>
+            <MudTabPanel Text="@ThemeSelectionOptions.Moonlight.ToString()"> @* Fix space between tabs and buttons *@
+                <MudButton class="on-secondary secondary-text" OnClick="@SetToMoonlight">Set to Moonlight Theme</MudButton>
+            </MudTabPanel>
+            <MudTabPanel Text="@ThemeSelectionOptions.Volcano.ToString()">
+                <MudButton class="on-secondary secondary-text" OnClick="@SetToVolcano">Set to Volcano Theme</MudButton>
+            </MudTabPanel>
+            <MudTabPanel Text="@ThemeSelectionOptions.Plasma.ToString()">
+                <MudButton class="on-secondary secondary-text" OnClick="@SetToPlasma">Set to Plasma Theme</MudButton>
+            </MudTabPanel>
+            <MudTabPanel Text="@ThemeSelectionOptions.Custom.ToString()">
+                <MudColorPicker Value="MudColor" ValueChanged="ColorUpdated" Rounded="true" Class="primary-text"/>
+            </MudTabPanel>
+            <MudTabPanel Text="Custom (Advanced)">
+                @if (!AgreeToAdvancedWarning)
+                {
+                    <MudCheckBox T="bool" @bind-Value="AgreeToAdvancedWarning" Label="@AdvancedWarning"
+                                 Color="MudBlazor.Color.Primary"/>
+                }
+                else
+                {
+                    <AdvancedCustomOptions/>
+                }
+            </MudTabPanel>
+        </MudTabs>
+    </div>
+    <div id="SchemeDisplay">
+        <SchemeTiles/>
+    </div>
+</article>
+
+@code {
+    private MudColor MudColor { get; set; } = null!;
+
+    private void ColorUpdated(MudColor color)
+    {
+        MudColor = color;
+        ThemeContainer.UpdateScheme(new Theme(HCTA.FromRGBA(new RGBA(color.R, color.G, color.B))));
+    }
+
+    private const string AdvancedWarning = "The advanced settings in this section may produce colors with poor " +
+                                           "contrast that limit the ability to see any or all elements on a page. " +
+                                           "Are you sure you wish to proceed?";
+    
+    private bool AgreeToAdvancedWarning { get; set; }
+    
+    private void SetToOceanic() => ThemeContainer.UpdateScheme(new Oceanic());
+    private void SetToMoonlight() => ThemeContainer.UpdateScheme(new Moonlight());
+    private void SetToVolcano() => ThemeContainer.UpdateScheme(new Volcano());
+    private void SetToPlasma() => ThemeContainer.UpdateScheme(new Plasma());
+
+    protected override void OnInitialized()
+    {
+        Random rng = new();
+        byte[] randomBytes = new byte[3];
+        rng.NextBytes(randomBytes);
+        RGBA rgba = ThemeContainer.Scheme.Origin?.ToRGBA() ?? new RGBA(randomBytes[0], randomBytes[1], randomBytes[2]);
+        MudColor = new MudColor(rgba.R, rgba.G, rgba.B, rgba.A255);
+    }
+
+    private async void OnSchemeUpdate()
+    {
+        StorageRequestResult result = await SettingsStorage.SetSchemeAsync(ThemeContainer.Scheme);
+        if (!result.Success) Logger.LogError(result.Error, "Failed to set stored scheme.");
+        var newSchemeResult = await SettingsStorage.GetSchemeAsync();
+        if (newSchemeResult.Success) Console.WriteLine(newSchemeResult.Value.Origin);
+        else Logger.LogError(newSchemeResult.Error, "Failed to get new scheme after setting.");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        ThemeContainer.OnSchemeUpdate += OnSchemeUpdate;
+    }
+
+    public void Dispose()
+    {
+        ThemeContainer.OnSchemeUpdate -= OnSchemeUpdate;
+    }
+}
