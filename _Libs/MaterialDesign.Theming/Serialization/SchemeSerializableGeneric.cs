@@ -11,7 +11,8 @@ public readonly struct SchemeSerializableGeneric() : ISchemeSerializable<SchemeS
     public required HCTA? Origin { get; init; }
     public required bool IsDarkScheme { get; init; }
 
-    public string SerializeScheme() => SchemeSerializer.SerializeGeneric<IScheme>(this);
+    public string SerializeScheme() => /*SchemeSerializer.SerializeGeneric((IScheme)this);*/ throw new Exception();
+    
     public static SchemeSerializableGeneric DeserializeScheme(string serialized)
     {
         return SchemeSerializer.DeserializeGeneric(serialized, 

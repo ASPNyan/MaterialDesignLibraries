@@ -2,7 +2,6 @@
 using MaterialDesign.Theming;
 using MaterialDesign.Theming.Injection;
 
-#pragma warning disable CA2208 // Disable in file for all uses. Prevents ArgumentOutOfRange warnings from appearing
 
 namespace MaterialDesign.Color.Schemes.Custom;
 

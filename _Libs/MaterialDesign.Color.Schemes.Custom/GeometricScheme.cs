@@ -30,7 +30,7 @@ public sealed record GeometricScheme : CustomSchemeBase
         OnColorGap = onColorGap;
         CoreContainerGap = coreContainerGap;
         
-        SurfaceDifference = DifferenceFromSource.UseSurfaceChromaOverride;
+        SurfaceDifference = DifferenceFromSource.UseChromaOverride;
         SurfaceChroma = Math.Min(Origin!.C, 8);
         
         switch (ColorGeometry)
@@ -41,21 +41,21 @@ public sealed record GeometricScheme : CustomSchemeBase
                 break;
             case ColorGeometry.Complementary:
                 SecondaryDifference = DifferenceFromSource.RelativeDesaturateLarge;
-                TertiaryDifference = DifferenceFromSource.UseTertiaryHueOverride;
+                TertiaryDifference = DifferenceFromSource.UseHueOverride;
                 TertiaryHue = Colorspaces.Color.SanitizeDegrees(Origin.H + 180);
                 break;
             case ColorGeometry.Triadic:
-                SecondaryDifference = DifferenceFromSource.UseSecondaryHueOverride;
+                SecondaryDifference = DifferenceFromSource.UseHueOverride;
                 SecondaryHue = Colorspaces.Color.SanitizeDegrees(Origin.H + 120);
-                TertiaryDifference = DifferenceFromSource.UseTertiaryHueOverride;
+                TertiaryDifference = DifferenceFromSource.UseHueOverride;
                 TertiaryHue = Colorspaces.Color.SanitizeDegrees(Origin.H - 120);
                 break;
             case ColorGeometry.Tetradic:
-                SecondaryDifference = DifferenceFromSource.UseSecondaryHueOverride;
+                SecondaryDifference = DifferenceFromSource.UseHueOverride;
                 SecondaryHue = Colorspaces.Color.SanitizeDegrees(Origin.H + 90);
-                TertiaryDifference = DifferenceFromSource.UseTertiaryHueOverride;
+                TertiaryDifference = DifferenceFromSource.UseHueOverride;
                 TertiaryHue = Colorspaces.Color.SanitizeDegrees(Origin.H - 90);
-                SurfaceDifference = DifferenceFromSource.UseSurfaceHueOverride;
+                SurfaceDifference = DifferenceFromSource.UseHueOverride;
                 SurfaceHue = Colorspaces.Color.SanitizeDegrees(Origin.H + 180);
                 break;
             default:

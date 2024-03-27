@@ -44,7 +44,7 @@ public static class SchemeSerializer
     /// and its <see cref="Type"/> as provided by <typeparamref name="TScheme"/>.
     /// </summary>
     public static string SerializeGeneric<TScheme>(TScheme scheme) where TScheme : IScheme =>
-        JsonSerializer.Serialize(new SchemeGenericTyped(scheme.Origin, scheme.IsDarkScheme, 
+        JsonSerializer.Serialize(new SchemeGenericTyped(scheme.Origin, scheme.IsDarkScheme,
             scheme.GetType().AssemblyQualifiedName));
 
     /// <summary>

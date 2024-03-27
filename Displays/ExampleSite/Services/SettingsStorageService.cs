@@ -86,12 +86,12 @@ public sealed class SettingsStorageService(ProtectedLocalStorage localStorage, I
         return result;
     }
 
-    public async ValueTask<StorageRequestResult> SetSchemeAsync<TScheme>(TScheme scheme) where TScheme : IScheme
+    public async ValueTask<StorageRequestResult> SetSchemeAsync(IScheme scheme)
     {
-        if (typeof(TScheme) == typeof(ModifiableCustomScheme)) 
+        if (scheme.GetType() == typeof(ModifiableCustomScheme)) 
             await BrowserStorage.SetAsync(Purpose, ExtraSchemeSettings, scheme);
         
-        string serialized = SchemeSerializer.SerializeGeneric(scheme); // todo: AssemblyQualifiedName that is found in here is null?
+        string serialized = SchemeSerializer.SerializeGeneric(scheme);
         return await TryAndReturnFromError(BrowserStorage.SetAsync(Purpose, SchemeStorage, serialized));
     }
 

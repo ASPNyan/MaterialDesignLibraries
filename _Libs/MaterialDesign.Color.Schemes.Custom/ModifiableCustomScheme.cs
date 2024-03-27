@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using static MaterialDesign.Color.Schemes.Custom.CustomSchemeBase.DifferenceFromSource;
 
 namespace MaterialDesign.Color.Schemes.Custom;
 
+[method: JsonConstructor]
 public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
 {
     public new HCTA Origin => base.Origin;
@@ -15,7 +17,7 @@ public record ModifiableCustomScheme(HCTA Origin) : CustomSchemeBase(Origin)
     private DifferenceFromSource _schemePrimaryDifference = None;
     private DifferenceFromSource _schemeSecondaryDifference = RelativeDesaturateLarge;
     private DifferenceFromSource _schemeTertiaryDifference = HueShiftWide | NegativeHueShift;
-    private DifferenceFromSource _schemeSurfaceDifference = UseSurfaceChromaOverride;
+    private DifferenceFromSource _schemeSurfaceDifference = UseChromaOverride;
     private SaturationType _schemeVariantDifferenceFromSurface = SaturationType.HighSaturation;
     private double _schemePrimaryHue;
     private double _schemeSecondaryHue;

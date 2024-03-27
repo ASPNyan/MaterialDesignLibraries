@@ -1,6 +1,7 @@
 @using ExampleSite.DefaultThemes
 @using ExampleSite.Services
 @using MaterialDesign.Color.Colorspaces
+@using MaterialDesign.Color.Schemes.Custom
 @using MudBlazor.Utilities
 @implements IDisposable
 @inject ThemeContainer ThemeContainer
@@ -15,25 +16,33 @@
 <article id="SchemeCustomizationGrid">
     <div id="SchemeSettings">
         <h2>Scheme Customization</h2>
-        <MudTabs Rounded="true" AlwaysShowScrollButtons="true" Color="MudBlazor.Color.Tertiary" 
-                 TabHeaderClass="on-tertiary-text">
-            <MudTabPanel Text="@ThemeSelectionOptions.Oceanic.ToString()"> @* Center buttons in default schemes *@
-                <MudButton Class="on-secondary secondary-text" OnClick="@SetToOceanic">Set to Oceanic Theme</MudButton>
+        <MudTabs Rounded="true" AlwaysShowScrollButtons="true" Color="MudBlazor.Color.Tertiary" Active
+                 TabHeaderClass="on-tertiary-text" @ref="Tabs">
+            <MudTabPanel Text="@ThemeSelectionOptions.Oceanic.ToString()" ID="typeof(Oceanic)">
+                <MudButton Class="on-secondary secondary-text mud-elevation-4" OnClick="@SetToOceanic">
+                    Set to Oceanic Theme
+                </MudButton>
             </MudTabPanel>
-            <MudTabPanel Text="@ThemeSelectionOptions.Moonlight.ToString()"> @* Fix space between tabs and buttons *@
-                <MudButton class="on-secondary secondary-text" OnClick="@SetToMoonlight">Set to Moonlight Theme</MudButton>
+            <MudTabPanel Text="@ThemeSelectionOptions.Moonlight.ToString()" ID="typeof(Moonlight)">
+                <MudButton class="on-secondary secondary-text mud-elevation-4" OnClick="@SetToMoonlight">
+                    Set to Moonlight Theme
+                </MudButton>
             </MudTabPanel>
-            <MudTabPanel Text="@ThemeSelectionOptions.Volcano.ToString()">
-                <MudButton class="on-secondary secondary-text" OnClick="@SetToVolcano">Set to Volcano Theme</MudButton>
+            <MudTabPanel Text="@ThemeSelectionOptions.Volcano.ToString()" ID="typeof(Volcano)">
+                <MudButton class="on-secondary secondary-text mud-elevation-4" OnClick="@SetToVolcano">
+                    Set to Volcano Theme
+                </MudButton>
             </MudTabPanel>
-            <MudTabPanel Text="@ThemeSelectionOptions.Plasma.ToString()">
-                <MudButton class="on-secondary secondary-text" OnClick="@SetToPlasma">Set to Plasma Theme</MudButton>
+            <MudTabPanel Text="@ThemeSelectionOptions.Plasma.ToString()" ID="typeof(Plasma)">
+                <MudButton class="on-secondary secondary-text mud-elevation-4" OnClick="@SetToPlasma">
+                    Set to Plasma Theme
+                </MudButton>
             </MudTabPanel>
-            <MudTabPanel Text="@ThemeSelectionOptions.Custom.ToString()">
-                <MudColorPicker Value="MudColor" ValueChanged="ColorUpdated" Rounded="true" Class="primary-text"/>
+            <MudTabPanel Text="@ThemeSelectionOptions.Custom.ToString()" ID="typeof(Theme)">
+                <MudColorPicker Value="MudColor" ValueChanged="ColorUpdated" Rounded="true" Class="on-primary primary-text"/>
             </MudTabPanel>
-            <MudTabPanel Text="Custom (Advanced)">
-                @if (!AgreeToAdvancedWarning)
+            <MudTabPanel Text="Custom (Advanced)" ID="typeof(ModifiableCustomScheme)">
+                @if (!AgreeToAdvancedWarning && ThemeContainer.Scheme is not ModifiableCustomScheme)
                 {
                     <MudCheckBox T="bool" @bind-Value="AgreeToAdvancedWarning" Label="@AdvancedWarning"
                                  Color="MudBlazor.Color.Primary"/>
@@ -51,6 +60,8 @@
 </article>
 
 @code {
+    private MudTabs? Tabs { get; set; }
+    
     private MudColor MudColor { get; set; } = null!;
 
     private void ColorUpdated(MudColor color)
@@ -83,9 +94,12 @@
     {
         StorageRequestResult result = await SettingsStorage.SetSchemeAsync(ThemeContainer.Scheme);
         if (!result.Success) Logger.LogError(result.Error, "Failed to set stored scheme.");
+        
         var newSchemeResult = await SettingsStorage.GetSchemeAsync();
-        if (newSchemeResult.Success) Console.WriteLine(newSchemeResult.Value.Origin);
-        else Logger.LogError(newSchemeResult.Error, "Failed to get new scheme after setting.");
+        if (!newSchemeResult.Success) Logger.LogError(newSchemeResult.Error, "Failed to get new scheme after setting.");
+        
+        Tabs?.ActivatePanel(ThemeContainer.Scheme.GetType());
+        if (AgreeToAdvancedWarning) AgreeToAdvancedWarning = ThemeContainer.Scheme is ModifiableCustomScheme;
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -93,6 +107,8 @@
         if (!firstRender) return;
 
         ThemeContainer.OnSchemeUpdate += OnSchemeUpdate;
+        
+        Tabs?.ActivatePanel(ThemeContainer.Scheme.GetType());
     }
 
     public void Dispose()

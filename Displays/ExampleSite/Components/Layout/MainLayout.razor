@@ -5,6 +5,8 @@
 @using ExampleSite.Components.Settings
 @inherits LayoutComponentBase
 @implements IDisposable
+@inject ILogger<App> Logger
+@inject SettingsStorageService SettingsStorage
 @inject ThemeContainer ThemeContainer
 @inject NavigationManager Nav
 @inject LayoutSettings LayoutSettings
@@ -89,6 +91,21 @@
     {
         ThemeContainer.OnSchemeUpdate += OnUpdate;
         Nav.LocationChanged += OnNavigate;
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        
+        StorageRequestResult<IScheme> storedScheme = await SettingsStorage.GetSchemeAsync();
+
+        if (storedScheme.Success)
+        {
+            ThemeContainer.UpdateScheme(storedScheme.Value);
+            Logger.LogInformation("Found and set to stored scheme {typeName}.", storedScheme.Value.GetType().Name);
+        } 
+        else if (storedScheme.Error is not null) Logger.LogError(storedScheme.Error, "Failed to get stored scheme.");
+        else Logger.LogInformation("No stored scheme found. This may be indicative of an error, but in of itself is not.");
     }
 
     public void Dispose()
