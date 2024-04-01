@@ -2,275 +2,275 @@
   background-color: var(--md-sys-color-primary);
 }
 .primary-text {
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary-text);
 }
 .on-primary {
   background-color: var(--md-sys-color-on-primary);
 }
 .on-primary-text {
-  color: var(--md-sys-color-on-primary);
+  color: var(--md-sys-color-on-primary-text);
 }
 .primary-container {
   background-color: var(--md-sys-color-primary-container);
 }
 .primary-container-text {
-  color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-primary-container-text);
 }
 .on-primary-container {
   background-color: var(--md-sys-color-on-primary-container);
 }
 .on-primary-container-text {
-  color: var(--md-sys-color-on-primary-container);
+  color: var(--md-sys-color-on-primary-container-text);
 }
 .secondary {
   background-color: var(--md-sys-color-secondary);
 }
 .secondary-text {
-  color: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-secondary-text);
 }
 .on-secondary {
   background-color: var(--md-sys-color-on-secondary);
 }
 .on-secondary-text {
-  color: var(--md-sys-color-on-secondary);
+  color: var(--md-sys-color-on-secondary-text);
 }
 .secondary-container {
   background-color: var(--md-sys-color-secondary-container);
 }
 .secondary-container-text {
-  color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-secondary-container-text);
 }
 .on-secondary-container {
   background-color: var(--md-sys-color-on-secondary-container);
 }
 .on-secondary-container-text {
-  color: var(--md-sys-color-on-secondary-container);
+  color: var(--md-sys-color-on-secondary-container-text);
 }
 .tertiary {
   background-color: var(--md-sys-color-tertiary);
 }
 .tertiary-text {
-  color: var(--md-sys-color-tertiary);
+  color: var(--md-sys-color-tertiary-text);
 }
 .on-tertiary {
   background-color: var(--md-sys-color-on-tertiary);
 }
 .on-tertiary-text {
-  color: var(--md-sys-color-on-tertiary);
+  color: var(--md-sys-color-on-tertiary-text);
 }
 .tertiary-container {
   background-color: var(--md-sys-color-tertiary-container);
 }
 .tertiary-container-text {
-  color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-tertiary-container-text);
 }
 .on-tertiary-container {
   background-color: var(--md-sys-color-on-tertiary-container);
 }
 .on-tertiary-container-text {
-  color: var(--md-sys-color-on-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container-text);
 }
 .error {
   background-color: var(--md-sys-color-error);
 }
 .error-text {
-  color: var(--md-sys-color-error);
+  color: var(--md-sys-color-error-text);
 }
 .on-error {
   background-color: var(--md-sys-color-on-error);
 }
 .on-error-text {
-  color: var(--md-sys-color-on-error);
+  color: var(--md-sys-color-on-error-text);
 }
 .error-container {
   background-color: var(--md-sys-color-error-container);
 }
 .error-container-text {
-  color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-error-container-text);
 }
 .on-error-container {
   background-color: var(--md-sys-color-on-error-container);
 }
 .on-error-container-text {
-  color: var(--md-sys-color-on-error-container);
+  color: var(--md-sys-color-on-error-container-text);
 }
 .outline {
   background-color: var(--md-sys-color-outline);
 }
 .outline-text {
-  color: var(--md-sys-color-outline);
+  color: var(--md-sys-color-outline-text);
 }
 .background {
   background-color: var(--md-sys-color-background);
 }
 .background-text {
-  color: var(--md-sys-color-background);
+  color: var(--md-sys-color-background-text);
 }
 .on-background {
   background-color: var(--md-sys-color-on-background);
 }
 .on-background-text {
-  color: var(--md-sys-color-on-background);
+  color: var(--md-sys-color-on-background-text);
 }
 .surface {
   background-color: var(--md-sys-color-surface);
 }
 .surface-text {
-  color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-surface-text);
 }
 .on-surface {
   background-color: var(--md-sys-color-on-surface);
 }
 .on-surface-text {
-  color: var(--md-sys-color-on-surface);
+  color: var(--md-sys-color-on-surface-text);
 }
 .surface-variant {
   background-color: var(--md-sys-color-surface-variant);
 }
 .surface-variant-text {
-  color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-surface-variant-text);
 }
 .on-surface-variant {
   background-color: var(--md-sys-color-on-surface-variant);
 }
 .on-surface-variant-text {
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--md-sys-color-on-surface-variant-text);
 }
 .inverse-surface {
   background-color: var(--md-sys-color-inverse-surface);
 }
 .inverse-surface-text {
-  color: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-surface-text);
 }
 .inverse-on-surface {
   background-color: var(--md-sys-color-inverse-on-surface);
 }
 .inverse-on-surface-text {
-  color: var(--md-sys-color-inverse-on-surface);
+  color: var(--md-sys-color-inverse-on-surface-text);
 }
 .inverse-primary {
   background-color: var(--md-sys-color-inverse-primary);
 }
 .inverse-primary-text {
-  color: var(--md-sys-color-inverse-primary);
+  color: var(--md-sys-color-inverse-primary-text);
 }
 .shadow {
   background-color: var(--md-sys-color-shadow);
 }
 .shadow-text {
-  color: var(--md-sys-color-shadow);
+  color: var(--md-sys-color-shadow-text);
 }
 .surface-tint {
   background-color: var(--md-sys-color-surface-tint);
 }
 .surface-tint-text {
-  color: var(--md-sys-color-surface-tint);
+  color: var(--md-sys-color-surface-tint-text);
 }
 .outline-variant {
   background-color: var(--md-sys-color-outline-variant);
 }
 .outline-variant-text {
-  color: var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-outline-variant-text);
 }
 .scrim {
   background-color: var(--md-sys-color-scrim);
 }
 .scrim-text {
-  color: var(--md-sys-color-scrim);
+  color: var(--md-sys-color-scrim-text);
 }
 .primary-fixed { 
     background-color: var(--md-sys-color-primary-fixed);
 }
 .primary-fixed-text { 
-    color: var(--md-sys-color-primary-fixed);
+    color: var(--md-sys-color-primary-fixed-text);
 }
 .on-primary-fixed { 
     background-color: var(--md-sys-color-on-primary-fixed);
 }
 .on-primary-fixed-text { 
-    color: var(--md-sys-color-on-primary-fixed);
+    color: var(--md-sys-color-on-primary-fixed-text);
 }
 .secondary-fixed { 
     background-color: var(--md-sys-color-secondary-fixed);
 }
 .secondary-fixed-text { 
-    color: var(--md-sys-color-secondary-fixed);
+    color: var(--md-sys-color-secondary-fixed-text);
 }
 .on-secondary-fixed { 
     background-color: var(--md-sys-color-on-secondary-fixed);
 }
 .on-secondary-fixed-text { 
-    color: var(--md-sys-color-on-secondary-fixed);
+    color: var(--md-sys-color-on-secondary-fixed-text);
 }
 .tertiary-fixed { 
     background-color: var(--md-sys-color-tertiary-fixed);
 }
 .tertiary-fixed-text { 
-    color: var(--md-sys-color-tertiary-fixed);
+    color: var(--md-sys-color-tertiary-fixed-text);
 }
 .on-tertiary-fixed { 
     background-color: var(--md-sys-color-on-tertiary-fixed);
 }
 .on-tertiary-fixed-text { 
-    color: var(--md-sys-color-on-tertiary-fixed);
+    color: var(--md-sys-color-on-tertiary-fixed-text);
 }
 .primary-fixed-dim {
     background-color: var(--md-sys-color-primary-fixed-dim);
 }
 .primary-fixed-dim-text {
-    color: var(--md-sys-color-primary-fixed-dim);
+    color: var(--md-sys-color-primary-fixed-dim-text);
 }
 .secondary-fixed-dim {
     background-color: var(--md-sys-color-secondary-fixed-dim);
 }
 .secondary-fixed-dim-text {
-    color: var(--md-sys-color-secondary-fixed-dim);
+    color: var(--md-sys-color-secondary-fixed-dim-text);
 }
 .tertiary-fixed-dim {
     background-color: var(--md-sys-color-tertiary-fixed-dim);
 }
 .tertiary-fixed-dim-text {
-    color: var(--md-sys-color-tertiary-fixed-dim);
+    color: var(--md-sys-color-tertiary-fixed-dim-text);
 }
 .surface-dim {
     background-color: var(--md-sys-color-surface-dim);
 }
 .surface-dim-text {
-    color: var(--md-sys-color-surface-dim);
+    color: var(--md-sys-color-surface-dim-text);
 }
 .surface-bright {
     background-color: var(--md-sys-color-surface-bright);
 }
 .surface-bright-text {
-    color: var(--md-sys-color-surface-bright);
+    color: var(--md-sys-color-surface-bright-text);
 }
 .surface-container-highest {
     background-color: var(--md-sys-color-surface-container-highest);
 }
 .surface-container-highest-text {
-    color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-surface-container-highest-text);
 }
 .surface-container-high {
     background-color: var(--md-sys-color-surface-container-high);
 }
 .surface-container-high-text {
-    color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-surface-container-high-text);
 }
 .surface-container {
     background-color: var(--md-sys-color-surface-container);
 }
 .surface-container-text {
-    color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-surface-container-text);
 }
 .surface-container-low {
     background-color: var(--md-sys-color-surface-container-low);
 }
 .surface-container-low-text {
-    color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-surface-container-low-text);
 }
 .surface-container-lowest {
     background-color: var(--md-sys-color-surface-container-lowest);
 }
 .surface-container-lowest-text {
-    color: var(--md-sys-color-surface-container-lowest);
+    color: var(--md-sys-color-surface-container-lowest-text);
 }

@@ -20,6 +20,8 @@ public class Theme : IThemeSource, IScheme, ISchemeSerializable<Theme>, IEquatab
     public bool IsDarkScheme { get; private set; }
     public Scheme CurrentScheme => IsDarkScheme ? Scheme with { IsDark = true } : Scheme with { IsDark = false };
     public Scheme Scheme { get; private set; }
+    
+    public TextColorStyle TextColorStyle { get; private set; }
 
     /// <summary>
     /// Sets a theme to dark mode. Does nothing if this is already the case.
@@ -38,6 +40,36 @@ public class Theme : IThemeSource, IScheme, ISchemeSerializable<Theme>, IEquatab
     {
         if (!IsDarkScheme) return;
         IsDarkScheme = false;
+        OnUpdate?.Invoke();
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void SetColoredText()
+    {
+        if (TextColorStyle is TextColorStyle.Colored) return;
+        TextColorStyle = TextColorStyle.Colored;
+        OnUpdate?.Invoke();
+    }
+    
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void SetBlackAndWhiteText()
+    {
+        if (TextColorStyle is TextColorStyle.BlackAndWhite) return;
+        TextColorStyle = TextColorStyle.BlackAndWhite;
+        OnUpdate?.Invoke();
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public void SetGreyText()
+    {
+        if (TextColorStyle is TextColorStyle.GreyAndGrey) return;
+        TextColorStyle = TextColorStyle.GreyAndGrey;
         OnUpdate?.Invoke();
     }
 

@@ -11,6 +11,55 @@ public interface IScheme
     public bool IsDarkScheme { get; }
     public void SetDark();
     public void SetLight();
+    
+    /// <summary>
+    /// Controls whether the current scheme has black and white text (when <c>true</c>)
+    /// or colored text (when <c>false</c>). Colored text is the default. 
+    /// </summary>
+    public TextColorStyle TextColorStyle => TextColorStyle.Colored;
+
+    /// <summary>
+    /// Sets the current theme's text to <see cref="TextColorStyle.Colored"/>. Does nothing if this is already the case.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the method has not been implemented by current scheme.
+    /// </exception>
+    public void SetColoredText() =>
+        throw new InvalidOperationException("SetColoredText() has not been implemented for this IScheme implementation.");
+
+    /// <summary>
+    /// Sets the current theme's text to <see cref="TextColorStyle.BlackAndWhite">Black &amp; White</see>.
+    /// Does nothing if this is already the case.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the method has not been implemented by current scheme.
+    /// </exception>
+    public void SetBlackAndWhiteText() =>
+        throw new InvalidOperationException("SetBlackAndWhiteText() has not been implemented for this IScheme implementation.");
+
+    /// <summary>
+    /// Sets the current theme's text to <see cref="TextColorStyle.GreyAndGrey">Dark &amp; Light Grey</see>.
+    /// Does nothing if this is already the case.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the method has not been implemented by current scheme.
+    /// </exception>
+    public void SetGreyText() =>
+        throw new InvalidOperationException("SetBlackAndWhiteText() has not been implemented for this IScheme implementation.");
+
+    /// <summary>
+    /// Converts a color into the correct text color as per <see cref="TextColorStyle"/>.
+    /// </summary>
+    public HCTA GetTextColor(HCTA hcta)
+    {
+        return TextColorStyle switch
+        {
+            TextColorStyle.Colored => hcta,
+            TextColorStyle.BlackAndWhite => new HCTA(0, 0, hcta.T < 50 ? 0 : 100),
+            TextColorStyle.GreyAndGrey => new HCTA(0, 0, hcta.T < 50 ? Math.Min(hcta.T, 21.5) : Math.Max(hcta.T, 82)),
+            _ => hcta
+        };
+    }
 
     public event Action OnUpdate;
     

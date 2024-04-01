@@ -1,6 +1,11 @@
+
+
+using System.Text.Json;
+using MaterialDesign.Theming.Serialization;
+
 namespace MaterialDesign.Color.Schemes.Custom;
 
-public sealed record GeometricScheme : CustomSchemeBase
+public sealed record GeometricScheme : CustomSchemeBase, ISchemeSerializable<GeometricScheme>
 {
     public ColorGeometry ColorGeometry { get; }
 
@@ -31,7 +36,7 @@ public sealed record GeometricScheme : CustomSchemeBase
         CoreContainerGap = coreContainerGap;
         
         SurfaceDifference = DifferenceFromSource.UseChromaOverride;
-        SurfaceChroma = Math.Min(Origin!.C, 8);
+        SurfaceChroma = Math.Min(Origin.C, 8);
         
         switch (ColorGeometry)
         {
@@ -88,4 +93,19 @@ public sealed record GeometricScheme : CustomSchemeBase
                 break;
         }
     }
+
+    public string SerializeScheme()
+    {
+        Serializable serializable = new(ColorGeometry, new ModifiableCustomScheme(this));
+        return JsonSerializer.Serialize(serializable);
+    }
+
+    public static GeometricScheme DeserializeScheme(string serialized)
+    {
+        (ColorGeometry colorGeometry, ModifiableCustomScheme? options) = JsonSerializer.Deserialize<Serializable>(serialized);
+        return new GeometricScheme(options.Origin, colorGeometry, options.TextStyle, options.Saturation, 
+            options.DarkLightGap, options.OnColorGap, options.CoreContainerGap, options.IsDarkScheme);
+    }
+
+    private readonly record struct Serializable(ColorGeometry ColorGeometry, ModifiableCustomScheme SchemeOptions);
 }

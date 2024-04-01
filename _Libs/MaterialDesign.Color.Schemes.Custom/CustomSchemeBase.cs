@@ -36,7 +36,7 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
     #nullable disable
     #region Colors
 
-    private bool BlackAndWhiteText { get; set; }
+    public bool BlackAndWhiteText => TextStyle is TextStyleType.BlackAndWhite;
 
     public HCTA GetText(HCTA color)
     {
@@ -109,6 +109,9 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
     /// Whether the text should be colored or black &amp; white.
     /// </summary>
     protected internal abstract TextStyleType TextStyle { get; }
+
+    public TextColorStyle TextColorStyle => (TextColorStyle)TextStyle;
+
     /// <summary>
     /// How the chroma of the source color will be modified. <see cref="SaturationType.MediumSaturation"/> means
     /// the saturation is equal to the source.
@@ -320,7 +323,6 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
         TonalPalette surfacePalette = new(surfaceSource);
         TonalPalette surfaceVariantPalette = new(surfacePalette.Hue, GetSurfaceVariantChroma());
 
-        BlackAndWhiteText = TextStyle is TextStyleType.BlackAndWhite;
         Primary = CustomSourcePaletteMethod(primaryPalette.Core);
         OnPrimary = CustomSourcePaletteMethod(primaryPalette.OnCore);
         PrimaryContainer = CustomSourcePaletteMethod(primaryPalette.Container);
@@ -373,7 +375,8 @@ public abstract record CustomSchemeBase : IThemeSource, IScheme
     public enum TextStyleType
     {
         Colored,
-        BlackAndWhite
+        BlackAndWhite,
+        GreyAndGrey
     }
 
     public enum SaturationType

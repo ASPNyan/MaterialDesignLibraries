@@ -34,28 +34,36 @@
 .mud-tab-slider,
 .mud-tab-active {
     background: var(--md-sys-color-on-tertiary) !important;
-    color: var(--md-sys-color-tertiary) !important;
+    color: var(--md-sys-color-tertiary-text) !important;
 }
 
 .primary-text .mud-input,
 .mud-picker .mud-input {
-    color: var(--md-sys-color-on-primary) !important;
+    color: var(--md-sys-color-on-primary-text) !important;
 }
 
 .mud-input-helper-text {
-    color: var(--md-sys-color-primary-container) !important;
+    color: var(--md-sys-color-primary-container-text) !important;
 }
 
 .mud-button:hover { 
     background-color: var(--md-sys-color-secondary-container) !important;
-    color: var(--md-sys-color-secondary) !important;
+    color: var(--md-sys-color-secondary-text) !important;
 }
 
 .mud-input-control > .mud-input-control-input-container > div.mud-input.mud-input-text {
-    color: var(--md-sys-color-primary) !important;
+    color: var(--md-sys-color-primary-text) !important;
     margin-top: 0 !important;
 }
 
 .mud-input.mud-input-outlined:not(.mud-disabled):not(:focus-within):hover .mud-input-outlined-border {
     border-color: var(--md-sys-color-primary-container) !important;
+}
+
+.on-primary .mud-icon-button {
+    color: var(--md-sys-color-primary) !important;
+}
+
+.mud-input {
+    
 }

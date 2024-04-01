@@ -1,4 +1,7 @@
-﻿using ExampleSite.Components.Settings;
+﻿using System.Text;
+using System.Text.Json;
+using System.Reflection;
+using ExampleSite.Components.Settings;
 using ExampleSite.DefaultThemes;
 using MaterialDesign.Color.Schemes.Custom;
 using MaterialDesign.Theming;
@@ -7,15 +10,15 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace ExampleSite.Services;
 
-public sealed class SettingsStorageService(ProtectedLocalStorage localStorage, ILogger<SettingsStorageService> logger)
+public sealed class SettingsStorageService(ProtectedLocalStorage localStorage)
 {
     private ProtectedLocalStorage BrowserStorage { get; } = localStorage;
-    public ILogger<SettingsStorageService> Logger { get; } = logger;
 
     private const string Purpose = "Settings";
     
     private const string SchemeStorage = nameof(SchemeStorage);
-    private const string ExtraSchemeSettings = nameof(ExtraSchemeSettings);
+    private const string CustomSchemeSettings = nameof(CustomSchemeSettings);
+    private const string GeometricSchemeSettings = nameof(GeometricSchemeSettings);
     
     public async ValueTask<StorageRequestResult<IScheme>> GetSchemeAsync(IScheme? fallback = null)
     {
@@ -24,8 +27,8 @@ public sealed class SettingsStorageService(ProtectedLocalStorage localStorage, I
         try
         {
             var serializedResult = await BrowserStorage.GetAsync<string>(Purpose, SchemeStorage);
-            var customSchemeResult =
-                await BrowserStorage.GetAsync<ModifiableCustomScheme>(Purpose, ExtraSchemeSettings);
+            var customSchemeResult = await BrowserStorage.GetAsync<ModifiableCustomScheme>(Purpose, CustomSchemeSettings);
+            var geometricSchemeResult = await BrowserStorage.GetAsync<string>(Purpose, GeometricSchemeSettings);
 
             if (!serializedResult.Success || serializedResult.Value is null)
                 return StorageRequestResult.FromOutput<IScheme>(null);
@@ -56,17 +59,23 @@ public sealed class SettingsStorageService(ProtectedLocalStorage localStorage, I
                 {
                     if (typed.Origin is null)
                         throw new ArgumentException(
-                            "The color of the scheme could not be found in the provided serialization.");
+                            $"The color of the scheme could not be found in the provided serialization.\n{serializedResult.Value}");
 
                     return new Theme(typed.Origin);
                 }
 
                 if (type == typeof(ModifiableCustomScheme))
                 {
-                    if (!customSchemeResult.Success || customSchemeResult.Value is null)
-                        throw new ArgumentException(
-                            "Stored scheme was ModifiableCustomScheme, but ModifiableCustomScheme options could be found.");
+                    if (!customSchemeResult.Success || customSchemeResult.Value is null) throw new ArgumentException(
+                        "Stored scheme was ModifiableCustomScheme, but ModifiableCustomScheme options could be found.");
                     return customSchemeResult.Value;
+                }
+
+                if (type == typeof(GeometricScheme))
+                {
+                    if (!geometricSchemeResult.Success || geometricSchemeResult.Value is null) throw new ArgumentException(
+                        $"Stored scheme was GeometricScheme, but GeometricScheme options could be found.\n{JsonSerializer.Serialize(geometricSchemeResult.Value)}");
+                    return GeometricScheme.DeserializeScheme(geometricSchemeResult.Value);
                 }
 
                 return fallback ?? throw new Exception($"Could not construct type {type.FullName}");
@@ -88,9 +97,16 @@ public sealed class SettingsStorageService(ProtectedLocalStorage localStorage, I
 
     public async ValueTask<StorageRequestResult> SetSchemeAsync(IScheme scheme)
     {
-        if (scheme.GetType() == typeof(ModifiableCustomScheme)) 
-            await BrowserStorage.SetAsync(Purpose, ExtraSchemeSettings, scheme);
-        
+        switch (scheme)
+        {
+            case ModifiableCustomScheme:
+                await BrowserStorage.SetAsync(Purpose, CustomSchemeSettings, scheme);
+                break;
+            case GeometricScheme geometricScheme:
+                await BrowserStorage.SetAsync(Purpose, GeometricSchemeSettings, geometricScheme.SerializeScheme());
+                break;
+        }
+
         string serialized = SchemeSerializer.SerializeGeneric(scheme);
         return await TryAndReturnFromError(BrowserStorage.SetAsync(Purpose, SchemeStorage, serialized));
     }
@@ -127,6 +143,4 @@ public sealed class SettingsStorageService(ProtectedLocalStorage localStorage, I
 
         return StorageRequestResult.FromError(error);
     }
-    
-    
 }

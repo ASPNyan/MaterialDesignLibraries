@@ -16,7 +16,7 @@
 <article id="SchemeCustomizationGrid">
     <div id="SchemeSettings">
         <h2>Scheme Customization</h2>
-        <MudTabs Rounded="true" AlwaysShowScrollButtons="true" Color="MudBlazor.Color.Tertiary" Active
+        <MudTabs Rounded="true" AlwaysShowScrollButtons="true" Color="MudBlazor.Color.Tertiary"
                  TabHeaderClass="on-tertiary-text" @ref="Tabs">
             <MudTabPanel Text="@ThemeSelectionOptions.Oceanic.ToString()" ID="typeof(Oceanic)">
                 <MudButton Class="on-secondary secondary-text mud-elevation-4" OnClick="@SetToOceanic">
@@ -39,10 +39,16 @@
                 </MudButton>
             </MudTabPanel>
             <MudTabPanel Text="@ThemeSelectionOptions.Custom.ToString()" ID="typeof(Theme)">
+                @if (ThemeContainer.Scheme is not Theme)
+                {
+                    GenerateOrigin(out RGBA rgba);
+                    ThemeContainer.UpdateScheme(new Theme(HCTA.FromRGBA(rgba)));
+                }
+                
                 <MudColorPicker Value="MudColor" ValueChanged="ColorUpdated" Rounded="true" Class="on-primary primary-text"/>
             </MudTabPanel>
             <MudTabPanel Text="Custom (Advanced)" ID="typeof(ModifiableCustomScheme)">
-                @if (!AgreeToAdvancedWarning && ThemeContainer.Scheme is not ModifiableCustomScheme)
+                @if (!AgreeToAdvancedWarning && ThemeContainer.Scheme is not ModifiableCustomScheme and not GeometricScheme)
                 {
                     <MudCheckBox T="bool" @bind-Value="AgreeToAdvancedWarning" Label="@AdvancedWarning"
                                  Color="MudBlazor.Color.Primary"/>
@@ -81,12 +87,12 @@
     private void SetToVolcano() => ThemeContainer.UpdateScheme(new Volcano());
     private void SetToPlasma() => ThemeContainer.UpdateScheme(new Plasma());
 
-    protected override void OnInitialized()
+    private void GenerateOrigin(out RGBA rgba)
     {
         Random rng = new();
         byte[] randomBytes = new byte[3];
         rng.NextBytes(randomBytes);
-        RGBA rgba = ThemeContainer.Scheme.Origin?.ToRGBA() ?? new RGBA(randomBytes[0], randomBytes[1], randomBytes[2]);
+        rgba = ThemeContainer.Scheme.Origin?.ToRGBA() ?? new RGBA(randomBytes[0], randomBytes[1], randomBytes[2]);
         MudColor = new MudColor(rgba.R, rgba.G, rgba.B, rgba.A255);
     }
 
@@ -98,8 +104,11 @@
         var newSchemeResult = await SettingsStorage.GetSchemeAsync();
         if (!newSchemeResult.Success) Logger.LogError(newSchemeResult.Error, "Failed to get new scheme after setting.");
         
-        Tabs?.ActivatePanel(ThemeContainer.Scheme.GetType());
-        if (AgreeToAdvancedWarning) AgreeToAdvancedWarning = ThemeContainer.Scheme is ModifiableCustomScheme;
+        Type schemeType = ThemeContainer.Scheme.GetType();
+        if (schemeType == typeof(GeometricScheme)) schemeType = typeof(ModifiableCustomScheme);
+
+        Tabs?.ActivatePanel(schemeType);
+        AgreeToAdvancedWarning = ThemeContainer.Scheme is ModifiableCustomScheme or GeometricScheme;
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -107,8 +116,11 @@
         if (!firstRender) return;
 
         ThemeContainer.OnSchemeUpdate += OnSchemeUpdate;
-        
-        Tabs?.ActivatePanel(ThemeContainer.Scheme.GetType());
+
+        Type schemeType = ThemeContainer.Scheme.GetType();
+        if (schemeType == typeof(GeometricScheme)) schemeType = typeof(ModifiableCustomScheme);
+
+        Tabs?.ActivatePanel(schemeType);
     }
 
     public void Dispose()

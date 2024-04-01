@@ -13,7 +13,16 @@
     border-radius: 10px;
 }
 
-.SchemeTiles * {
+.SchemeTiles > * {
     aspect-ratio: 1;
     width: 9%;
+}
+
+.SchemeTiles > * .mud-paper {
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.TextDisplay {
+    background-color: currentColor;
 }

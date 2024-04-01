@@ -34,7 +34,7 @@ main {
 }
 
 .SchemeTooltip {
-    color: var(--md-sys-color-tertiary) !important;
+    color: var(--md-sys-color-tertiary-text) !important;
     background-color: var(--md-sys-color-on-tertiary) !important;
     box-shadow: var(--mud-elevation-8);
 }
