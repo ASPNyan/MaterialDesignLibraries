@@ -36,7 +36,7 @@
     private string ThemeName => Scheme switch
     {
         DefaultThemeBase defaultTheme => defaultTheme.ThemeName,
-        ModifiableCustomScheme => "Custom (Advanced)",
+        ModifiableCustomScheme or GeometricScheme => "Custom (Advanced)",
         _ => "Custom",
     };
 }

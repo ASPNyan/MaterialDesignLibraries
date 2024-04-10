@@ -86,12 +86,12 @@
             <MudSelectItem T="string" Value="@GetFormattedEnumValueString(flag)"/>
         }
     </MudSelect>
-    @if ((Scheme.SchemePrimaryDifference & DifferenceFromSource.UsePrimaryHueOverride) != 0)
+    @if ((Scheme.SchemePrimaryDifference & DifferenceFromSource.UseHueOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemePrimaryHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemePrimaryHue = x))"
                   Placeholder="Primary Hue" Class="SettingSelector"/>
     }
-    @if ((Scheme.SchemePrimaryDifference & DifferenceFromSource.UsePrimaryChromaOverride) != 0)
+    @if ((Scheme.SchemePrimaryDifference & DifferenceFromSource.UseChromaOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemePrimaryChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemePrimaryChroma = x))"
                   Placeholder="Primary Hue" Class="SettingSelector"/>
@@ -107,12 +107,12 @@
             <MudSelectItem T="string" Value="@GetFormattedEnumValueString(flag)"/>
         }
     </MudSelect>
-    @if ((Scheme.SchemeSecondaryDifference & DifferenceFromSource.UseSecondaryHueOverride) != 0)
+    @if ((Scheme.SchemeSecondaryDifference & DifferenceFromSource.UseHueOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemeSecondaryHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSecondaryHue = x))"
                   Placeholder="Secondary Hue" Class="SettingSelector"/>
     }
-    @if ((Scheme.SchemeSecondaryDifference & DifferenceFromSource.UseSecondaryChromaOverride) != 0)
+    @if ((Scheme.SchemeSecondaryDifference & DifferenceFromSource.UseChromaOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemeSecondaryChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSecondaryChroma = x))"
                   Placeholder="Secondary Chroma" Class="SettingSelector"/>
@@ -128,12 +128,12 @@
             <MudSelectItem T="string" Value="@GetFormattedEnumValueString(flag)"/>
         }
     </MudSelect>
-    @if ((Scheme.SchemeTertiaryDifference & DifferenceFromSource.UseTertiaryHueOverride) != 0)
+    @if ((Scheme.SchemeTertiaryDifference & DifferenceFromSource.UseHueOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemeTertiaryHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeTertiaryHue = x))"
                   Placeholder="Tertiary Hue" Class="SettingSelector"/>
     }
-    @if ((Scheme.SchemeTertiaryDifference & DifferenceFromSource.UseTertiaryChromaOverride) != 0)
+    @if ((Scheme.SchemeTertiaryDifference & DifferenceFromSource.UseChromaOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemeTertiaryChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeTertiaryChroma = x))"
                   Placeholder="Tertiary Chroma" Class="SettingSelector"/>
@@ -149,12 +149,12 @@
             <MudSelectItem T="string" Value="@GetFormattedEnumValueString(flag)"/>
         }
     </MudSelect>
-    @if ((Scheme.SchemeSurfaceDifference & DifferenceFromSource.UseSurfaceHueOverride) != 0)
+    @if ((Scheme.SchemeSurfaceDifference & DifferenceFromSource.UseHueOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemeSurfaceHue" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSurfaceHue = x))"
                   Placeholder="Surface Hue" Class="SettingSelector"/>
     }
-    @if ((Scheme.SchemeSurfaceDifference & DifferenceFromSource.UseSurfaceChromaOverride) != 0)
+    @if ((Scheme.SchemeSurfaceDifference & DifferenceFromSource.UseChromaOverride) != 0)
     {
         <MudInput T="double" Value="Scheme.SchemeSurfaceChroma" ValueChanged="@(x => SetAndUpdate(() => Scheme.SchemeSurfaceChroma = x))"
                   Placeholder="Surface Chroma" Class="SettingSelector"/>

@@ -2,3 +2,6 @@
     content: " (Enabled)";
 }
 
+.mud-picker-color-controls .mud-icon-root {
+    color: var(--md-sys-color-primary-container-text);
+}

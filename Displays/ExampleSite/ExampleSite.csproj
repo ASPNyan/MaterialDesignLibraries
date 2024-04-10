@@ -10,16 +10,12 @@
         <PackageReference Include="MudBlazor" Version="6.17.0" />
         <PackageReference Include="Nyan.MaterialDesign.Color" Version="1.1.3" />
         <PackageReference Include="Nyan.MaterialDesign.Color.Extensions" Version="1.0.1" />
+        <PackageReference Include="Nyan.MaterialDesign.Color.Schemes.Custom" Version="1.0.2" />
         <PackageReference Include="Nyan.MaterialDesign.Theming" Version="1.1.4" />
-<!--        <PackageReference Include="Nyan.MaterialDesign.Theming.Web" Version="1.1.1" />-->
+        <PackageReference Include="Nyan.MaterialDesign.Theming.Web" Version="1.2.0" />
         <PackageReference Include="Nyan.MaterialDesign.Theming.Web.MudBlazor" Version="1.0.1" />
-<!--        <PackageReference Include="Nyan.MaterialDesign.Theming" Version="1.1.3" />-->
+        <PackageReference Include="Nyan.MaterialDesign.Icons" Version="1.0.1" />
+        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.3" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Color.Schemes.Custom\MaterialDesign.Color.Schemes.Custom.csproj" />
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Icons\MaterialDesign.Icons.csproj" />
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Theming.Web\MaterialDesign.Theming.Web.csproj" />
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Web\MaterialDesign.Web.csproj" />
-    </ItemGroup>
 </Project>
