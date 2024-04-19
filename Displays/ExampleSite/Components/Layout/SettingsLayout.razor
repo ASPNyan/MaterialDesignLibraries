@@ -1,0 +1,18 @@
+@inherits LayoutComponentBase
+@layout MainLayout
+@inject ThemeContainer ThemeContainer
+
+<DynamicComponentContent OutletId="@MainLayout.DrawerId">
+    <MdIconText Icon="Settings" Text="Settings Tabs" Scale="1.3"/>
+    <MdIconText Icon="Palette" Text="Customize Scheme" Href="/Settings/Scheme" style="@TabStyle"/>
+    <MudDivider Light="!ThemeContainer.Scheme.IsDarkScheme" Style="@DividerStyle"/> @* true makes it dark idfk *@
+    <MdIconText Icon="Space Dashboard" Text="Customize Layout" Href="/Settings/Layout" style="@TabStyle"/>
+    <MudDivider Light="!ThemeContainer.Scheme.IsDarkScheme" Style="@DividerStyle"/>
+</DynamicComponentContent>
+
+@Body
+
+@code {
+    private const string DividerStyle = $"margin-left: 20px; width: calc(100% - 20px); {MainLayout.DividerStyle}";
+    private const string TabStyle = "color: inherit; margin-left: 12px;";
+}

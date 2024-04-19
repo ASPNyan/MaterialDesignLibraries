@@ -1,42 +1,10 @@
-﻿@inject ThemeContainer ThemeContainer
+﻿@using ExampleSite.Components.Settings.Components.Preview
 @page "/Settings"
-@using ExampleSite.DefaultThemes
-@using MaterialDesign.Color.Schemes.Custom
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Settings.css">
 </DynamicHeadContent>
 
 <h1>Your Settings Overview</h1>
-<h3 style="font-weight: normal">Current Theme: @ThemeName</h3>
-<MudExpansionPanel Text="Theme Colors:" @bind-IsExpanded="Expanded" Class="ExpansionPanel on-tertiary-container-text">
-    <SchemeTiles/>
-</MudExpansionPanel>
+<SchemePreview/>
 
-<MudGrid Justify="Justify.SpaceBetween" Class="@GridClass" Style="width: 60%;">
-    <MudItem Class="SchemeTiles surface-variant" Style="width: 100%;">
-        <MudPaper Class="primary"/>
-        <MudPaper Class="on-primary"/>
-        <MudPaper Class="secondary"/>
-        <MudPaper Class="on-secondary"/>
-        <MudPaper Class="tertiary"/>
-        <MudPaper Class="on-tertiary"/>
-        <MudPaper Class="background"/>
-        <MudPaper Class="on-background"/>
-    </MudItem>
-</MudGrid>
-
-@code {
-    private bool Expanded { get; set; }
-
-    private string GridClass => "SchemeTileContainer DisplayGrid" + (Expanded ? " Expanded" : null);
-    
-    private IScheme Scheme => ThemeContainer.Scheme;
-
-    private string ThemeName => Scheme switch
-    {
-        DefaultThemeBase defaultTheme => defaultTheme.ThemeName,
-        ModifiableCustomScheme or GeometricScheme => "Custom (Advanced)",
-        _ => "Custom",
-    };
-}

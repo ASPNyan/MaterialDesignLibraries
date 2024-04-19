@@ -1,8 +1,8 @@
 ﻿@using MaterialDesign.Theming.Web.CSS
 @using MaterialDesign.Theming.Web.MudBlazor
-@using ExampleSite.Components.Settings.Components
 @using ExampleSite.Services
 @using ExampleSite.Components.Settings
+@using ExampleSite.Components.Settings.Components.Scheme
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject ILogger<App> Logger
@@ -20,8 +20,12 @@
 
 <MdIconConfig Weight="400" Grade="0" LineStyle="MdIconLineStyle.Rounded" OpticalSize="24" Fill="true">
     <MudLayout>
-        <MudDrawer @bind-Open="DrawerOpen" Variant="DrawerVariant.Responsive" Anchor="Anchor.Start" Elevation="1"
-                   Class="secondary-container on-secondary-container-text" ClipMode="DrawerClipMode.Always" id="Drawer">
+        @{
+            // moving the page around on the layout page causes behavior I'm too lazy to fix.
+            DrawerVariant variant = Nav.Uri.EndsWith("/Settings/Layout") ? DrawerVariant.Temporary : DrawerVariant.Responsive;
+        }
+        <MudDrawer @bind-Open="DrawerOpen" Variant="variant" Anchor="@LayoutSettings.MudDrawerPosition" Elevation="1"
+                   Class="@LayoutSettings.DrawerClass" ClipMode="DrawerClipMode.Always" DisableOverlay="true" id="Drawer">
             <spacer/>
             <MdIconText Href="/" Icon="Home" Text="Home" Scale="1.3" class="on-secondary-container-text"/>
             <MudDivider Style="@DividerStyle"/>
@@ -29,14 +33,14 @@
             <SettingsDrawer/>
             <spacer/>
         </MudDrawer>
-        <MudAppBar Elevation="2" Color="Color.Surface" Class="secondary-container on-secondary-container-text">
-            <MdIcon Icon="Menu" @onclick="ToggleDrawer" />
+        <MudAppBar Elevation="2" Class="@LayoutSettings.HeaderClass" Bottom="@(LayoutSettings.HeaderPosition is LayoutSettings.LayoutPosition.Bottom)">
+            <MdIcon Icon="Menu" @onclick="ToggleDrawer"/>
             <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleLeft"/>
             <DynamicComponentOutlet Id="@AppBarId"/>
             <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleRight"/>
             <MudTooltip Placement="Placement.Bottom" RootStyle="margin: auto 0; height: 36px" Class="SchemeTooltip"
                         Text="@($"Switch to {(Scheme.IsDarkScheme ? "Light" : "Dark")} Mode")" Delay="200">
-                <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;" 
+                <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;"
                         @onclick="ToggleScheme"/>
             </MudTooltip>
         </MudAppBar>
@@ -79,8 +83,8 @@
         if (LayoutSettings.CloseDrawerOnMainFocus) DrawerOpen = false;
     }
 
-    private void OnUpdate() => InvokeAsync(StateHasChanged);
-    private void OnNavigate(object? _1, LocationChangedEventArgs _2) => InvokeAsync(() =>
+    private async void OnUpdate() => await InvokeAsync(StateHasChanged);
+    private async void OnNavigate(object? _1, LocationChangedEventArgs _2) => await InvokeAsync(() =>
     {
         if (!DrawerOpen || !LayoutSettings.CloseDrawerOnNavigate) return;
         DrawerOpen = false;
@@ -90,6 +94,7 @@
     protected override void OnInitialized()
     {
         ThemeContainer.OnSchemeUpdate += OnUpdate;
+        LayoutSettings.OnUpdate += OnUpdate;
         Nav.LocationChanged += OnNavigate;
     }
     
