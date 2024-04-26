@@ -6,6 +6,36 @@
     width: auto;
 }
 
+.mud-layout:has(footer) .mud-main-content {
+    padding-top: 0;
+    padding-bottom: var(--mud-appbar-height)
+}
+
+.mud-layout:has(footer) #Drawer {
+    top: 0 !important;
+    bottom: var(--mud-appbar-height);
+}
+
+#Drawer {
+    z-index: 7;
+}
+
+#AppBar {
+    z-index: 8;
+}
+
+#AppBar a {
+    color: inherit !important;
+}
+
+#AppBar:is(footer) {
+    box-shadow: 0 -3px 1px -2px rgba(0,0,0,0.2),0 -2px 2px 0 rgba(0,0,0,0.14),0 -1px 5px 0 rgba(0,0,0,0.12);
+}
+
+#Drawer[position="Right"] ~ #AppBar > .mud-toolbar {
+    flex-flow: row-reverse;
+}
+
 @media (min-width: 0px) and (orientation: landscape) {
     .mud-main-content, main {
         height: calc(100vh - var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
@@ -37,4 +67,22 @@ main {
     color: var(--md-sys-color-tertiary-text) !important;
     background-color: var(--md-sys-color-on-tertiary) !important;
     box-shadow: var(--mud-elevation-8);
+}
+
+/* this specifically matches MdIconText elements by checking for span or a elements immediately containing a span with 
+ * one of the material symbol classes followed by another span sibling element.
+ */
+:is(span, a):has(> span.material-symbols-sharp ~ span, 
+                 > span.material-symbols-outlined ~ span, 
+                 > span.material-symbols-rounded ~ span) {
+    gap: 1ch;
+}
+
+/* that's a couple things, but it's everywhere that sets either of these values */
+.mud-typography-body1, .mud-typography-body2, .mud-typography-caption, .mud-typography-button,
+.mud-typography-h1, .mud-typography-h2,.mud-typography-h3, .mud-typography-h4,
+.mud-typography-h5, .mud-typography-h6, .mud-typography-subtitle1,.mud-typography-subtitle2,
+.mud-typography-overline, .mud-button, .mud-fab,.mud-input, .mud-input-label {
+    font-family: inherit !important;
+    font-weight: inherit !important;
 }

@@ -1,4 +1,6 @@
 using System.Diagnostics.Contracts;
+using MaterialDesign.Web.Fonts;
+using MaterialDesign.Web.Fonts.Enums;
 using MudBlazor;
 
 namespace ExampleSite.Components.Settings;
@@ -9,9 +11,12 @@ public class LayoutSettings : IEquatable<LayoutSettings>
     
     private LayoutPosition _drawerPosition = LayoutPosition.Left;
     private LayoutPosition _headerPosition = LayoutPosition.Top;
-    private Color _layoutColor = Color.Secondary;
+    private Color _headerColor = Color.Secondary;
+    private Color _drawerColor = Color.Secondary;
     private bool _closeDrawerOnMainFocus = true;
     private bool _closeDrawerOnNavigate = true;
+    private bool _floatingDrawer = true;
+    private FontFace _pageFont = Fonts.Roboto[FontWeightValue.Regular];
 
     public required bool CloseDrawerOnNavigate
     {
@@ -29,6 +34,16 @@ public class LayoutSettings : IEquatable<LayoutSettings>
         set
         {
             _closeDrawerOnMainFocus = value;
+            OnUpdate?.Invoke();
+        }
+    }
+    
+    public required bool FloatingDrawer
+    {
+        get => _floatingDrawer;
+        set
+        {
+            _floatingDrawer = value;
             OnUpdate?.Invoke();
         }
     }
@@ -59,12 +74,32 @@ public class LayoutSettings : IEquatable<LayoutSettings>
         }
     }
 
-    public required Color LayoutColor
+    public required Color HeaderColor
     {
-        get => _layoutColor;
+        get => _headerColor;
         set
         {
-            _layoutColor = value;
+            _headerColor = value;
+            OnUpdate?.Invoke();
+        }
+    }
+
+    public required Color DrawerColor
+    {
+        get => _drawerColor;
+        set
+        {
+            _drawerColor = value;
+            OnUpdate?.Invoke();
+        }
+    }
+
+    public required FontFace PageFont
+    {
+        get => _pageFont;
+        set
+        {
+            _pageFont = value;
             OnUpdate?.Invoke();
         }
     }
@@ -75,19 +110,19 @@ public class LayoutSettings : IEquatable<LayoutSettings>
     {
         get
         {
-            switch (LayoutColor)
+            switch (HeaderColor)
             {
                 case Color.Primary:
                 case Color.Secondary:
                 case Color.Tertiary:
-                    return $"{LayoutColor}-container on-{LayoutColor}-container-text".ToLowerInvariant();
+                    return $"{HeaderColor}-container on-{HeaderColor}-container-text".ToLowerInvariant();
                 case Color.PrimarySwapped:
                 case Color.SecondarySwapped:
                 case Color.TertiarySwapped:
-                    string color = LayoutColor.ToString().Replace("Swapped", null).ToLowerInvariant();
+                    string color = HeaderColor.ToString().Replace("Swapped", null).ToLowerInvariant();
                     return $"on-{color} on-{color}-container-text";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(LayoutColor), LayoutColor, "The set LayoutColor was invalid.");
+                    throw new ArgumentOutOfRangeException(nameof(HeaderColor), HeaderColor, "The set LayoutColor was invalid.");
             }
         }
     }
@@ -96,19 +131,19 @@ public class LayoutSettings : IEquatable<LayoutSettings>
     {
         get
         {
-            switch (LayoutColor)
+            switch (DrawerColor)
             {
                 case Color.Primary:
                 case Color.Secondary:
                 case Color.Tertiary:
-                    return $"on-{LayoutColor} on-{LayoutColor}-container-text".ToLowerInvariant();
+                    return $"on-{HeaderColor} on-{HeaderColor}-container-text".ToLowerInvariant();
                 case Color.PrimarySwapped:
                 case Color.SecondarySwapped:
                 case Color.TertiarySwapped:
-                    string color = LayoutColor.ToString().Replace("Swapped", null).ToLowerInvariant();
+                    string color = HeaderColor.ToString().Replace("Swapped", null).ToLowerInvariant();
                     return $"{color}-container on-{color}-container-text";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(LayoutColor), LayoutColor, "The set LayoutColor was invalid.");
+                    throw new ArgumentOutOfRangeException(nameof(HeaderColor), HeaderColor, "The set LayoutColor was invalid.");
             }
         }
     }
@@ -117,9 +152,12 @@ public class LayoutSettings : IEquatable<LayoutSettings>
     {
         _drawerPosition = newSettings._drawerPosition;
         _headerPosition = newSettings._headerPosition;
-        _layoutColor = newSettings._layoutColor;
+        _headerColor = newSettings._headerColor;
+        _drawerColor = newSettings._drawerColor;
         _closeDrawerOnMainFocus = newSettings._closeDrawerOnMainFocus;
         _closeDrawerOnNavigate = newSettings._closeDrawerOnNavigate;
+        _floatingDrawer = newSettings._floatingDrawer;
+        _pageFont = newSettings._pageFont;
         OnUpdate?.Invoke();
     }
 
@@ -128,9 +166,12 @@ public class LayoutSettings : IEquatable<LayoutSettings>
     {
         CloseDrawerOnNavigate = CloseDrawerOnNavigate,
         CloseDrawerOnMainFocus = CloseDrawerOnMainFocus,
+        FloatingDrawer = FloatingDrawer,
         DrawerPosition = DrawerPosition,
         HeaderPosition = HeaderPosition,
-        LayoutColor = LayoutColor
+        HeaderColor = HeaderColor,
+        DrawerColor = DrawerColor,
+        PageFont = PageFont
     };
 
     public event Action? OnUpdate;
@@ -159,7 +200,7 @@ public class LayoutSettings : IEquatable<LayoutSettings>
         if (ReferenceEquals(this, other)) return true;
         return _drawerPosition == other._drawerPosition 
                && _headerPosition == other._headerPosition 
-               && _layoutColor == other._layoutColor 
+               && _headerColor == other._headerColor 
                && _closeDrawerOnMainFocus == other._closeDrawerOnMainFocus
                && _closeDrawerOnNavigate == other._closeDrawerOnNavigate;
     }

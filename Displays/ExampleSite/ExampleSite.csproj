@@ -15,7 +15,7 @@
         <PackageReference Include="Nyan.MaterialDesign.Theming.Web" Version="1.2.0" />
         <PackageReference Include="Nyan.MaterialDesign.Theming.Web.MudBlazor" Version="1.0.1" />
         <PackageReference Include="Nyan.MaterialDesign.Icons" Version="1.0.1" />
-        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.3" />
+        <PackageReference Include="Nyan.MaterialDesign.Web" Version="1.1.4" />
     </ItemGroup>
 
 </Project>

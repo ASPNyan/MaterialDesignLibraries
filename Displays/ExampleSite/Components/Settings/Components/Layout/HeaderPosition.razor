@@ -1,0 +1,166 @@
+﻿@using System.Numerics
+@using static ExampleSite.Components.Settings.LayoutSettings
+@inject LayoutSettings LayoutSettings
+
+<MudPaper Class="@LayoutSettings.HeaderClass" Width="@($"{Size.X}px")" Height="@($"{Size.Y}px")" Style="@BoxStyle" Elevation="0"
+          id="HeaderPosition" @onmousedown="SetMouseState(true)" @onmouseup="SetMouseState(false)" dragging="@_dragging"/>
+
+@code {
+    [Parameter, EditorRequired]
+    public int InteractiveAreaSize { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Vector2 LayoutSettingsSize { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Vector2 Size { get; set; }
+
+    [Parameter, EditorRequired]
+    public LayoutSettings NewSettings { get; set; } = null!;
+    
+    [Parameter]
+    public EventCallback<LayoutSettings> NewSettingsChanged { get; set; }
+
+    [Parameter]
+    public HeaderPosition? Previous { get; set; }
+    
+    private Vector2? InitialPos { get; set; }
+    private Vector2 LastMouseOffset { get; set; }
+    private Vector2 MouseOffset { get; set; }
+    private Vector2 BoxOffset { get; set; }
+    public LayoutPosition? Position { get; set; }
+    
+    private string BoxStyle => Position switch
+    {
+        LayoutPosition.Top => $"transform: translate(0, 0); width: {LayoutSettingsSize.X - 2}px; height: {InteractiveAreaSize}px",
+        LayoutPosition.Bottom => $"transform: translate(0, {LayoutSettingsSize.Y - InteractiveAreaSize}px); width: {LayoutSettingsSize.X - 2}px; height: {InteractiveAreaSize}px",
+        LayoutPosition.Left or LayoutPosition.Right => throw InvalidHeaderPosition,
+        null => $"transform: translate({BoxOffset.X}px, {BoxOffset.Y}px)",
+        _ => throw new ArgumentOutOfRangeException()
+    };
+    
+    private bool _mouseDown;
+    private bool _dragging;
+
+    private Action<MouseEventArgs> SetMouseState(bool down) =>
+        args =>
+        {
+            _mouseDown = down;
+            StateHasChanged();
+
+            float xOffset = (float)args.OffsetX / LayoutSettingsSize.X * Size.X;
+            if (InitialPos == null)
+            {
+                Vector2 offset = Position switch
+                {
+                    LayoutPosition.Top => Vector2.Zero,
+                    LayoutPosition.Bottom => new Vector2(LayoutSettingsSize.Y - InteractiveAreaSize),
+                    LayoutPosition.Left or LayoutPosition.Right => throw InvalidHeaderPosition,
+                    null => LayoutSettingsSize / 2 - Size / 2,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                float x = Position is null ? (float)args.ClientX : (float)args.ClientX - (float)args.OffsetX + xOffset;
+                InitialPos = new Vector2(x, (float)args.ClientY) - offset;
+            }
+
+            LastMouseOffset = MouseOffset;
+            MouseOffset = new Vector2((float)args.OffsetX, (float)args.OffsetY);
+
+            if (Position is not null) MouseOffset = MouseOffset with { X = xOffset };
+
+            if (LastMouseOffset == default) LastMouseOffset = MouseOffset;
+
+            InitialPos = InitialPos.Value - (LastMouseOffset - MouseOffset);
+
+            MoveBox(args);
+        };
+
+    public void MoveBox(MouseEventArgs args)
+    {
+        if (!_mouseDown) return;
+
+        double x = args.ClientX;
+        double y = args.ClientY;
+
+        Vector2 elementPos = new Vector2((float)x, (float)y);
+
+        // offset the position by the mouse position, then clamp to min 0 and max (container size - box size)
+        // remove (2, 2) to account for border size.
+        Vector2 borderPadding = new(2, 2);
+        BoxOffset = Vector2.Clamp(elementPos - InitialPos!.Value, Vector2.Zero, LayoutSettingsSize - Size - borderPadding);
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        NewSettings.OnUpdate += StateHasChanged;
+        Position = NewSettings.HeaderPosition;
+        if (Previous is not null)
+        {
+            InitialPos = Previous.InitialPos;
+            LastMouseOffset = Previous.LastMouseOffset;
+            MouseOffset = Previous.MouseOffset;
+            BoxOffset = Previous.BoxOffset;
+            Position = Previous.Position;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!_mouseDown || MouseOffset == LastMouseOffset)
+        {
+            _dragging = false;
+            if (Position == null)
+            {
+                Position = BoxOffset.Y < LayoutSettingsSize.Y / 2 - Size.Y / 2 ? LayoutPosition.Top : LayoutPosition.Bottom;
+                NewSettings.HeaderPosition = Position.Value;
+            }
+            
+            return;
+        }
+
+        // check if box in interactive area.
+        if (BoxOffset.Y < InteractiveAreaSize)
+        {
+            Position = LayoutPosition.Top;
+            NewSettings.HeaderPosition = LayoutPosition.Top;
+            _dragging = false;
+            return;
+        }
+
+        if (BoxOffset.Y > LayoutSettingsSize.Y - Size.Y - InteractiveAreaSize)
+        {
+            Position = LayoutPosition.Bottom;
+            NewSettings.HeaderPosition = LayoutPosition.Bottom;
+            _dragging = false;
+            return;
+        }
+        
+        Position = null;
+        _dragging = true;
+    }
+
+    private bool _adjustedForTop = false;
+    public void Reset()
+    {
+        if (InitialPos is not null && LayoutSettings.HeaderPosition is LayoutPosition.Bottom && !_adjustedForTop)
+        {
+            InitialPos = InitialPos.Value with { Y = InitialPos.Value.Y - 100 };
+            _adjustedForTop = true;
+        }
+        
+        if (InitialPos is not null && LayoutSettings.HeaderPosition is LayoutPosition.Top && _adjustedForTop)
+        {
+            InitialPos = InitialPos.Value with { Y = InitialPos.Value.Y + 100 };
+            _adjustedForTop = false;
+        }
+    }
+    
+    public void ContainerMouseUp()
+    {
+        _mouseDown = false;
+        StateHasChanged();
+    }
+
+    private static InvalidOperationException InvalidHeaderPosition => new("HeaderPosition cannot be set to Left or Right.");
+}

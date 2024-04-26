@@ -1,0 +1,187 @@
+﻿@using System.Numerics
+@using static ExampleSite.Components.Settings.LayoutSettings
+@inject LayoutSettings LayoutSettings
+
+<MudPaper Class="@LayoutSettings.DrawerClass" Width="@($"{Size.X}px")" Height="@($"{Size.Y}px")" Style="@BoxStyle" Elevation="0"
+          id="DrawerPosition" @onmousedown="SetMouseState(true)" @onmouseup="SetMouseState(false)" dragging="@_dragging"/>
+
+@code {
+    [Parameter, EditorRequired]
+    public int InteractiveAreaSize { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Vector2 LayoutSettingsSize { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Vector2 Size { get; set; }
+    
+    [Parameter, EditorRequired]
+    public Func<LayoutPosition?>? HeaderPosition { get; set; }
+
+    [Parameter, EditorRequired]
+    public Vector2 HeaderSize { get; set; }
+
+    [Parameter, EditorRequired]
+    public LayoutSettings NewSettings { get; set; } = null!;
+    
+    [Parameter]
+    public EventCallback<LayoutSettings> NewSettingsChanged { get; set; }
+
+    [Parameter]
+    public DrawerPosition? Previous { get; set; }
+
+    private Vector2? InitialPos { get; set; }
+    private Vector2 LastMouseOffset { get; set; }
+    private Vector2 MouseOffset { get; set; }
+    private Vector2 BoxOffset { get; set; }
+    public LayoutPosition? Position { get; set; }
+
+    private string BoxY => HeaderPosition?.Invoke() switch
+    {
+        LayoutPosition.Bottom => $"-{InteractiveAreaSize}px",
+        null => $"-{HeaderSize.Y}px",
+        _ => "0"
+    };
+
+    // subtract 2 to account for border size
+    private string BoxH => HeaderPosition?.Invoke() switch
+    {
+        LayoutPosition.Top => $"{LayoutSettingsSize.Y - InteractiveAreaSize - 2}px",
+        null => $"{LayoutSettingsSize.Y - 2}px",
+        _ => $"{LayoutSettingsSize.Y - InteractiveAreaSize}px"
+    };
+    
+    private string BoxStyle => Position switch
+    {
+        LayoutPosition.Left => $"transform: translate(0, {BoxY}); width: {InteractiveAreaSize}px; height: {BoxH}",
+        LayoutPosition.Right => $"transform: translate({LayoutSettingsSize.X - InteractiveAreaSize - 2}px, {BoxY}); width: {InteractiveAreaSize}px; height: {BoxH}",
+        LayoutPosition.Top or LayoutPosition.Bottom => throw InvalidDrawerPosition,
+        null => $"transform: translate({BoxOffset.X}px, {BoxOffset.Y}px)",
+        _ => throw new ArgumentOutOfRangeException()
+    };
+    
+    private bool _mouseDown;
+    private bool _dragging;
+
+    private Action<MouseEventArgs> SetMouseState(bool down) =>
+        args =>
+        {
+            _mouseDown = down;
+            StateHasChanged();
+
+            float yOffset = (float)args.OffsetY / LayoutSettingsSize.Y * Size.Y;
+            if (InitialPos == null)
+            {
+                Vector2 offset = Position switch
+                {
+                    LayoutPosition.Left => Vector2.Zero,
+                    LayoutPosition.Right => new Vector2(LayoutSettingsSize.X - InteractiveAreaSize),
+                    LayoutPosition.Top or LayoutPosition.Bottom => throw InvalidDrawerPosition,
+                    null => LayoutSettingsSize / 2 - Size / 2,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                float y = Position is null ? (float)args.ClientY : (float)args.ClientY - (float)args.OffsetY + yOffset;
+                InitialPos = new Vector2((float)args.ClientX, y) - offset;
+            }
+
+            LastMouseOffset = MouseOffset;
+            MouseOffset = new Vector2((float)args.OffsetX, (float)args.OffsetY);
+
+            if (Position is not null) MouseOffset = MouseOffset with { Y = yOffset };
+
+            if (LastMouseOffset == default) LastMouseOffset = MouseOffset;
+
+            InitialPos = InitialPos.Value - (LastMouseOffset - MouseOffset);
+
+            MoveBox(args);
+        };
+
+    public void MoveBox(MouseEventArgs args)
+    {
+        if (!_mouseDown) return;
+
+        double x = args.ClientX;
+        double y = args.ClientY;
+
+        Vector2 elementPos = new Vector2((float)x, (float)y);
+
+        // offset the position by the mouse position, then clamp to min 0 and max (container size - box size)
+        // remove (2, 2) to account for border size.
+        Vector2 borderPadding = new(2, 2);
+        BoxOffset = Vector2.Clamp(elementPos - InitialPos!.Value, Vector2.Zero, LayoutSettingsSize - Size - borderPadding);
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        NewSettings.OnUpdate += StateHasChanged;
+        Position = NewSettings.DrawerPosition;
+        if (Previous is not null)
+        {
+            InitialPos = Previous.InitialPos;
+            LastMouseOffset = Previous.LastMouseOffset;
+            MouseOffset = Previous.MouseOffset;
+            BoxOffset = Previous.BoxOffset;
+            Position = Previous.Position;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!_mouseDown || MouseOffset == LastMouseOffset)
+        {
+            _dragging = false;
+            if (Position == null)
+            {
+                Position = BoxOffset.X < LayoutSettingsSize.X / 2 - Size.X / 2 ? LayoutPosition.Left : LayoutPosition.Right;
+                NewSettings.DrawerPosition = Position.Value;
+            }
+            
+            return;
+        }
+
+        // check if box in interactive area.
+        if (BoxOffset.X < InteractiveAreaSize)
+        {
+            Position = LayoutPosition.Left;
+            NewSettings.DrawerPosition = LayoutPosition.Left;
+            _dragging = false;
+            return;
+        }
+
+        if (BoxOffset.X > LayoutSettingsSize.X - Size.X - InteractiveAreaSize)
+        {
+            Position = LayoutPosition.Right;
+            NewSettings.DrawerPosition = LayoutPosition.Right;
+            _dragging = false;
+            return;
+        }
+        
+        Position = null;
+        _dragging = true;
+    }
+    
+    private bool _adjustedForTop = false;
+    public void Reset()
+    {
+        if (InitialPos is not null && LayoutSettings.HeaderPosition is LayoutPosition.Bottom && !_adjustedForTop)
+        {
+            InitialPos = InitialPos.Value with { Y = InitialPos.Value.Y - 100 };
+            _adjustedForTop = true;
+        }
+        
+        if (InitialPos is not null && LayoutSettings.HeaderPosition is LayoutPosition.Top && _adjustedForTop)
+        {
+            InitialPos = InitialPos.Value with { Y = InitialPos.Value.Y + 100 };
+            _adjustedForTop = false;
+        }
+    }
+    
+    public void ContainerMouseUp()
+    {
+        _mouseDown = false;
+        StateHasChanged();
+    }
+
+    private static InvalidOperationException InvalidDrawerPosition => new("DrawerPosition cannot be set to Top or Bottom.");
+}

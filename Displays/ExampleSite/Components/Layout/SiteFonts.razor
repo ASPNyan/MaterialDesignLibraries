@@ -1,0 +1,37 @@
+﻿@using ExampleSite.Components.Settings
+@using static ExampleSite.Components.Settings.Fonts
+@using MaterialDesign.Web.Fonts
+@using MaterialDesign.Web.Fonts.Enums
+@inject LayoutSettings LayoutSettings
+
+<DynamicFontCollection ClassName="Merriweather" MainFontFace="Merriweather[FontWeightValue.Regular]" ExtraFontWeights="GetFontWeights(Merriweather)"/>
+<DynamicFontCollection ClassName="Montserrat" MainFontFace="Montserrat[FontWeightValue.Regular]" ExtraFontWeights="GetFontWeights(Montserrat)"/>
+
+<DynamicFontCollection ClassName="OpenSans" MainFontFace="OpenSans[OpenSansOptions.Default][FontWeightValue.Regular]" 
+                       ExtraFontWeights="GetFontWeights(OpenSans[OpenSansOptions.Default])"/>
+<DynamicFontCollection ClassName="OpenSansSemiCondensed" MainFontFace="OpenSans[OpenSansOptions.SemiCondensed][FontWeightValue.Regular]" 
+                       ExtraFontWeights="GetFontWeights(OpenSans[OpenSansOptions.SemiCondensed])"/>
+<DynamicFontCollection ClassName="OpenSansCondensed" MainFontFace="OpenSans[OpenSansOptions.Condensed][FontWeightValue.Regular]" 
+                       ExtraFontWeights="GetFontWeights(OpenSans[OpenSansOptions.Condensed])"/>
+
+<DynamicFontCollection ClassName="PlayfairDisplay" MainFontFace="PlayfairDisplay[FontWeightValue.Regular]" ExtraFontWeights="GetFontWeights(PlayfairDisplay)"/>
+<DynamicFontCollection ClassName="Poppins" MainFontFace="Poppins[FontWeightValue.Regular]" ExtraFontWeights="GetFontWeights(Poppins)"/>
+<DynamicFontCollection ClassName="Raleway" MainFontFace="Raleway[FontWeightValue.Regular]" ExtraFontWeights="GetFontWeights(Raleway)"/>
+<DynamicFontCollection ClassName="Roboto" MainFontFace="Roboto[FontWeightValue.Regular]" ExtraFontWeights="GetFontWeights(Roboto)"/>
+
+@code {
+    private static Dictionary<FontWeight, Action<FontSourceBuilder>> GetFontWeights(Dictionary<FontWeightValue, FontFace> fonts)
+    {
+        Dictionary<FontWeight, Action<FontSourceBuilder>> dictionary = [];
+
+        foreach ((FontWeightValue weight, FontFace font) in fonts)
+        {
+            int urlIndex = font.SourceString.IndexOf("\"", StringComparison.Ordinal);
+            int urlIndexLast = font.SourceString[(urlIndex + 1)..].IndexOf("\")", StringComparison.Ordinal);
+            string url = font.SourceString[(urlIndex + 1)..(urlIndex + 1 + urlIndexLast)];
+            dictionary.Add(new FontWeight(weight), builder => builder.AddUrlSource(url, FontFormat.TrueType));
+        }
+
+        return dictionary;
+    }
+}

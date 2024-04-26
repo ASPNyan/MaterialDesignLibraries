@@ -1,0 +1,71 @@
+﻿@using System.Numerics
+@inject LayoutSettings LayoutSettings
+
+<div id="LayoutSettings" @onmousemove="AssignMouseEvent(MouseMove)" @onmouseup="ContainerMouseUp" @onmouseleave="ContainerMouseUp">
+    <HeaderPosition @ref="HeaderPosition" Size="HeaderSize" InteractiveAreaSize="InteractiveAreaSize" Previous="HeaderPosition"
+                    LayoutSettingsSize="LayoutSettingsSize" @bind-NewSettings="NewSettings"/>
+    <DrawerPosition @ref="DrawerPosition" Size="DrawerSize" InteractiveAreaSize="InteractiveAreaSize"
+                    HeaderPosition="() => HeaderPosition?.Position" HeaderSize="HeaderSize" Previous="DrawerPosition"
+                    LayoutSettingsSize="LayoutSettingsSize" @bind-NewSettings="NewSettings"/>
+</div>
+
+@code {
+    private static readonly Vector2 LayoutSettingsSize = new(1280, 720);
+    private static readonly Vector2 DrawerSize = new(150, 150);
+    private static readonly Vector2 HeaderSize = new(120, 120); // all vectors are in px
+    const int InteractiveAreaSize = 100; // px
+
+    [Parameter, EditorRequired]
+    public LayoutSettings NewSettings { get; set; } = null!;
+    [Parameter, EditorRequired] 
+    public Action<HeaderPosition?, DrawerPosition?>? StoreValues { get; set; }
+    
+    [Parameter]
+    public HeaderPosition? HeaderPosition { get; set; }
+    [Parameter]
+    public DrawerPosition? DrawerPosition { get; set; }
+
+    private PushOutQueue<Action> BoxDragEvents { get; } = new(5);
+    private Action<MouseEventArgs> AssignMouseEvent(Action<MouseEventArgs> eventAction)
+    {
+        return args => BoxDragEvents.Enqueue(() => eventAction(args));
+    }
+    
+    protected override void OnInitialized()
+    {
+        NewSettings.OnUpdate += StateHasChanged;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (BoxDragEvents.Count is 0) return;
+        foreach (Action method in BoxDragEvents) method();
+        StoreValues?.Invoke(HeaderPosition, DrawerPosition);
+    }
+    
+    private void MouseMove(MouseEventArgs args)
+    {
+        DrawerPosition?.MoveBox(args);
+        HeaderPosition?.MoveBox(args);
+    }
+
+    private void ContainerMouseUp()
+    {
+        DrawerPosition?.ContainerMouseUp();
+        HeaderPosition?.ContainerMouseUp();
+    }
+    
+    public void ResetSettings()
+    {
+        if (DrawerPosition is not null) DrawerPosition.Position = NewSettings.DrawerPosition;
+        if (HeaderPosition is not null) HeaderPosition.Position = NewSettings.HeaderPosition;
+        StateHasChanged();
+    }
+
+    public void ApplySettings()
+    {
+        DrawerPosition?.Reset();
+        HeaderPosition?.Reset();
+        StateHasChanged();
+    }
+}

@@ -1,176 +1,97 @@
-﻿@using System.Numerics
-@using static ExampleSite.Components.Settings.LayoutSettings
+﻿@using ExampleSite.Components.Settings.Components.Layout
 @rendermode InteractiveServer
-@page "/Settings/Layout"
+@page "/Settings/Layout/{Tab?}"
 @inject LayoutSettings LayoutSettings
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Layout.css">
 </DynamicHeadContent>
 
+<DynamicComponentContent OutletId="@MainLayout.AppBarId">
+    <MudDivider Style="@MainLayout.DividerStylePushToRight(LayoutSettings)" Vertical="true" FlexItem="true"/>
+    <MdIconText Icon="Drag Pan" Text="Positioning" Href="/Settings/Layout" active="@(Tab is null)"/>
+    <MudDivider Style="@MainLayout.DividerStyle" Vertical="true" FlexItem="true"/>
+    <MdIconText Icon="Tune" Text="Options" Href="/Settings/Layout/Options" active="@(Tab is "Options")"/>
+    <MudDivider Style="@MainLayout.DividerStyle" Vertical="true" FlexItem="true"/>
+    <MdIconText Icon="Palette" Text="Color" Href="/Settings/Layout/Color" active="@(Tab is "Color")"/>
+    <MudDivider Style="@MainLayout.DividerStylePushToLeft(LayoutSettings)" Vertical="true" FlexItem="true"/>
+</DynamicComponentContent>
+
 <article id="LayoutSettingsGrid">
-    <div id="LayoutSettings" @onmousemove="AssignMouseEvent(MoveBox)" @onmouseup="() => _mouseDown = false"
-         @onmouseleave="() => _mouseDown = false">
-        <MudPaper Class="@LayoutSettings.DrawerClass" Width="150px" Height="150px" Style="@BoxStyle" dragging="@_dragging"
-                  id="DrawerPosition" @onmousedown="SetMouseState(true)" @onmouseup="SetMouseState(false)"/>
-    </div>
+    @switch (Tab)
+    {
+        case null:
+            <LayoutPositioning NewSettings="NewSettings" DrawerPosition="StoredDrawer" HeaderPosition="StoredHeader" 
+                               StoreValues="UpdateSavedLayoutPositions" @ref="LayoutPositioning"/>
+            break;
+        case "Options":
+            <LayoutOptions NewSettings="NewSettings"/>
+            break;
+        case "Color":
+            break;
+    }
     <div id="ApplySettings">
         <MudButton id="ApplyButton" Class="primary on-primary-text" OnClick="ApplySettings">
             <MdIconText Icon="Check Circle" Text="Apply" Weight="300" Grade="0" class="SettingsIconText"/>
         </MudButton>
         <div id="ResetWrapper">
-            @{
-                bool disabled = LayoutSettings == NewSettings;
-                <MudButton id="ResetButton" Class="secondary on-secondary-text" Disabled="@(disabled)" OnClick="ResetSettings">
-                    <MdIconText Icon="Refresh" Text="Reset" Weight="300" Grade="0" class="SettingsIconText"/>
-                    @if (disabled)
-                    {
-                        <div class="StrikeThrough"></div>
-                    }
-                </MudButton>
-            }
+            <MudButton id="ResetButton" Class="secondary on-secondary-text" Disabled="@SettingsEqual" OnClick="ResetSettings">
+                <MdIconText Icon="Refresh" Text="Reset" Weight="300" Grade="0" class="SettingsIconText"/>
+                @if (SettingsEqual)
+                {
+                    <div class="StrikeThrough"></div>
+                }
+            </MudButton>
         </div>
     </div>
 </article>
 
 @code {
-    private static readonly Vector2 LayoutSettingsSize = new(1280, 720);
-    private static readonly Vector2 BoxSize = new(150, 150); // all vectors are in px
-    const int InteractiveAreaSize = 100; // px
+    [Parameter] 
+    public string? Tab { get; set; }
 
     private LayoutSettings NewSettings { get; set; } = null!;
+    
+    private LayoutPositioning? LayoutPositioning { get; set; }
+    private HeaderPosition? StoredHeader { get; set; }
+    private DrawerPosition? StoredDrawer { get; set; }
 
-    private Vector2? InitialPos { get; set; }
-    private Vector2 LastMouseOffset { get; set; }
-    private Vector2 MouseOffset { get; set; }
-    private Vector2 BoxOffset { get; set; }
-    private LayoutPosition? DrawerPosition { get; set; }
-
-    private string BoxStyle => DrawerPosition switch
-    {
-        LayoutPosition.Left => $"transform: translate(0, 0); width: {InteractiveAreaSize}px; height: {LayoutSettingsSize.Y - 2}px",
-        LayoutPosition.Right => $"transform: translate({LayoutSettingsSize.X - InteractiveAreaSize}px, 0); width: {InteractiveAreaSize}px; height: {LayoutSettingsSize.Y - 2}px",
-        LayoutPosition.Top or LayoutPosition.Bottom => throw InvalidDrawerPosition,
-        null => $"transform: translate({BoxOffset.X}px, {BoxOffset.Y}px)",
-        _ => throw new ArgumentOutOfRangeException()
-    };
-
-    private bool _mouseDown;
-    private bool _dragging;
-
-    private Action<MouseEventArgs> SetMouseState(bool down) =>
-        args =>
-        {
-            _mouseDown = down;
-            if (!_mouseDown) return;
-
-            float yOffset = (float)args.OffsetY / LayoutSettingsSize.Y * BoxSize.Y;
-            if (InitialPos == null)
-            {
-                Vector2 offset = DrawerPosition switch
-                {
-                    LayoutPosition.Left => Vector2.Zero,
-                    LayoutPosition.Right => new Vector2(LayoutSettingsSize.X - InteractiveAreaSize),
-                    LayoutPosition.Top or LayoutPosition.Bottom => throw InvalidDrawerPosition,
-                    null => LayoutSettingsSize / 2 - BoxSize / 2,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                float y = DrawerPosition is null ? (float)args.ClientY : (float)args.ClientY - (float)args.OffsetY + yOffset;
-                InitialPos = new Vector2((float)args.ClientX, y) - offset;
-            }
-
-            LastMouseOffset = MouseOffset;
-            MouseOffset = new Vector2((float)args.OffsetX, (float)args.OffsetY);
-
-            if (DrawerPosition is not null) MouseOffset = MouseOffset with { Y = yOffset };
-
-            if (LastMouseOffset == default) LastMouseOffset = MouseOffset;
-
-            InitialPos = InitialPos.Value - (LastMouseOffset - MouseOffset);
-
-            MoveBox(args);
-        };
-
-    private void MoveBox(MouseEventArgs args)
-    {
-        if (!_mouseDown) return;
-
-        double x = args.ClientX;
-        double y = args.ClientY;
-
-        Vector2 elementPos = new Vector2((float)x, (float)y);
-
-        // offset the position by the mouse position, then clamp to min 0 and max (container size - box size)
-        // remove (2, 2) to account for border size.
-        Vector2 borderPadding = new(2, 2);
-        BoxOffset = Vector2.Clamp(elementPos - InitialPos!.Value, Vector2.Zero, LayoutSettingsSize - BoxSize - borderPadding);
-        StateHasChanged();
-    }
-
-    private PushOutQueue<Action> BoxDragEvents { get; } = new(5);
-
-    private Action<MouseEventArgs> AssignMouseEvent(Action<MouseEventArgs> eventAction)
-    {
-        return args => BoxDragEvents.Enqueue(() => eventAction(args));
-    }
-
+    private bool SettingsEqual => LayoutSettings == NewSettings;
+    
     protected override void OnInitialized()
     {
         NewSettings = new LayoutSettings
         {
-            CloseDrawerOnNavigate = LayoutSettings.CloseDrawerOnNavigate, // todo: add to settings
-            CloseDrawerOnMainFocus = LayoutSettings.CloseDrawerOnMainFocus, // todo: add to settings, add note that layout page always closes drawer on click.
-            DrawerPosition = LayoutSettings.DrawerPosition, // finished, just using default.
-            HeaderPosition = LayoutSettings.HeaderPosition, // todo: add to settings
-            LayoutColor = LayoutSettings.LayoutColor, // todo: add to settings
+            CloseDrawerOnNavigate = LayoutSettings.CloseDrawerOnNavigate,
+            CloseDrawerOnMainFocus = LayoutSettings.CloseDrawerOnMainFocus,
+            FloatingDrawer = LayoutSettings.FloatingDrawer,
+            DrawerPosition = LayoutSettings.DrawerPosition,
+            HeaderPosition = LayoutSettings.HeaderPosition,
+            HeaderColor = LayoutSettings.HeaderColor, // todo: add to settings
+            DrawerColor = LayoutSettings.DrawerColor, // todo: add to settings
+            PageFont = LayoutSettings.PageFont
         };
 
-        DrawerPosition = NewSettings.DrawerPosition;
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        foreach (Action method in BoxDragEvents) method();
-
-        if (!_mouseDown || MouseOffset == LastMouseOffset)
-        {
-            _dragging = false;
-            DrawerPosition ??= BoxOffset.X < LayoutSettingsSize.X / 2 - BoxSize.X / 2 ? LayoutPosition.Left : LayoutPosition.Right;
-            return;
-        }
-
-        // check if box in interactive area, prefer left and right before top and bottom.
-        if (BoxOffset.X < InteractiveAreaSize)
-        {
-            NewSettings.DrawerPosition = LayoutPosition.Left;
-            DrawerPosition = LayoutPosition.Left;
-            _dragging = false;
-            return;
-        }
-
-        if (BoxOffset.X > LayoutSettingsSize.X - BoxSize.X - InteractiveAreaSize)
-        {
-            NewSettings.DrawerPosition = LayoutPosition.Right;
-            DrawerPosition = LayoutPosition.Right;
-            _dragging = false;
-            return;
-        }
-
-        DrawerPosition = null;
-        _dragging = true;
+        NewSettings.OnUpdate += StateHasChanged;
     }
 
     private void ResetSettings()
     {
-        NewSettings = LayoutSettings.Clone();
+        NewSettings.Update(LayoutSettings.Clone());
+        LayoutPositioning?.ResetSettings();
         StateHasChanged();
     }
 
     private void ApplySettings()
     {
         LayoutSettings.Update(NewSettings);
+        LayoutPositioning?.ApplySettings();
         StateHasChanged();
     }
 
-    private static InvalidOperationException InvalidDrawerPosition => new("DrawerPosition cannot be set to Top or Bottom.");
+    private void UpdateSavedLayoutPositions(HeaderPosition? header, DrawerPosition? drawer)
+    {
+        StoredHeader = header ?? throw new ArgumentNullException(nameof(header));
+        StoredDrawer = drawer ?? throw new ArgumentNullException(nameof(drawer));
+    }
 }

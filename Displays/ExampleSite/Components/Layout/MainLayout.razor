@@ -3,6 +3,7 @@
 @using ExampleSite.Services
 @using ExampleSite.Components.Settings
 @using ExampleSite.Components.Settings.Components.Scheme
+@using MaterialDesign.Web.Fonts.Enums
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject ILogger<App> Logger
@@ -16,16 +17,21 @@
     <link rel="stylesheet" href="css/MainLayout.css">
 </DynamicHeadContent>
 
-<MdMudThemeProvider/>
+<SiteFonts/>
+
+<div class="@FontClass">
+    <MdMudThemeProvider/>
+</div>
 
 <MdIconConfig Weight="400" Grade="0" LineStyle="MdIconLineStyle.Rounded" OpticalSize="24" Fill="true">
-    <MudLayout>
+    <MudLayout Class="@FontClass">
         @{
             // moving the page around on the layout page causes behavior I'm too lazy to fix.
             DrawerVariant variant = Nav.Uri.EndsWith("/Settings/Layout") ? DrawerVariant.Temporary : DrawerVariant.Responsive;
         }
         <MudDrawer @bind-Open="DrawerOpen" Variant="variant" Anchor="@LayoutSettings.MudDrawerPosition" Elevation="1"
-                   Class="@LayoutSettings.DrawerClass" ClipMode="DrawerClipMode.Always" DisableOverlay="true" id="Drawer">
+                   Class="@LayoutSettings.DrawerClass" ClipMode="DrawerClipMode.Always" DisableOverlay="true"
+                   position="@LayoutSettings.DrawerPosition" id="Drawer">
             <spacer/>
             <MdIconText Href="/" Icon="Home" Text="Home" Scale="1.3" class="on-secondary-container-text"/>
             <MudDivider Style="@DividerStyle"/>
@@ -33,7 +39,8 @@
             <SettingsDrawer/>
             <spacer/>
         </MudDrawer>
-        <MudAppBar Elevation="2" Class="@LayoutSettings.HeaderClass" Bottom="@(LayoutSettings.HeaderPosition is LayoutSettings.LayoutPosition.Bottom)">
+        <MudAppBar Elevation="2" Class="@LayoutSettings.HeaderClass" id="AppBar"
+                   Bottom="@(LayoutSettings.HeaderPosition is LayoutSettings.LayoutPosition.Bottom)">
             <MdIcon Icon="Menu" @onclick="ToggleDrawer"/>
             <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleLeft"/>
             <DynamicComponentOutlet Id="@AppBarId"/>
@@ -53,9 +60,21 @@
 </MdIconConfig>
 
 @code {
-    public const string DividerStyleLeft = $"margin-right: auto; {DividerStyle}";
     public const string DividerStyle = $"border-color: var({ThemeCSSTokens.OnSecondaryContainerCSSToken}); flex-grow: 0;";
-    public const string DividerStyleRight = $"margin-left: auto; {DividerStyle}";
+
+    private const string DividerStylePushLeft = $"margin-right: auto; {DividerStyle}";
+    private const string DividerStylePushRight = $"margin-left: auto; {DividerStyle}";
+
+    public static string DividerStylePushToLeft(LayoutSettings settings) =>
+        settings.DrawerPosition is LayoutSettings.LayoutPosition.Left ? DividerStylePushLeft : DividerStylePushRight;
+
+    public static string DividerStylePushToRight(LayoutSettings settings) =>
+        settings.DrawerPosition is LayoutSettings.LayoutPosition.Left ? DividerStylePushRight : DividerStylePushLeft;
+    
+    // swap values when flex flow reverses.
+    private string DividerStyleLeft => DividerStylePushToLeft(LayoutSettings);
+
+    private string DividerStyleRight => DividerStylePushToRight(LayoutSettings);
     
     public static string DrawerId { get; } = Guid.NewGuid().ToString();
     public static string AppBarId { get; } = Guid.NewGuid().ToString();
@@ -71,6 +90,9 @@
     private IScheme Scheme => ThemeContainer.Scheme;
 
     private string SchemeIcon => Scheme.IsDarkScheme ? "Dark Mode" : "Light Mode";
+
+    private string FontClass => LayoutSettings.PageFont.Family.Trim('"').Replace(" ", null) + ' ' 
+        + Enum.Parse<FontWeightValue>(LayoutSettings.PageFont.Weight, true).ToString().ToLowerInvariant();
     
     private void ToggleScheme()
     {
@@ -86,8 +108,7 @@
     private async void OnUpdate() => await InvokeAsync(StateHasChanged);
     private async void OnNavigate(object? _1, LocationChangedEventArgs _2) => await InvokeAsync(() =>
     {
-        if (!DrawerOpen || !LayoutSettings.CloseDrawerOnNavigate) return;
-        DrawerOpen = false;
+        if (DrawerOpen && LayoutSettings.CloseDrawerOnNavigate) DrawerOpen = false;
         StateHasChanged();
     });
     
@@ -109,7 +130,9 @@
             ThemeContainer.UpdateScheme(storedScheme.Value);
             Logger.LogInformation("Found and set to stored scheme {typeName}.", storedScheme.Value.GetType().Name);
         } 
-        else if (storedScheme.Error is not null) Logger.LogError(storedScheme.Error, "Failed to get stored scheme.");
+        // TaskCancelledException means the page was refreshed multiple times and quickly, which is fine, and should be ignored.
+        else if (storedScheme.Error is not null && storedScheme.Error is not TaskCanceledException)
+            Logger.LogError(storedScheme.Error, "Failed to get stored scheme.");
         else Logger.LogInformation("No stored scheme found. This may be indicative of an error, but in of itself is not.");
     }
 
