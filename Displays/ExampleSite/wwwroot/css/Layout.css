@@ -81,9 +81,15 @@
 
 /* Positioning */
 
+#LayoutSettings:not(.LayoutColor) #DrawerPosition,
+#LayoutSettings:not(.LayoutColor) #HeaderPosition {
+    cursor: grab;
+}
+
 #DrawerPosition,
 #HeaderPosition {
-    transition: width 80ms ease-in, height 80ms ease-in, transform 80ms ease-out, border-radius 80ms ease;
+    transition: width 80ms ease-in, height 80ms ease-in, transform 80ms ease-out, border-radius 80ms ease,
+                background-color 150ms, color 150ms;
     border-radius: 0;
 }
 
@@ -91,6 +97,7 @@
 #HeaderPosition[dragging] {
     transition: none;
     border-radius: var(--mud-default-borderradius);
+    cursor: grabbing !important;
 }
 
 /* Options */
@@ -113,6 +120,11 @@
     flex-grow: 0 !important;
 }
 
+#LayoutSettings .Option .mud-input,
+.Option:has(.mud-input.mud-input-outlined:not(.mud-disabled)) .mud-input-label {
+    color: var(--md-sys-color-on-surface-variant-text) !important;
+}
+
 .mud-input.mud-input-outlined:not(.mud-disabled):not(:focus-within):hover .mud-input-outlined-border {
     border-color: var(--md-sys-color-surface-tint) !important;
 }
@@ -121,8 +133,9 @@
     border-color: var(--md-sys-color-primary-container) !important;
 }
 
+#LayoutSettings .Option:has(.mud-input.mud-input-outlined:not(.mud-disabled):focus-within) .mud-input,
 .Option:has(.mud-input.mud-input-outlined:not(.mud-disabled):focus-within) .mud-input-label {
-    color: var(--md-sys-color-primary-container-text) !important;
+    color: var(--md-sys-color-on-surface-text) !important;
 }
 
 .SelectPopover .mud-list-item {
@@ -130,6 +143,8 @@
     padding: 8px 11px;
     width: calc(100% - 10px);
     border-radius: 5px;
+    color: inherit !important;
+    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .SelectPopover .mud-list-item:has(~ .mud-list-item) {
@@ -137,14 +152,88 @@
 }
 
 .SelectPopover .mud-selected-item {
-    color: var(--md-sys-color-on-primary-text) !important;
-    background: transparent !important;
-    backdrop-filter: saturate(15) contrast(0.3);
-    transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: var(--md-sys-color-on-surface) !important;
+    color: var(--md-sys-color-surface-text) !important;
 }
 
 .SelectPopover .mud-selected-item:hover {
-    backdrop-filter: saturate(5) contrast(0.5);
+    background-color: var(--md-sys-color-on-surface-variant) !important;
 }
 
+/* Color */
 
+#LayoutSettings.LayoutColor[header] #HeaderPosition,
+#LayoutSettings.LayoutColor[drawer] #DrawerPosition {
+    background-color: color-mix(in srgb, currentColor, transparent 75%);
+    background-image: radial-gradient(var(--md-sys-color-outline-variant) 2px, transparent 3px);
+    background-size: 25px 25px;
+}
+
+#LayoutSettings.LayoutColor[header]:has(.ColorSelectionWheel:hover) #HeaderPosition,
+#LayoutSettings.LayoutColor[drawer]:has(.ColorSelectionWheel:hover) #DrawerPosition {
+    background-color: color-mix(in srgb, currentColor, transparent 40%);
+}
+
+#LayoutSettings.LayoutColor[header] #HeaderPosition {
+    animation: ScrollHorizontal 10s infinite linear;
+}
+
+@keyframes ScrollHorizontal {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -99.999% 0; /* if you do 100% there is a very small, noticeable skip. */
+    }
+}
+
+#LayoutSettings.LayoutColor[drawer] #DrawerPosition {
+    animation: ScrollVertical 5.625s infinite linear;
+}
+
+@keyframes ScrollVertical {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 0 99.999%;
+    }
+}
+
+.ColorSelectionWheel {
+    position: absolute;
+    top: calc(50% - 250px);
+    left: calc(50% - 250px);
+    width: 500px;
+    height: 500px;
+    border-radius: 250px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 150ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.ColorSelectionWheel .ColorSelection {
+    --index: 0;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 290px;
+    height: 250px;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    transform-origin: top center;
+    rotate: calc(60deg * var(--index));
+    translate: -50% 0;
+}
+
+.ColorSelectionWheel[display] {
+    opacity: 1;
+}
+
+.ColorSelectionWheel .ColorSelection > span {
+    position: absolute;
+    top: 67%;
+    left: 50%;
+    translate: -50% -50%;
+    rotate: calc(-60deg * var(--index));
+    transform-origin: center center;
+}

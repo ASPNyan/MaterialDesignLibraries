@@ -136,14 +136,14 @@ public class LayoutSettings : IEquatable<LayoutSettings>
                 case Color.Primary:
                 case Color.Secondary:
                 case Color.Tertiary:
-                    return $"on-{HeaderColor} on-{HeaderColor}-container-text".ToLowerInvariant();
+                    return $"on-{DrawerColor} on-{DrawerColor}-container-text".ToLowerInvariant();
                 case Color.PrimarySwapped:
                 case Color.SecondarySwapped:
                 case Color.TertiarySwapped:
-                    string color = HeaderColor.ToString().Replace("Swapped", null).ToLowerInvariant();
+                    string color = DrawerColor.ToString().Replace("Swapped", null).ToLowerInvariant();
                     return $"{color}-container on-{color}-container-text";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(HeaderColor), HeaderColor, "The set LayoutColor was invalid.");
+                    throw new ArgumentOutOfRangeException(nameof(DrawerColor), DrawerColor, "The set LayoutColor was invalid.");
             }
         }
     }
@@ -201,14 +201,21 @@ public class LayoutSettings : IEquatable<LayoutSettings>
         return _drawerPosition == other._drawerPosition 
                && _headerPosition == other._headerPosition 
                && _headerColor == other._headerColor 
-               && _closeDrawerOnMainFocus == other._closeDrawerOnMainFocus
-               && _closeDrawerOnNavigate == other._closeDrawerOnNavigate;
+               && _drawerColor == other._drawerColor 
+               && _closeDrawerOnMainFocus == other._closeDrawerOnMainFocus 
+               && _closeDrawerOnNavigate == other._closeDrawerOnNavigate 
+               && _floatingDrawer == other._floatingDrawer 
+               && _pageFont.ToString() == other._pageFont.ToString();
     }
 
-    public override bool Equals(object? obj) => obj is LayoutSettings settings && Equals(settings);
+    public override bool Equals(object? obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        return obj is LayoutSettings other && Equals(other);
+    }
 
     public override int GetHashCode() => Hash.GetHashCode();
-
 
     public static bool operator ==(LayoutSettings? left, LayoutSettings? right) => Equals(left, right);
 

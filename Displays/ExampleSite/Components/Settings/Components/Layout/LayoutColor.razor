@@ -1,0 +1,91 @@
+﻿@using System.Numerics
+@using ExampleSite.Components.Settings.Pages
+@implements IDisposable
+@inject LayoutSettings LayoutSettings
+
+<div id="LayoutSettings" class="LayoutColor" header="@(HeaderActive is true)" drawer="@(HeaderActive is false)">
+    <HeaderPosition Size="default" NewSettings="NewSettings" InteractiveAreaSize="100" LayoutSettingsSize="LayoutSize"
+                    @onclick="OpenHeader" Style="@HeaderStyle"/>
+    <DrawerPosition Size="default" NewSettings="NewSettings" LayoutSettingsSize="LayoutSize" HeaderSize="default"
+                    InteractiveAreaSize="100" HeaderPosition="() => NewSettings.HeaderPosition" Style="@DrawerStyle"
+                    @onclick="OpenDrawer"/>
+    @{
+        Action<LayoutSettings.Color>? setColor = HeaderActive switch
+        {
+            true => color => NewSettings.HeaderColor = color,
+            false => color => NewSettings.DrawerColor = color,
+            null => null
+        };
+    }
+
+    <div class="ColorSelectionWheel" @onclick:stopPropagation="true" display="@(HeaderActive is not null)"
+         style="translate: 0 -@(NewSettings.HeaderPosition is LayoutSettings.LayoutPosition.Bottom ? 100 : 0)px;">
+        @foreach (LayoutSettings.Color color in Enum.GetValues<LayoutSettings.Color>())
+        {
+            LayoutSettings.Color? currentColor;
+            if (HeaderActive is null) currentColor = null;
+            else currentColor = HeaderActive.Value ? NewSettings.HeaderColor : NewSettings.DrawerColor;
+
+            LayoutSettings settings = NewSettings.Clone();
+            settings.HeaderColor = settings.DrawerColor = color;
+            string colorClass = HeaderActive is true ? settings.HeaderClass : settings.DrawerClass;
+            <div class="ColorSelection @colorClass" style="--index: @((int)color);" @onclick="() => setColor?.Invoke(color)">
+                @if (currentColor == color)
+                {
+                    <MdIcon Icon="Check Circle" Fill="false" LineStyle="MdIconLineStyle.Rounded" Scale="3"/>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private Vector2 LayoutSize { get; } = new(1280, 720);
+    
+    [Parameter, EditorRequired]
+    public LayoutSettings NewSettings { get; set; } = null!;
+
+    [CascadingParameter] 
+    public Layout.OnClickContainer OnClickContainer { get; set; } = null!;
+    
+    // true: open header & drawer closed, false: open drawer & header closed, null: both closed.
+    private bool? HeaderActive { get; set; }
+
+    private string HeaderStyle => $"color: var(--md-sys-color-{NewSettings.HeaderClass.Split(' ').First()});";
+    private string DrawerStyle => $"color: var(--md-sys-color-{NewSettings.DrawerClass.Split(' ').First()});";
+
+    private DateTime _invokeTime;
+    
+    private void OpenHeader()
+    {
+        _invokeTime = DateTime.Now;
+        HeaderActive = true;
+        StateHasChanged();
+    }
+
+    private void OpenDrawer()
+    {
+        _invokeTime = DateTime.Now;
+        HeaderActive = false;
+        StateHasChanged();
+    }
+
+    private void CloseActive()
+    {
+        if (DateTime.Now - _invokeTime < TimeSpan.FromMilliseconds(5)) return;
+        HeaderActive = null;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        NewSettings.OnUpdate += StateHasChanged;
+        OnClickContainer.OnClick += CloseActive;
+    }
+
+    public void Dispose()
+    {
+        NewSettings.OnUpdate -= StateHasChanged;
+        OnClickContainer.OnClick -= CloseActive;
+    }
+}

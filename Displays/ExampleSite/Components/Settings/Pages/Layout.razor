@@ -1,7 +1,9 @@
 ﻿@using ExampleSite.Components.Settings.Components.Layout
+@using ExampleSite.Services
 @rendermode InteractiveServer
 @page "/Settings/Layout/{Tab?}"
 @inject LayoutSettings LayoutSettings
+@inject SettingsStorageService SettingsStorage
 
 <DynamicHeadContent>
     <link rel="stylesheet" href="css/Layout.css">
@@ -17,7 +19,7 @@
     <MudDivider Style="@MainLayout.DividerStylePushToLeft(LayoutSettings)" Vertical="true" FlexItem="true"/>
 </DynamicComponentContent>
 
-<article id="LayoutSettingsGrid">
+<article id="LayoutSettingsGrid" @onclick="LayoutOnClick.Invoke">
     @switch (Tab)
     {
         case null:
@@ -28,8 +30,12 @@
             <LayoutOptions NewSettings="NewSettings"/>
             break;
         case "Color":
+            <CascadingValue TValue="OnClickContainer" Value="LayoutOnClick">
+                <LayoutColor NewSettings="NewSettings"/>
+            </CascadingValue>
             break;
     }
+    
     <div id="ApplySettings">
         <MudButton id="ApplyButton" Class="primary on-primary-text" OnClick="ApplySettings">
             <MdIconText Icon="Check Circle" Text="Apply" Weight="300" Grade="0" class="SettingsIconText"/>
@@ -56,10 +62,14 @@
     private HeaderPosition? StoredHeader { get; set; }
     private DrawerPosition? StoredDrawer { get; set; }
 
+    private OnClickContainer LayoutOnClick { get; set; } = null!;
+
     private bool SettingsEqual => LayoutSettings == NewSettings;
     
     protected override void OnInitialized()
     {
+        LayoutOnClick = new OnClickContainer(StateHasChanged);
+        
         NewSettings = new LayoutSettings
         {
             CloseDrawerOnNavigate = LayoutSettings.CloseDrawerOnNavigate,
@@ -67,8 +77,8 @@
             FloatingDrawer = LayoutSettings.FloatingDrawer,
             DrawerPosition = LayoutSettings.DrawerPosition,
             HeaderPosition = LayoutSettings.HeaderPosition,
-            HeaderColor = LayoutSettings.HeaderColor, // todo: add to settings
-            DrawerColor = LayoutSettings.DrawerColor, // todo: add to settings
+            HeaderColor = LayoutSettings.HeaderColor,
+            DrawerColor = LayoutSettings.DrawerColor,
             PageFont = LayoutSettings.PageFont
         };
 
@@ -82,10 +92,11 @@
         StateHasChanged();
     }
 
-    private void ApplySettings()
+    private async Task ApplySettings()
     {
         LayoutSettings.Update(NewSettings);
         LayoutPositioning?.ApplySettings();
+        await SettingsStorage.SetLayoutSettingsAsync(LayoutSettings);
         StateHasChanged();
     }
 
@@ -93,5 +104,12 @@
     {
         StoredHeader = header ?? throw new ArgumentNullException(nameof(header));
         StoredDrawer = drawer ?? throw new ArgumentNullException(nameof(drawer));
+    }
+
+    public class OnClickContainer(Action stateHasChanged)
+    {
+        public event Action OnClick = stateHasChanged;
+
+        public void Invoke() => OnClick();
     }
 }

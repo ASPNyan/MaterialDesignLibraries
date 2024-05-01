@@ -4,19 +4,19 @@
 
 <div id="LayoutSettings" class="LayoutOptions">
     <MudSelect T="bool" @bind-Value="NewSettings.CloseDrawerOnNavigate" Label="Close Drawer on Navigate" Class="Option"
-               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint">
+               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint on-surface-text" AnchorOrigin="Origin.BottomCenter">
         <MudSelectItem T="bool" Value="true">Enable</MudSelectItem>
         <MudSelectItem T="bool" Value="false">Disable</MudSelectItem>
     </MudSelect>
     
     <MudSelect T="bool" @bind-Value="NewSettings.CloseDrawerOnMainFocus" Label="Close Drawer on Main Focus" Class="Option"
-               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint">
+               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint on-surface-text" AnchorOrigin="Origin.BottomCenter">
         <MudSelectItem T="bool" Value="true">Enable</MudSelectItem>
         <MudSelectItem T="bool" Value="false">Disable</MudSelectItem>
     </MudSelect>
     
     <MudSelect T="bool" @bind-Value="NewSettings.FloatingDrawer" Label="Drawer Behavior" Class="Option"
-               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint">
+               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint on-surface-text" AnchorOrigin="Origin.BottomCenter">
         <MudSelectItem T="bool" Value="true">Floating</MudSelectItem>
         <MudSelectItem T="bool" Value="false">Responsive</MudSelectItem>
     </MudSelect>
@@ -24,7 +24,7 @@
     <MudDivider Style="border-color: var(--md-sys-color-outline); flex-grow: 0;"/>
     
     <MudSelect T="Fonts.FontFamily?" @bind-Value="FontFamilyFilter" ToStringFunc="@(x => x?.ToString() ?? "Any")" Class="Option"
-               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint" Label="Font Family Filter">
+               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint on-surface-text" Label="Font Family Filter" AnchorOrigin="Origin.BottomCenter">
         <MudSelectItem T="Fonts.FontFamily?" Value="null">Any</MudSelectItem>
         @foreach (Fonts.FontFamily? family in Enum.GetValues<Fonts.FontFamily>())
         {
@@ -32,7 +32,7 @@
         }
     </MudSelect>
     <MudSelect T="FontWeightValue?" @bind-Value="FontWeightFilter" ToStringFunc="@(x => x?.ToString() ?? "Any")" Class="Option"
-               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint" Label="Font Weight Filter">
+               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint on-surface-text" Label="Font Weight Filter" AnchorOrigin="Origin.BottomCenter">
         <MudSelectItem T="FontWeightValue?" Value="null">Any</MudSelectItem>
         @foreach (FontWeightValue? weight in Enum.GetValues<FontWeightValue>())
         {
@@ -41,13 +41,13 @@
         }
     </MudSelect>
     <MudSelect T="bool?" @bind-Value="SerifFilter" ToStringFunc="@(x => x?.ToString() ?? "Either")" Class="Option"
-               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint" Label="Font Style Filter">
+               Variant="Variant.Outlined" PopoverClass="SelectPopover surface-tint on-surface-text" Label="Font Style Filter">
         <MudSelectItem T="bool?" Value="null">Either</MudSelectItem>
         <MudSelectItem T="bool?" Value="true">Serif</MudSelectItem>
         <MudSelectItem T="bool?" Value="false">Sans-Serif</MudSelectItem>
     </MudSelect>
     <MudSelect T="FontFace" @bind-Value="NewSettings.PageFont" Label="Site Font" Class="Option" Variant="Variant.Outlined"
-               PopoverClass="SelectPopover surface-tint" Text="@GetFontText(NewSettings.PageFont)">
+               PopoverClass="SelectPopover surface-tint on-surface-text" Text="@GetFontText(NewSettings.PageFont)" AnchorOrigin="Origin.BottomCenter">
         @foreach (FontFace font in FilteredFonts)
         {
             <MudSelectItem T="FontFace" Value="font">

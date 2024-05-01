@@ -16,6 +16,10 @@
     bottom: var(--mud-appbar-height);
 }
 
+.mud-layout:has(.mud-drawer-responsive.mud-drawer--open) .mud-main-content {
+    margin: 0 0 0 var(--mud-drawer-width, var(--mud-drawer-width-left));
+}
+
 #Drawer {
     z-index: 7;
 }
@@ -72,8 +76,8 @@ main {
 /* this specifically matches MdIconText elements by checking for span or a elements immediately containing a span with 
  * one of the material symbol classes followed by another span sibling element.
  */
-:is(span, a):has(> span.material-symbols-sharp ~ span, 
-                 > span.material-symbols-outlined ~ span, 
+:is(span, a):has(> span.material-symbols-sharp ~ span,
+                 > span.material-symbols-outlined ~ span,
                  > span.material-symbols-rounded ~ span) {
     gap: 1ch;
 }
@@ -86,3 +90,5 @@ main {
     font-family: inherit !important;
     font-weight: inherit !important;
 }
+
+

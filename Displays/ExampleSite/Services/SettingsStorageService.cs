@@ -123,7 +123,7 @@ public sealed class SettingsStorageService(ProtectedLocalStorage localStorage)
     }
 
     public async ValueTask<StorageRequestResult> SetLayoutSettingsAsync(LayoutSettings layoutSettings) =>
-        await TryAndReturnFromError(BrowserStorage.SetAsync(LayoutSettingsStorage, layoutSettings));
+        await TryAndReturnFromError(BrowserStorage.SetAsync(Purpose, LayoutSettingsStorage, layoutSettings));
 
     public async ValueTask<StorageRequestResult> DeleteLayoutSettingsAsync() =>
         await TryAndReturnFromError(BrowserStorage.DeleteAsync(LayoutSettingsStorage));

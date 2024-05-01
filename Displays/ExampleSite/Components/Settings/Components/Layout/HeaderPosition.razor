@@ -2,8 +2,9 @@
 @using static ExampleSite.Components.Settings.LayoutSettings
 @inject LayoutSettings LayoutSettings
 
-<MudPaper Class="@LayoutSettings.HeaderClass" Width="@($"{Size.X}px")" Height="@($"{Size.Y}px")" Style="@BoxStyle" Elevation="0"
-          id="HeaderPosition" @onmousedown="SetMouseState(true)" @onmouseup="SetMouseState(false)" dragging="@_dragging"/>
+<MudPaper Class="@NewSettings.HeaderClass" Width="@($"{Size.X}px")" Height="@($"{Size.Y}px")" Style="@ElementStyle"
+          Elevation="0" id="HeaderPosition" @onmousedown="SetMouseState(true)" @onmouseup="SetMouseState(false)"
+          dragging="@_dragging" @attributes="Attributes"/>
 
 @code {
     [Parameter, EditorRequired]
@@ -24,11 +25,19 @@
     [Parameter]
     public HeaderPosition? Previous { get; set; }
     
+    [Parameter]
+    public string? Style { get; set; }
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? Attributes { get; set; }
+    
     private Vector2? InitialPos { get; set; }
     private Vector2 LastMouseOffset { get; set; }
     private Vector2 MouseOffset { get; set; }
     private Vector2 BoxOffset { get; set; }
     public LayoutPosition? Position { get; set; }
+
+    private string ElementStyle => BoxStyle + "; " + Style;
     
     private string BoxStyle => Position switch
     {

@@ -25,13 +25,8 @@
 
 <MdIconConfig Weight="400" Grade="0" LineStyle="MdIconLineStyle.Rounded" OpticalSize="24" Fill="true">
     <MudLayout Class="@FontClass">
-        @{
-            // moving the page around on the layout page causes behavior I'm too lazy to fix.
-            DrawerVariant variant = Nav.Uri.EndsWith("/Settings/Layout") ? DrawerVariant.Temporary : DrawerVariant.Responsive;
-        }
-        <MudDrawer @bind-Open="DrawerOpen" Variant="variant" Anchor="@LayoutSettings.MudDrawerPosition" Elevation="1"
-                   Class="@LayoutSettings.DrawerClass" ClipMode="DrawerClipMode.Always" DisableOverlay="true"
-                   position="@LayoutSettings.DrawerPosition" id="Drawer">
+        <MudDrawer @bind-Open="DrawerOpen" Variant="DrawerVariant" Anchor="@LayoutSettings.MudDrawerPosition" Elevation="1"
+                   Class="@LayoutSettings.DrawerClass" ClipMode="DrawerClipMode.Always" DisableOverlay="true" id="Drawer">
             <spacer/>
             <MdIconText Href="/" Icon="Home" Text="Home" Scale="1.3" class="on-secondary-container-text"/>
             <MudDivider Style="@DividerStyle"/>
@@ -47,8 +42,7 @@
             <MudDivider Vertical="true" FlexItem="true" Style="@DividerStyleRight"/>
             <MudTooltip Placement="Placement.Bottom" RootStyle="margin: auto 0; height: 36px" Class="SchemeTooltip"
                         Text="@($"Switch to {(Scheme.IsDarkScheme ? "Light" : "Dark")} Mode")" Delay="200">
-                <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;"
-                        @onclick="ToggleScheme"/>
+                <MdIcon Icon="@SchemeIcon" Fill="true" Scale="1.5" style="cursor: pointer;" @onclick="ToggleScheme"/>
             </MudTooltip>
         </MudAppBar>
         <MudMainContent @onclick="CloseDrawer">
@@ -91,8 +85,11 @@
 
     private string SchemeIcon => Scheme.IsDarkScheme ? "Dark Mode" : "Light Mode";
 
-    private string FontClass => LayoutSettings.PageFont.Family.Trim('"').Replace(" ", null) + ' ' 
-        + Enum.Parse<FontWeightValue>(LayoutSettings.PageFont.Weight, true).ToString().ToLowerInvariant();
+    private string FontClass => (LayoutSettings.PageFont.Family.Trim('"').Replace(" ", null) + ' ' 
+        + Enum.Parse<FontWeightValue>(LayoutSettings.PageFont.Weight, true)).ToLowerInvariant();
+
+    private DrawerVariant DrawerVariant => Nav.Uri.EndsWith("/Settings/Layout") || LayoutSettings.FloatingDrawer
+        ? DrawerVariant.Temporary : DrawerVariant.Responsive;
     
     private void ToggleScheme()
     {
@@ -121,19 +118,24 @@
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        Console.WriteLine(DrawerVariant);
+        
         if (!firstRender) return;
         
         StorageRequestResult<IScheme> storedScheme = await SettingsStorage.GetSchemeAsync();
 
-        if (storedScheme.Success)
-        {
-            ThemeContainer.UpdateScheme(storedScheme.Value);
-            Logger.LogInformation("Found and set to stored scheme {typeName}.", storedScheme.Value.GetType().Name);
-        } 
+        if (storedScheme.Success) ThemeContainer.UpdateScheme(storedScheme.Value);
         // TaskCancelledException means the page was refreshed multiple times and quickly, which is fine, and should be ignored.
-        else if (storedScheme.Error is not null && storedScheme.Error is not TaskCanceledException)
+        else if (storedScheme.Error is not null and not TaskCanceledException)
             Logger.LogError(storedScheme.Error, "Failed to get stored scheme.");
         else Logger.LogInformation("No stored scheme found. This may be indicative of an error, but in of itself is not.");
+
+        StorageRequestResult<LayoutSettings> storedLayout = await SettingsStorage.GetLayoutSettingsAsync();
+        
+        if (storedLayout.Success) LayoutSettings.Update(storedLayout.Value);
+        else if (storedLayout.Error is not null and not TaskCanceledException)
+            Logger.LogError(storedLayout.Error, "Failed to get stored layout.");
+        else Logger.LogInformation("No stored layout found. This may be indicative of an error, but in of itself is not.");
     }
 
     public void Dispose()
@@ -141,5 +143,4 @@
         ThemeContainer.OnSchemeUpdate -= OnUpdate;
         Nav.LocationChanged -= OnNavigate;
     }
-
 }

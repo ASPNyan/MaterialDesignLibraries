@@ -1,0 +1,24 @@
+﻿@using System.Numerics
+@inject IJSRuntime Js
+
+<DynamicHeadContent>
+    <link rel="stylesheet" href="css/Layout.css">
+    <script>
+        window.getMainSize = function() {
+            let main = document.getElementsByName('main')[0].getBoundingClientRect();
+            return [main.width, main.height];
+        }
+    </script>
+</DynamicHeadContent>
+
+
+
+@code {
+    private Vector2 DisplaySize { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        double[] values = await Js.InvokeAsync<double[]>("window.getMainSize");
+        DisplaySize = new Vector2((float)values[0], (float)values[1]) * 0.60f; // 60% of <main>
+    }
+}
