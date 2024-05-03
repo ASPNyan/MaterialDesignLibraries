@@ -19,6 +19,7 @@
     [Parameter, EditorRequired]
     public LayoutSettings NewSettings { get; set; } = null!;
     
+    // so this isn't required but everything already uses @bind-NewSettings so it is until that's changed
     [Parameter]
     public EventCallback<LayoutSettings> NewSettingsChanged { get; set; }
 

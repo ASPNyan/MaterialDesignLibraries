@@ -2,6 +2,7 @@
 @using ExampleSite.Components.Settings.Pages
 @implements IDisposable
 @inject LayoutSettings LayoutSettings
+@inject IJSRuntime Js
 
 <div id="LayoutSettings" class="LayoutColor" header="@(HeaderActive is true)" drawer="@(HeaderActive is false)">
     <HeaderPosition Size="default" NewSettings="NewSettings" InteractiveAreaSize="100" LayoutSettingsSize="LayoutSize"
@@ -40,7 +41,7 @@
 </div>
 
 @code {
-    private Vector2 LayoutSize { get; } = new(1280, 720);
+    private Vector2 LayoutSize { get; set; } = new(1280, 720);
     
     [Parameter, EditorRequired]
     public LayoutSettings NewSettings { get; set; } = null!;
@@ -81,6 +82,15 @@
     {
         NewSettings.OnUpdate += StateHasChanged;
         OnClickContainer.OnClick += CloseActive;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            float width = (float)await Js.InvokeAsync<double>("window.getPageWidth") * 0.65f;
+            LayoutSize = Vector2.Min(new Vector2(width, width / (16/9f)), LayoutSize);
+        }
     }
 
     public void Dispose()

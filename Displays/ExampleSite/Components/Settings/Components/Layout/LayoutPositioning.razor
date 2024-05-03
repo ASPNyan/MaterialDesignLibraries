@@ -1,5 +1,6 @@
 ﻿@using System.Numerics
 @inject LayoutSettings LayoutSettings
+@inject IJSRuntime Js
 
 <div id="LayoutSettings" @onmousemove="AssignMouseEvent(MouseMove)" @onmouseup="ContainerMouseUp" @onmouseleave="ContainerMouseUp">
     <HeaderPosition @ref="HeaderPosition" Size="HeaderSize" InteractiveAreaSize="InteractiveAreaSize" Previous="HeaderPosition"
@@ -10,7 +11,6 @@
 </div>
 
 @code {
-    private static readonly Vector2 LayoutSettingsSize = new(1280, 720);
     private static readonly Vector2 DrawerSize = new(150, 150);
     private static readonly Vector2 HeaderSize = new(120, 120); // all vectors are in px
     const int InteractiveAreaSize = 100; // px
@@ -24,6 +24,8 @@
     public HeaderPosition? HeaderPosition { get; set; }
     [Parameter]
     public DrawerPosition? DrawerPosition { get; set; }
+    
+    private Vector2 LayoutSettingsSize { get; set; } = new(1280, 720);
 
     private PushOutQueue<Action> BoxDragEvents { get; } = new(5);
     private Action<MouseEventArgs> AssignMouseEvent(Action<MouseEventArgs> eventAction)
@@ -36,8 +38,14 @@
         NewSettings.OnUpdate += StateHasChanged;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            float width = (float)await Js.InvokeAsync<double>("window.getPageWidth") * 0.65f;
+            LayoutSettingsSize = Vector2.Min(new Vector2(width, width / (16/9f)), LayoutSettingsSize);
+        }
+        
         if (BoxDragEvents.Count is 0) return;
         foreach (Action method in BoxDragEvents) method();
         StoreValues?.Invoke(HeaderPosition, DrawerPosition);

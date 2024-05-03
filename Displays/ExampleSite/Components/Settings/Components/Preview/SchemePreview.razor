@@ -2,23 +2,30 @@
 @using ExampleSite.DefaultThemes
 @using MaterialDesign.Color.Schemes.Custom
 
-<h3 style="font-weight: normal">Current Theme: @ThemeName</h3>
-<MudExpansionPanel Text="Theme Colors:" @bind-IsExpanded="Expanded" Class="ExpansionPanel on-tertiary-container-text">
-    <SchemeTiles/>
+<h3 style="font-weight: inherit">Current Theme: @ThemeName</h3>
+<MudExpansionPanel @bind-IsExpanded="Expanded" Class="ExpansionPanel on-tertiary-container-text">
+    <TitleContent>
+        Theme Colors:
+        <MudGrid Justify="Justify.SpaceBetween" Class="@GridClass">
+            <MudItem Class="SchemeTiles surface-variant" Style="width: 100%;">
+                <MudPaper Class="primary"/>
+                <MudPaper Class="on-primary"/>
+                <MudPaper Class="secondary"/>
+                <MudPaper Class="on-secondary"/>
+                <MudPaper Class="tertiary"/>
+                <MudPaper Class="on-tertiary"/>
+                <MudPaper Class="background"/>
+                <MudPaper Class="on-background"/>
+            </MudItem>
+        </MudGrid>
+    </TitleContent>
+    
+    <ChildContent>
+        <SchemeTiles/>
+    </ChildContent>
 </MudExpansionPanel>
 
-<MudGrid Justify="Justify.SpaceBetween" Class="@GridClass" Style="width: 60%;">
-    <MudItem Class="SchemeTiles surface-variant" Style="width: 100%;">
-        <MudPaper Class="primary"/>
-        <MudPaper Class="on-primary"/>
-        <MudPaper Class="secondary"/>
-        <MudPaper Class="on-secondary"/>
-        <MudPaper Class="tertiary"/>
-        <MudPaper Class="on-tertiary"/>
-        <MudPaper Class="background"/>
-        <MudPaper Class="on-background"/>
-    </MudItem>
-</MudGrid>
+
 
 @code {
     private bool Expanded { get; set; }

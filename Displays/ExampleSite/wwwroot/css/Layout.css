@@ -3,16 +3,17 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+    gap: 20px;
 }
 
 #LayoutSettings {
-    width: 1280px;
-    height: 720px;
+    width: calc(min(1280px, 65vw));
+    height: calc(min(1280px, 65vw / (16/9)));
     border: var(--md-sys-color-outline-variant) 1px solid;
     border-radius: 5px;
     overflow: hidden;
@@ -53,7 +54,7 @@
     background: var(--md-sys-color-on-secondary-text);
 }
 
-#ApplyButton, 
+#ApplyButton,
 #ResetButton {
     box-shadow: var(--mud-elevation-0);
     transition: box-shadow 150ms cubic-bezier(0, 0, 0.2, 1);
@@ -89,7 +90,7 @@
 #DrawerPosition,
 #HeaderPosition {
     transition: width 80ms ease-in, height 80ms ease-in, transform 80ms ease-out, border-radius 80ms ease,
-                background-color 150ms, color 150ms;
+    background-color 150ms, color 150ms;
     border-radius: 0;
 }
 
@@ -202,10 +203,10 @@
 
 .ColorSelectionWheel {
     position: absolute;
-    top: calc(50% - 250px);
-    left: calc(50% - 250px);
-    width: 500px;
-    height: 500px;
+    top: calc(50% - 12vw);
+    left: calc(50% - 12vw);
+    width: 24vw;
+    height: 24vw;
     border-radius: 250px;
     overflow: hidden;
     opacity: 0;
@@ -217,8 +218,8 @@
     position: absolute;
     left: 50%;
     bottom: 0;
-    width: 290px;
-    height: 250px;
+    aspect-ratio: 1.16;
+    height: calc(min(250px, 12vw));
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     transform-origin: top center;
     rotate: calc(60deg * var(--index));
