@@ -37,6 +37,8 @@ internal class FontFaceCollection
     {
         if (FontsByClassName.TryGetValue(className, out List<FontFace>? existingFontFaces))
             existingFontFaces.Remove(fontFace);
+
+        if (existingFontFaces?.Count is 0) FontsByClassName.Remove(className);
         
         OnUpdate?.Invoke();
     }
@@ -114,3 +116,13 @@ internal class FontFaceCollection
         }
     }
 }
+
+/*
+ * System.InvalidOperationException: Sequence contains no elements
+ *     at System.Linq.ThrowHelper.ThrowNoElementsException()
+ *     at System.Linq.Enumerable.First[TSource](IEnumerable`1 source)
+ *     at MaterialDesign.Web.Services.FontFaceCollection.CollectionComponent.<BuildRenderTree>b__18_0(RenderTreeBuilder childBuilder)
+ *     at Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder.AddContent(Int32 sequence, RenderFragment fragment)
+ *     at MaterialDesign.Web.Components.DynamicHeadOutlet.BuildRenderTree(RenderTreeBuilder __builder)
+ *     at Microsoft.AspNetCore.Components.Rendering.ComponentState.RenderIntoBatch(RenderBatchBuilder batchBuilder, RenderFragment renderFragment, Exception& renderFragmentException)
+ */
