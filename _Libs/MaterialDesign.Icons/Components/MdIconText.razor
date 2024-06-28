@@ -31,6 +31,11 @@ else
     [Parameter, EditorRequired]
     public string? Text { get; set; }
 
+    [Parameter]
+    public string? IconStyle { get; set; }
+
+    private new string IconStyleString => base.IconStyleString[..^(style?.Length ?? 0)] + IconStyle; // remove style from end.
+
     protected override void OnInitialized()
     {
         if (string.IsNullOrWhiteSpace(Text)) 
