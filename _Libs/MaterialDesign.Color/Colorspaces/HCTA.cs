@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using static System.Math;
+using Vector = System.Numerics.Vector3;
 
 namespace MaterialDesign.Color.Colorspaces;
 
@@ -172,37 +173,37 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="y">The y-coordinate.</param>
     /// <param name="n">The index of the vertex.</param>
     /// <returns>The calculated Nth vertex as a Vector.</returns>
-    private static Vector NthVertex(double y, int n)
+    private static Vector NthVertex(float y, float n)
     {
-        double kR = YFromLinRGB[0];
-        double kG = YFromLinRGB[1];
-        double kB = YFromLinRGB[2];
+        float kR = YFromLinRGB[0];
+        float kG = YFromLinRGB[1];
+        float kB = YFromLinRGB[2];
 
-        double coordA = n % 4 <= 1 ? 0 : 100;
-        double coordB = n % 2 is 0 ? 0 : 100;
+        float coordA = n % 4 <= 1 ? 0 : 100;
+        float coordB = n % 2 is 0 ? 0 : 100;
 
         switch (n)
         {
             case < 4:
             {
-                double r = (y - coordA * kG - coordB * kB) / kR;
+                float r = (y - coordA * kG - coordB * kB) / kR;
 
-                if (IsBounded(r)) return Vector.From(new[] { r, coordA, coordB });
-                return Vector.From(new double[] { -1, -1, -1 });
+                if (IsBounded(r)) return new Vector(r, coordA, coordB);
+                return new Vector(-1, -1, -1);
             }
             case < 8:
             {
-                double g = (y - coordB * kR - coordA * kB) / kG;
+                float g = (y - coordB * kR - coordA * kB) / kG;
 
-                if (IsBounded(g)) return Vector.From(new[] { coordB, g, coordA });
-                return Vector.From(new double[] { -1, -1, -1 });
+                if (IsBounded(g)) return new Vector(coordB, g, coordA);
+                return new Vector(-1, -1, -1);
             }
             default:
             {
-                double b = (y - coordA * kR - coordB * kG) / kB;
+                float b = (y - coordA * kR - coordB * kG) / kB;
 
-                if (IsBounded(b)) return Vector.From(new[] { coordA, coordB, b });
-                return Vector.From(new double[] { -1, -1, -1 });
+                if (IsBounded(b)) return new Vector(coordA, coordB, b);
+                return new Vector(-1, -1, -1);
             }
         }
     }
@@ -214,7 +215,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <returns>The hue value.</returns>
     private static double HueOf(in Vector linRGB)
     {
-        Vector scaledDiscount = ScaledDiscountFromLinRGB.Multiply(linRGB);
+        Vector scaledDiscount = ScaledDiscountFromLinRGB * linRGB;
 
         double rA = ChromaticAdaptation(scaledDiscount[0]);
         double gA = ChromaticAdaptation(scaledDiscount[1]);
@@ -255,9 +256,9 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="y">The y-axis value.</param>
     /// <param name="targetHue">The target hue.</param>
     /// <param name="val">An array containing the left and right vectors of the bisected segment.</param>
-    private static void BisectToSegment(double y, double targetHue, out Vector[] val)
+    private static void BisectToSegment(float y, double targetHue, out Vector[] val)
     {
-        Vector left = Vector.From(new double[] { -1, -1, -1 });
+        Vector left = new Vector(-1, -1, -1);
         Vector right = left;
 
         double leftHue = 0;
@@ -300,7 +301,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
             }
         }
         
-        val = new[] { left, right };
+        val = [left, right];
     }
 
     /// <summary>
@@ -371,14 +372,9 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="t">The interpolation factor (between 0 and 1).</param>
     /// <param name="target">The ending point of the interpolation.</param>
     /// <returns>The interpolated point between the source and target points.</returns>
-    private static Vector LerpPoint(Vector source, double t, Vector target) =>
-        Vector.From(new[]
-        {
-            source[0] + (target[0] - source[0]) * t,
-            source[1] + (target[1] - source[1]) * t,
-            source[2] + (target[2] - source[2]) * t
-        });
-
+    private static Vector LerpPoint(Vector source, double t, Vector target) => 
+        Vector.Lerp(source, target, (float)t);
+    
     /// <summary>
     /// Sets the specified coordinate of the target vector using linear interpolation
     /// . </summary> <param name="source">The source vector.</param> <param name="coordinate">The coordinate value to set.</param> <param name="target">The target vector.</param>
@@ -396,13 +392,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="a">The first Vector.</param>
     /// <param name="b">The second Vector.</param>
     /// <returns>The midpoint between the two input Vector objects.</returns>
-    private static Vector Midpoint(Vector a, Vector b) =>
-        Vector.From(new[]
-        {
-            (a[0] + b[0]) / 2,
-            (a[1] + b[1]) / 2,
-            (a[2] + b[2]) / 2
-        });
+    private static Vector Midpoint(Vector a, Vector b) => (a + b) / 2;
 
     /// <summary>
     /// Bisection method to find a vector that satisfies a certain condition.
@@ -410,7 +400,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <param name="y">The y-coordinate of the target vector.</param>
     /// <param name="targetHue">The target hue value.</param>
     /// <returns>The vector that satisfies the condition.</returns>
-    private static Vector BisectToLimit(double y, double targetHue)
+    private static Vector BisectToLimit(float y, double targetHue)
     {
         BisectToSegment(y, targetHue, out Vector[] segment);
 
@@ -498,17 +488,17 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// </summary>
     /// <param name="t">The value to convert.</param>
     /// <returns>The lightness value Y in the CIE XYZ color space.</returns>
-    public static double YFromTone(double t)
+    public static float YFromTone(double t)
     {
         const double ke = 8;
         if (t > ke)
         {
             double cbrt = (t + 16) / 116;
             double cube = cbrt * cbrt * cbrt;
-            return cube * 100;
+            return (float)cube * 100;
         }
 
-        return t / (24389 / 27d) * 100;
+        return (float)t / (24389 / 27f) * 100;
     }
 
     #endregion
@@ -520,7 +510,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// </summary>
     /// <returns>The Y value calculated from the current tone value.</returns>
     [Pure]
-    private double YFromTone() => YFromTone(T);
+    private float YFromTone() => YFromTone(T);
 
     /// <summary>
     /// Creates an RGBA color based on the current tone value.
@@ -537,52 +527,44 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <summary>
     /// Matrix used to convert scaled discount to Linear RGB values.
     /// </summary>
-    private static readonly Matrix LinRGBFromScaledDiscount = Matrix.From(
-    [
-        [
-            1373.2198709594231,
-            -1100.4251190754821,
-            -7.278681089101213,
-        ],
-        [
-            -271.815969077903,
-            559.6580465940733,
-            -32.46047482791194,
-        ],
-        [
-            1.9622899599665666,
-            -57.173814538844006,
-            308.7233197812385,
-        ]
-    ]);
+    private static readonly Matrix3x3 LinRGBFromScaledDiscount = new(
+        // M1
+        1373.2198709594231f,
+        -1100.4251190754821f,
+        -7.278681089101213f,
+        // M2
+        -271.815969077903f,
+        559.6580465940733f,
+        -32.46047482791194f,
+        // M3
+        1.9622899599665666f,
+        -57.173814538844006f,
+        308.7233197812385f
+    );
 
     /// <summary>
     /// Represents a matrix containing scaled discount values based on linear RGB values.
     /// </summary>
-    private static readonly Matrix ScaledDiscountFromLinRGB = Matrix.From(
-    [
-        [
-            0.001200833568784504,
-            0.002389694492170889,
-            0.0002795742885861124,
-        ],
-        [
-            0.0005891086651375999,
-            0.0029785502573438758,
-            0.0003270666104008398,
-        ],
-        [
-            0.00010146692491640572,
-            0.0005364214359186694,
-            0.0032979401770712076,
-        ],
-    ]);
+    private static readonly Matrix3x3 ScaledDiscountFromLinRGB = new(
+        // M1
+        0.001200833568784504f,
+        0.002389694492170889f,
+        0.0002795742885861124f,
+        // M2
+        0.0005891086651375999f,
+        0.0029785502573438758f,
+        0.0003270666104008398f,
+        // M3
+        0.00010146692491640572f,
+        0.0005364214359186694f,
+        0.0032979401770712076f
+    );
 
     /// <summary>
     /// YFromLinRGB represents the transformation coefficients used to calculate the luminance (Y) value from
     /// linear RGB values.
     /// </summary>
-    private static readonly double[] YFromLinRGB = {0.2126, 0.7152, 0.0722};
+    private static readonly float[] YFromLinRGB = [0.2126f, 0.7152f, 0.0722f];
 
     /// <summary>
     /// Finds the result using the given hue and y values in the CIECAM02 color appearance model.
@@ -627,12 +609,12 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
             double gA = (460 * p2 - 891 * a - 261 * b) / chromaticAdaptationDivisor;
             double bA = (460 * p2 - 220 * a - 6300 * b) / chromaticAdaptationDivisor;
 
-            double rCScaled = InverseChromaticAdaptation(rA);
-            double gCScaled = InverseChromaticAdaptation(gA);
-            double bCScaled = InverseChromaticAdaptation(bA);
+            float rCScaled = (float)InverseChromaticAdaptation(rA);
+            float gCScaled = (float)InverseChromaticAdaptation(gA);
+            float bCScaled = (float)InverseChromaticAdaptation(bA);
 
-            Vector scaled = Vector.From([rCScaled, gCScaled, bCScaled]);
-            Vector linRGB = LinRGBFromScaledDiscount.Multiply(scaled);
+            Vector scaled = new(rCScaled, gCScaled, bCScaled);
+            Vector linRGB = LinRGBFromScaledDiscount * scaled;
 
             if (linRGB[0] < 0 || linRGB[1] < 0 || linRGB[2] < 0) return (RGBA)0;
 
@@ -674,7 +656,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
         }
 
         double hueRad = H / 180 * double.Pi;
-        double y = YFromTone();
+        float y = YFromTone();
         
         RGBA exact = FindResultViaJ(hueRad, y);
         if ((uint)exact is not 0) return exact;
@@ -686,7 +668,8 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <summary>
     /// An array containing critical planes.
     /// </summary>
-    private static readonly double[] CriticalPlanes = {
+    private static readonly double[] CriticalPlanes =
+    [
         0.015176349177441876, 0.045529047532325624, 0.07588174588720938, 0.10623444424209313,  0.13658714259697685,  0.16693984095186062,
         0.19729253930674434,  0.2276452376616281,   0.2579979360165119,  0.28835063437139563,  0.3188300904430532,   0.350925934958123,
         0.3848314933096426,   0.42057480301049466,  0.458183274052838,   0.4976837250274023,   0.5391024159806381,   0.5824650784040898,
@@ -730,7 +713,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
         87.54890820862819,    88.3767072518277,     89.2090541872801,    90.04595612594655,    90.88742016217518,    91.73345337380438,
         92.58406282226491,    93.43925555268066,    94.29903859396902,   95.16341895893969,    96.03240364439274,    96.9059996312159,
         97.78421388448044,    98.6670533535366,     99.55452497210776
-    };
+    ];
 
     #endregion
 

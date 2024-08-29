@@ -1,5 +1,6 @@
 ﻿namespace MaterialDesign.Color.Common;
 
+[Obsolete("Use the inbuilt .NET Vector, not this. Don't use this. It's inefficient and poorly written.")]
 public class Vector
 {
     private readonly double[] _data;
