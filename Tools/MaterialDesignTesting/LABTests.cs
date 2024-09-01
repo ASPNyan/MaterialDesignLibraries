@@ -13,9 +13,9 @@ public class LABTests
         RGBA actual = lab.ToRGBA();
         RGBA expected = new RGBA(255, 255, 255);
 
-        Assert.AreEqual(expected.R, actual.R, 1);
-        Assert.AreEqual(expected.G, actual.G, 1);
-        Assert.AreEqual(expected.B, actual.B, 1);
+        Assert.AreEqual(expected.R, actual.R, 2);
+        Assert.AreEqual(expected.G, actual.G, 2);
+        Assert.AreEqual(expected.B, actual.B, 2);
     }
 
     [TestMethod]

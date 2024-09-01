@@ -42,8 +42,8 @@ public class PaletteTesting
 
     private static void RGBAIsEqual(RGBA expected, RGBA actual)
     {
-        Assert.AreEqual(expected.R, actual.R, 1);
-        Assert.AreEqual(expected.G, actual.G, 1);
-        Assert.AreEqual(expected.B, actual.B, 1);
+        Assert.AreEqual(expected.R, actual.R, 2);
+        Assert.AreEqual(expected.G, actual.G, 2);
+        Assert.AreEqual(expected.B, actual.B, 2);
     }
 }

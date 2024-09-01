@@ -11,6 +11,7 @@ const char r = 'r';
 const char h = 'h';
 const string hct = nameof(hct);
 const string exit = nameof(exit);
+const string help = nameof(help);
 const string createContrast = "createcontrast";
 const string contrast = nameof(contrast);
 const string scheme = nameof(scheme);
@@ -31,6 +32,18 @@ while (true)
             continue;
         case exit or exit + "()":
             return;
+        case help or help + "()":
+            Console.WriteLine("""
+                              To see syntax, enter a function without parenthesis ('()') or any other args.
+                              createContrast: creates a new HCTA color with the provided contrast
+                              contrast: finds the contrast between two colors
+                              scheme: creates a small scheme using the provided base color and variant
+                              variants: displays valid variants for the `scheme` function
+                              distance: calculates the Euclidean distance between two colors
+                              
+                              Colors can be converted between using the syntax <color> -> <colorspace>, where <colorspace> can be rgb, hct, hex, or # (short for hex)
+                              """);
+            continue;
         case variants or variants + "()":
             string[] names = Enum.GetNames<Variant>();
             string output = names[0];

@@ -1,4 +1,6 @@
-﻿namespace MaterialDesign.Color.Colorspaces;
+﻿using System.Numerics;
+
+namespace MaterialDesign.Color.Colorspaces;
 
 /// <summary>
 /// Represents a color in LAB color space.
@@ -63,11 +65,9 @@ public class LAB(double l, double a, double b) : IRGBAConvertible<LAB>
         double gL = -0.9689 * x + 1.8758 * y + 0.0415 * z;
         double bL = 0.0557 * x - 0.2040 * y + 1.0570 * z;
 
-        byte red = HCTA.Delinearized(rL);
-        byte green = HCTA.Delinearized(gL);
-        byte blue = HCTA.Delinearized(bL);
+        (byte r, byte g, byte b) = HCTA.Delinearized(new Vector3((float)rL, (float)gL, (float)bL));
 
-        return new RGBA(red, green, blue);
+        return new RGBA(r, g, b);
     }
 
     /// <summary>

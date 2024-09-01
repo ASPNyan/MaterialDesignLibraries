@@ -1,34 +1,15 @@
-﻿@using System.Numerics
-@using ExampleSite.Components.Settings.Components.Layout
-@inject IJSRuntime Js
+﻿@using static ExampleSite.Components.Settings.LayoutSettings
 @inject LayoutSettings LayoutSettings
 
-<DynamicHeadContent>
-    <link rel="stylesheet" href="css/Layout.css">
-    <link rel="stylesheet" href="css/Components/LayoutPreview.css">
-    <script>
-        window.getLayoutSettingsSize = function() {
-            let main = document.getElementsByClassName('ExpansionPanel')[0].getBoundingClientRect();
-            return [main.width, main.width / (16 / 9)];
-        }
-    </script>
-</DynamicHeadContent>
-
 <h3 style="font-weight: inherit">Layout Settings:</h3>
-<div id="LayoutSettings" style="width: 60vw; height: calc(60vw / (16 / 9));">
-    <HeaderPosition NewSettings="LayoutSettings" Size="Vector2.Zero" InteractiveAreaSize="@InteractiveArea" LayoutSettingsSize="DisplaySize"/>
-    <DrawerPosition NewSettings="LayoutSettings" Size="Vector2.Zero" InteractiveAreaSize="@InteractiveArea" HeaderSize="Vector2.Zero"
-                    LayoutSettingsSize="DisplaySize" HeaderPosition="() => LayoutSettings.HeaderPosition"/>
+<div class="HeaderPreview @LayoutSettings.HeaderClass" style="width: 60vmin; height: 100px;">
+    <MdIconText Icon="@HeaderIcon" Text="Header" class="@LayoutSettings.HeaderClass"/>
+</div>
+<div class="DrawerPreview @LayoutSettings.DrawerClass" style="width: 60vmin; height: 100px;">
+    <MdIconText Icon="@HeaderIcon" Text="Drawer" class="@LayoutSettings.DrawerClass"/>
 </div>
 
 @code {
-    private Vector2 DisplaySize { get; set; }
-    private int InteractiveArea => (int)(DisplaySize.X * 0.117);
-    
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        double[] values = await Js.InvokeAsync<double[]>("window.getLayoutSettingsSize");
-        DisplaySize = new Vector2((float)values[0], (float)values[1]); // 60vmin width, 16:9 aspect ratio.
-        StateHasChanged();
-    }
+    private string HeaderIcon => $"Arrow {(LayoutSettings.HeaderPosition is LayoutPosition.Top ? "Upward" : "Downward")}";
+    private string DrawerIcon => $"Arrow {(LayoutSettings.HeaderPosition is LayoutPosition.Top ? "Back" : "Forward")}";
 }

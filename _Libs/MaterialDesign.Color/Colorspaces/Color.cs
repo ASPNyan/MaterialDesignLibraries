@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace MaterialDesign.Color.Colorspaces;
@@ -540,28 +541,17 @@ public class Color : IRGB, IHSL, IAlpha, IWebFormattable<Color>
     public static float Max3(float x, float y, float z) => Math.Max(x, Math.Max(y, z));
     public static double Max3(double x, double y, double z) => Math.Max(x, Math.Max(y, z));
 
-    public static int Round0(double x) => (int)Math.Truncate(x) + (x % 1 < 0.5 ? 0 : 1);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Round0(double x) => (int)x + (x % 1 < 0.5 ? 0 : 1); // (int)x truncates x
 
-    public static int SanitizeDegrees(int deg)
-    {
-        deg %= 360;
-        if (deg < 0) deg += 360;
-        return deg;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int SanitizeDegrees(int deg) => (deg %= 360) < 0 ? deg + 360 : deg;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float SanitizeDegrees(float deg) => (deg %= 360) < 0 ? deg + 360 : deg;
     
-    public static float SanitizeDegrees(float deg)
-    {
-        deg %= 360;
-        if (deg < 0) deg += 360;
-        return deg;
-    }
-    
-    public static double SanitizeDegrees(double deg)
-    {
-        deg %= 360;
-        if (deg < 0) deg += 360;
-        return deg;
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double SanitizeDegrees(double deg) => (deg %= 360) < 0 ? deg + 360 : deg;
     
     public static double DifferenceDegrees(double a, double b) => 180 - Math.Abs(Math.Abs(a - b) - 180);
     #endregion

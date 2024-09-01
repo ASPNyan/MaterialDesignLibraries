@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using static System.Math;
 using Vector = System.Numerics.Vector3;
 
@@ -95,6 +96,25 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
         return Clamp((byte)rounded, byte.MinValue, byte.MaxValue);
     }
 
+    private static readonly Vector DelinearizedSubtractVector = new(0.055f);
+    public static (byte, byte, byte) Delinearized(Vector rgbComp)
+    {
+        rgbComp /= 100; // normalize
+
+        if (rgbComp.X <= 0.0031308 || rgbComp.Y <= 0.0031308 || rgbComp.Z <= 0.0031308)
+        {
+            rgbComp *= 100; // de-normalize before using individual delinearize
+            return (Delinearized(rgbComp.X), Delinearized(rgbComp.Y), Delinearized(rgbComp.Z));
+        }
+        
+        rgbComp = 1.05f * new Vector(MathF.Pow(rgbComp.X, 1 / 2.4f), MathF.Pow(rgbComp.Y, 1 / 2.4f),
+            MathF.Pow(rgbComp.Z, 1 / 2.4f)) - DelinearizedSubtractVector;
+
+        rgbComp *= 255;
+
+        return ((byte)rgbComp.X, (byte)rgbComp.Y, (byte)rgbComp.Z);
+    }
+
     /// <summary>
     /// Determines the sign of a given value.
     /// </summary>
@@ -104,15 +124,20 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// 0 if the value is zero,
     /// 1 if the value is positive.
     /// </returns>
-    public static int SignOf(double val)
-    {
-        return val switch
-        {
-            < 0 => -1,
-            0 => 0,
-            _ => 1
-        };
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int SignOf(double val) => val < 0 ? -1 : val is 0 ? 0 : 1;
+    
+    /// <summary>
+    /// Determines the sign of a given value.
+    /// </summary>
+    /// <param name="val">The value for which the sign needs to be determined.</param>
+    /// <returns>
+    /// -1 if the value is negative,
+    /// 0 if the value is zero,
+    /// 1 if the value is positive.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int SignOf(float val) => val < 0 ? -1 : val is 0 ? 0 : 1;
 
     /// <summary>
     /// Performs chromatic adaptation on the given component.
@@ -128,19 +153,21 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
         return sign * 400 * af / (af + 27.13);
     }
 
+    private static readonly Vector IcaSubtractVector = new(400f);
+    
     /// <summary>
     /// Applies inverse chromatic adaptation to the input value.
     /// </summary>
     /// <param name="adapted">The adapted value to be transformed.</param>
     /// <returns>The transformed value after applying inverse chromatic adaptation.</returns>
-    private static double InverseChromaticAdaptation(double adapted)
+    private static Vector InverseChromaticAdaptation(Vector adapted)
     {
-        double abs = Abs(adapted);
-        double b = Max(0, 27.13 * abs / (400 - abs));
+        Vector abs = Vector.Abs(adapted);
+        Vector b = Vector.Max(Vector.Zero, 27.13f * abs / (IcaSubtractVector - abs));
+        
+        Vector sign = new(SignOf(adapted.X), SignOf(adapted.Y), SignOf(adapted.Z));
 
-        int sign = SignOf(adapted);
-
-        return sign * Pow(b, 1 / 0.42);
+        return sign * new Vector(MathF.Pow(b.X, 1 / 0.42f), MathF.Pow(b.Y, 1 / 0.42f), MathF.Pow(b.Z, 1 / 0.42f));
     }
 
     /// <summary>
@@ -150,9 +177,7 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
     /// <returns>The resulting RGBA color.</returns>
     private static RGBA RGBAFromLinRGB(Vector linRGB)
     {
-        byte r = Delinearized(linRGB[0]);
-        byte g = Delinearized(linRGB[1]);
-        byte b = Delinearized(linRGB[2]);
+        (byte r, byte g, byte b) = Delinearized(linRGB);
 
         return new RGBA(r, g, b);
     }
@@ -596,33 +621,27 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
 
             double ac = ViewingConditions.Aw * Pow(jNormalized, 1 / ViewingConditions.C / ViewingConditions.Z);
 
-            double p2 = ac / ViewingConditions.Nbb;
+            float p2 = (float)(ac / ViewingConditions.Nbb);
 
             double gamma = 23 * (p2 + 0.305) * t / (23 * p1 + 11 * t * hCos + 108 * t * hSin);
 
             // ReSharper disable once LocalVariableHidesPrimaryConstructorParameter
-            double a = gamma * hCos;
-            double b = gamma * hSin;
+            float a = (float)(gamma * hCos);
+            float b = (float)(gamma * hSin);
 
-            const double chromaticAdaptationDivisor = 1403;
-            double rA = (460 * p2 + 451 * a + 288 * b) / chromaticAdaptationDivisor;
-            double gA = (460 * p2 - 891 * a - 261 * b) / chromaticAdaptationDivisor;
-            double bA = (460 * p2 - 220 * a - 6300 * b) / chromaticAdaptationDivisor;
-
-            float rCScaled = (float)InverseChromaticAdaptation(rA);
-            float gCScaled = (float)InverseChromaticAdaptation(gA);
-            float bCScaled = (float)InverseChromaticAdaptation(bA);
-
-            Vector scaled = new(rCScaled, gCScaled, bCScaled);
+            const float chromaticAdaptationDivisor = 1403f;
+            float rA = (460 * p2 + 451 * a + 288 * b) / chromaticAdaptationDivisor;
+            float gA = (460 * p2 - 891 * a - 261 * b) / chromaticAdaptationDivisor;
+            float bA = (460 * p2 - 220 * a - 6300 * b) / chromaticAdaptationDivisor;
+            
+            Vector scaled = InverseChromaticAdaptation(new Vector(rA, gA, bA));
             Vector linRGB = LinRGBFromScaledDiscount * scaled;
 
             if (linRGB[0] < 0 || linRGB[1] < 0 || linRGB[2] < 0) return (RGBA)0;
 
-            double kR = YFromLinRGB[0];
-            double kG = YFromLinRGB[1];
-            double kB = YFromLinRGB[2];
+            Vector l = new(YFromLinRGB[0], YFromLinRGB[1], YFromLinRGB[2]);
 
-            double fnj = kR * linRGB[0] + kG * linRGB[1] + kB * linRGB[2];
+            double fnj = Vector.Dot(linRGB, l);
 
             if (fnj <= 0) return (RGBA)0;
 
@@ -719,6 +738,9 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
 
     #region From RGB
 
+    // ReSharper disable once IdentifierTypo
+    private static readonly Vector HcfrAdaptationAdditionVector = new(27.13f);
+
     /// <summary>
     /// Calculates the hue and chroma values from the given RGBA color.
     /// </summary>
@@ -735,28 +757,25 @@ public class HCTA(double h, double c, double t, float a = 100) : IAlpha, IEquata
         double z = 0.01932141 * redL + 0.11916382 * greenL + 0.95034478 * blueL;
         
         // XYZ to cone responses
-        double rCone = 0.401288 * x + 0.650173 * y - 0.051461 * z;
-        double gCone = -0.250268 * x + 1.204414 * y + 0.045854 * z;
-        double bCone = -0.002079 * x + 0.048952 * y + 0.953127 * z;
+        float rCone = (float)(0.401288 * x + 0.650173 * y - 0.051461 * z);
+        float gCone = (float)(-0.250268 * x + 1.204414 * y + 0.045854 * z);
+        float bCone = (float)(-0.002079 * x + 0.048952 * y + 0.953127 * z);
 
-        double rDiscount = ViewingConditions.RgbD[0] * rCone;
-        double gDiscount = ViewingConditions.RgbD[1] * gCone;
-        double bDiscount = ViewingConditions.RgbD[2] * bCone;
+        Vector discount = ViewingConditions.RgbD * new Vector(rCone, gCone, bCone);
 
-        double rAf = Pow(ViewingConditions.Fl * Abs(rDiscount) / 100, 0.42);
-        double gAf = Pow(ViewingConditions.Fl * Abs(gDiscount) / 100, 0.42);
-        double bAf = Pow(ViewingConditions.Fl * Abs(bDiscount) / 100, 0.42);
+        Vector preAf = (float)ViewingConditions.Fl * Vector.Abs(discount) / 100;
+        Vector af = new(MathF.Pow(preAf[0], 0.42f), MathF.Pow(preAf[1], 0.42f), MathF.Pow(preAf[2], 0.42f));
+        
+        Vector signOfDiscount = new(SignOf(discount[0]), SignOf(discount[1]), SignOf(discount[2]));
         
         // Chromatic adaptations
-        double rA = SignOf(rDiscount) * 400 * rAf / (rAf + 27.13);
-        double gA = SignOf(gDiscount) * 400 * gAf / (gAf + 27.13);
-        double bA = SignOf(bDiscount) * 400 * bAf / (bAf + 27.13);
+        Vector adaptations = signOfDiscount * 400f * af / (af + HcfrAdaptationAdditionVector);
         
         // Redness-Greenness
-        double a = (11 * rA + -12 * gA + bA) / 11;
-        double b = (rA + gA - 2 * bA) / 9; // const b = (rA + gA - 2.0 * bA) / 9.0;
-        double u = (20 * rA + 20 * gA + 21 * bA) / 20;
-        double p2 = (40 * rA + 20 * gA + bA) / 20;
+        double a = (11 * adaptations.X + -12 * adaptations.Y + adaptations.Z) / 11;
+        double b = (adaptations.X + adaptations.Y - 2 * adaptations.Z) / 9;
+        double u = (20 * adaptations.X + 20 * adaptations.Y + 21 * adaptations.Z) / 20;
+        double p2 = (40 * adaptations.X + 20 * adaptations.Y + adaptations.Z) / 20;
 
         double radians = Atan2(b, a);
         double degrees = radians * 180 / double.Pi;

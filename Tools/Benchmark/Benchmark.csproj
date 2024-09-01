@@ -5,12 +5,10 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <PackAsTool>true</PackAsTool>
-        <ToolCommandName>mdcli</ToolCommandName>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\_Libs\MaterialDesign.Color\MaterialDesign.Color.csproj" />
+      <PackageReference Include="Nyan.MaterialDesign.Color" Version="1.1.3"/>
     </ItemGroup>
-
+    
 </Project>

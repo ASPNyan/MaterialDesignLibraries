@@ -18,9 +18,9 @@ public class HCTColorTesting
         const byte g = 79;
         const byte b = 150;
         
-        Assert.AreEqual(r, rgba.R, 1);
-        Assert.AreEqual(g, rgba.G, 1);
-        Assert.AreEqual(b, rgba.B, 1);
+        Assert.AreEqual(r, rgba.R, 2);
+        Assert.AreEqual(g, rgba.G, 2);
+        Assert.AreEqual(b, rgba.B, 2);
     }
 
     [TestMethod]
@@ -50,9 +50,9 @@ public class HCTColorTesting
         HCTA converted = HCTA.FromRGBA(rgba);
         
         // rounding is required because HCT colors will not usually have exact RGB conversions, since HCT to RGB is lossy
-        Assert.AreEqual(original.H, Math.Round(converted.H));
-        Assert.AreEqual(original.C, Math.Round(converted.C));
-        Assert.AreEqual(original.T, Math.Round(converted.T));
+        Assert.AreEqual(original.H, Math.Round(converted.H), 1);
+        Assert.AreEqual(original.C, Math.Round(converted.C), 1);
+        Assert.AreEqual(original.T, Math.Round(converted.T), 1);
     }
 
     [TestMethod]

@@ -232,9 +232,7 @@ public class CAM16(double hue, double chroma, double j, double q, double m, doub
 
         Vector3 lRGB = XYZToSRGB * xyz;
 
-        byte r = HCTA.Delinearized(lRGB[0]);
-        byte g = HCTA.Delinearized(lRGB[1]);
-        byte b = HCTA.Delinearized(lRGB[2]);
+        (byte r, byte g, byte b) = HCTA.Delinearized(lRGB);
 
         return new RGBA(r, g, b);
     }
