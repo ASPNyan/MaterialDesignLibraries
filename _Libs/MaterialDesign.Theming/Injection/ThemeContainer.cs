@@ -77,7 +77,8 @@ public class ThemeContainer // Update to SchemeContainer in next major.
 
     public void UpdateScheme<TScheme>(string serialized) where TScheme : IScheme, ISchemeSerializable<TScheme>
     {
-        
+        TScheme scheme = TScheme.DeserializeScheme(serialized);
+        UpdateScheme(scheme);
     }
     
     /// <summary>
